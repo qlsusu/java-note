@@ -1,0 +1,13 @@
+参见：http://haohaoxuexi.iteye.com/blog/1413830
+
+一般：
+Runtime runtime = Runtime.getRuntime();  
+runtime.exec(command);
+
+如果一开始无法指定全部的cmd，如：
+	mysql -u{name}... 来登陆
+	后，mysql> use mydb
+Runtime runtime = Runtime.getRuntime();  
+Process p=runtime.exec(cmd1);
+OutputStreamWriter writer = new OutputStreamWriter(process.getOutputStream());  
+writer.write(cmd2);  

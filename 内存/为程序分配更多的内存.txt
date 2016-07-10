@@ -1,0 +1,17 @@
+eclipse中
+run configurations
+	arguments，如：分配1g
+		-Xmx1024M
+或者
+java
+	installed jres
+		选择jre,edit
+			default vm arguments中填入
+
+为线程设置堆栈（为了：避免深层递归时，抛出异常）：
+		
+关于jvm的内存更多的解释
+	http://my.oschina.net/xianggao/blog/83823
+	http://unixboy.iteye.com/blog/174173
+
+

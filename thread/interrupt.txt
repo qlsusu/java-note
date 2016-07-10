@@ -1,0 +1,27 @@
+参见：
+对Thread.interrupt()方法很详细的介绍
+	http://blog.csdn.net/yonghumingshishenme/article/details/6285259
+
+如果thread1的内部中，执行了
+	object.wait, 
+	Thread.sleep
+	thread2.join
+则，当在外部执行了thread1.interrupt时，则thread1会抛出InterruptedException异常
+
+可被中断的线程的一般写法：
+public void run(){
+	try{
+		. . .
+		while (!Thread.currentThread().isInterrupted() && more work to do) {
+			do more work
+		}
+	} catch(InterruptedException e) {
+	// thread was interrupted during sleep or wait
+	}finally{
+		cleanup, if required
+	}
+	// exiting the run method terminates the thread
+}
+说明：
+即便是抛出了InterruptedException异常，Thread.currentThread().isInterrupted()返回了true
+也是由线程内部逻辑来判断：是否要退出执行

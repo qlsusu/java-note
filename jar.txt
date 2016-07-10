@@ -1,0 +1,11 @@
+jar包中的 非.class资源
+String file = "/config/domainTypeMaker-config.xml";
+InputStream is = getClass().getResourceAsStream(file);
+
+可将一个工程打成一个可运行的jar
+该jar中包含了所依赖的 第三方jar
+后直接 java -jar my.jar来运行
+
+打jar包（命令行）：
+如：进入到：D:\workspace_eclipse\knowledgeSharing_wikipedia2k\bin
+jar cvf myjar.jar com/

@@ -1,0 +1,10 @@
+参见：
+JAVA线程池shutdown和shutdownNow的区别
+	http://www.iteye.com/topic/649677
+线程、多线程与线程池总结
+	http://www.jianshu.com/p/b8197dd2934c
+Java线程(七)：Callable和Future
+	http://blog.csdn.net/ghsau/article/details/7451464
+
+shutdown()：不会立即的终止线程池，而是要等所有任务缓存队列中的任务都执行完后才终止，但再也不会接受新的任务（再添加时会抛出RejectedExecutionException）。
+shutdownNow()：立即终止线程池，并尝试打断正在执行的任务（通过thread.interrupt的方式），并且清空任务缓存队列，返回尚未执行的任务。

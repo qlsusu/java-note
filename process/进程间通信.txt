@@ -1,0 +1,12 @@
+传统的进程间通信的方式有大致如下几种：
+(1)   管道(PIPE) 
+(2)   命名管道(FIFO) 
+(3)   信号量(Semphore) 
+(4)   消息队列(MessageQueue) 
+(5)   共享内存(SharedMemory) 
+(6)   Socket
+
+Java如何支持进程间通信。我们把Java进程理解为JVM进程。很明显，传统的这些大部分技术是无法被我们的应用程序利用了（这些进程间通信都是靠系统调用来实现的）。但是Java也有很多方法可以进行进程间通信的。 
+除了上面提到的Socket之外，当然首选的IPC可以使用Rmi，或者Corba也可以。另外Java nio的MappedByteBuffer也可以通过内存映射文件来实现进程间通信(共享内存)。
+	
+参见：my/rmi

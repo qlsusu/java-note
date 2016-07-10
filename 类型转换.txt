@@ -1,0 +1,2 @@
+不同类型数组（如：byte[] short[]）间的转换
+	http://hi.baidu.com/menglinxi_a/item/35a43d5d50e79212abf6d753

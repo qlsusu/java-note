@@ -1,0 +1,2 @@
+java中的局部final变量 到底是什么：
+参见：http://developer.51cto.com/art/200906/128214.htm

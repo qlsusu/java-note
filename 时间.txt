@@ -1,0 +1,2 @@
+显示星期几
+	simpledateformat中，E, yyyy/MM/dd，其中E代表了星期几

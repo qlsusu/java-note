@@ -1,0 +1,4 @@
+﻿方法修饰符
+protected
+	只能在 子类/同包 中被访问
+		子类中 的出现形式：super.member，而不是obj.member

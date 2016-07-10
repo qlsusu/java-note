@@ -1,0 +1,4 @@
+Thread t1 = new Thread(计数线程一);  
+t1.start();  
+t1.join(); //当前线程被阻塞，直到 t1执行完成
+...

@@ -1,0 +1,2 @@
+MaterialSheetFab<FAB extends View & AnimatedFab>
+泛型为FAB，其继承了View，并且实现了AnimatedFab接口

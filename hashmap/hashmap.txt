@@ -1,0 +1,10 @@
+参见：
+Hashmap
+	http://www.baike.com/wiki/hashmap&prd=so_1_doc
+
+如何存储：
+先将key的hashcode值 存储在索引表中
+hashcode值相同的 所有key将构建成 一个链表
+
+如何查找：
+先根据key的hashcode来找到索引表中的位置，然后通过key.equals来找到具体的key（进而找到entry）

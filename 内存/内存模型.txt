@@ -1,0 +1,3 @@
+参见：
+Java内存模型
+	http://www.importnew.com/19612.html

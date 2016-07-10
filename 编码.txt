@@ -1,0 +1,3 @@
+保证：程序运行时，不会展示乱码，且，内存中，传递的字符串不是乱码
+System.setProperty("sun.jnu.encoding", "UTF-8");
+System.setProperty("file.encoding", "UTF-8");

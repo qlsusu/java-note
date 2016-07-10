@@ -1,0 +1,3 @@
+参见：
+线程、多线程与线程池总结
+	http://www.jianshu.com/p/b8197dd2934c
