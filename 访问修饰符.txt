@@ -1,4 +1,15 @@
-﻿方法修饰符
-protected
-	只能在 子类/同包 中被访问
-		子类中 的出现形式：super.member，而不是obj.member
+继承
+外界可认为子类中拥有所有的 父类的非private的 成员（函数，变量）
+若子类不覆盖成员，则该成员的修饰符为 父类中的，修饰依据为 父类中的（如：protected成员 所涉及的同包，还是依据父类的包）
+
+只要外界可以访问 成员，那么就将走 多态
+如：father和son在不同的包里面，均定义了protected method1，当father的同包类other中，有一个方法：
+	father f=new son; f.method1。则最终会调用son.method1，虽然外界并不能：
+		son s=new son;s.method1
+
+成员修饰符，是参照于 该变量被定义的所在类（并不是子类）		
+protected成员
+该成员可被 同包类和子类访问
+	子类访问：
+		若子类和父类不同包，则，该成员被访问的形式只能为：super.成员
+		若子类和父类同包，则，变量被访问的依据为：可被同包类所访问
