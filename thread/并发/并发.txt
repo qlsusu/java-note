@@ -1,0 +1,3 @@
+参见：
+Java 并发 学习笔记
+	http://www.jianshu.com/p/cb1a23bc82d0

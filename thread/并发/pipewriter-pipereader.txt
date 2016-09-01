@@ -1,0 +1,1 @@
+使用PipedWriter/PipedReader也可以方便的在线程之间传递数据。

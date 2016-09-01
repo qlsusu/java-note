@@ -1,3 +1,7 @@
 参见：
+Java内存模型与垃圾回收
+	http://www.cnblogs.com/luoxn28/p/5492840.html
+【深入理解Java虚拟机】Java内存区域模型、对象创建过程、常见OOM
+	http://blog.csdn.net/shakespeare001/article/details/51732155
 Java内存模型
 	http://www.importnew.com/19612.html

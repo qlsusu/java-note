@@ -1,0 +1,20 @@
+参见：
+JAVA线程池shutdown和shutdownNow的区别
+	http://www.iteye.com/topic/649677
+线程、多线程与线程池总结
+	http://www.jianshu.com/p/b8197dd2934c
+Java线程(七)：Callable和Future
+	http://blog.csdn.net/ghsau/article/details/7451464
+Java 并发 学习笔记
+	http://www.jianshu.com/p/cb1a23bc82d0
+
+主要方法：
+submit 可以提交一个任务
+shutdown()：不会立即的终止线程池，而是要等所有任务缓存队列中的任务都执行完后才终止，但再也不会接受新的任务（再添加时会抛出RejectedExecutionException）。
+shutdownNow()：立即终止线程池，并尝试打断正在执行的任务（通过thread.interrupt的方式），并且清空任务缓存队列，返回尚未执行的任务。
+invokeXXX 批量执行任务
+
+一些线程池：
+CachedThreadExecutor 工作线程的数量没有上限(Integer的最大值), 有需要就创建新线程。
+FixedThreadExecutor 预先一次分配固定数量的线程，之后不再需要创建新线程。
+SingleThreadExecutor 只有一个线程的线程池。如果提交了多个任务，那么这些人物将排队，每个任务都在上一个人物执行完之后执行。所有任务都是按照它们的提交顺序执行的。

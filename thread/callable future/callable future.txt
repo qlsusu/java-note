@@ -14,6 +14,11 @@ Future<V>：
 可以获得callable的执行结果，也提供了诸如cancel之类的方法
 V get()throws InterruptedException,ExecutionException：如有必要，等待计算完成，然后获取其结果。
 	当调用get时，如果结果还没有获得，将会阻塞当前线程，直到结果被计算出来
+cancel()
+	会尝试取消未完成的任务
+		未执行->直接不执行
+		已经完成->返回false
+		正在执行->尝试中断
 
 FutureTask 
 实现了 Runnable 和 Future

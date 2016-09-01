@@ -1,0 +1,19 @@
+ThreadPoolExecutor(
+	int corePoolSize, 
+	int maximumPoolSize, 
+	long keepAliveTime, 
+	TimeUnit unit, 
+	BlockingQueue<Runnable> workQueue, 
+	RejectedExecutionHandler handler)
+
+参数含义：
+corePoolSize : int 工作的Worker的数量。
+maximumPoolSize : int 线程池中持有的Worker的最大数量
+keepAliveTime : long 当超过Workder的数量corePoolSize的时候，如果没有新的任务提交，超过corePoolSize的Worker的最长等待时间。超过这个时间之后，一部分Worker将被回收。
+unit : TimeUnit keepAliveTime的单位
+workQueue : BlockingQueue 缓存任务的队列, 这个队列只缓存提交的Runnable任务。
+threadFactory : ThreadFactory 产生线程的“工厂”
+handler : RejectedExecutionHandler 当一个任务被提交的时候，如果所有Worker都在工作并且超过了缓存队列的容量的时候。会交给这个Handler处理。Java 中提供了几种默认的实现，AbortPolicy, CallerRunsPolicy, DiscardOldestPolicy, DiscardPolicy。
+			
+一个例子：
+new ThreadPoolExecutor(6, 6, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());

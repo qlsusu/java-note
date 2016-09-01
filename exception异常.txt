@@ -13,3 +13,9 @@ exception的异常可以捕获
 		int c=x/y;
 	Checked Exceptions
 		必须在方法签名时，抛出
+		
+不能跨线程捕获异常，如：thread1中不能捕获thread2的异常
+
+UncaughtExceptionHandler
+每一个Thread对象都可以设置一个UncaughtExceptionHandler对象来处理本线程中抛出的异常。
+线程池中可以通过参数ThreadFactory来为每一个线程设置一个UncaughtExceptionHandler对象。
