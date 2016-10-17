@@ -1,8 +1,14 @@
 参见：
 Android并发编程之图文解析volatile关键字
 	http://blog.csdn.net/nugongahou110/article/details/49927667
+深入理解Java内存模型（四）——volatile
+	http://www.infoq.com/cn/articles/java-memory-model-4
+Java 理论与实践: 正确使用 Volatile 变量
+	http://www.ibm.com/developerworks/cn/java/j-jtp06197.html
+	http://www.uml.org.cn/j2ee/201505252.asp
 
 volatile变量的 读取和赋值 可认为是原子，可认为等价于 synchronized(this)
+
 volatile变量的 读取和赋值 是互斥的
 但，多个线程可同时 读取 volatile变量
 

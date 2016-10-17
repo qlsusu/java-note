@@ -1,0 +1,3 @@
+WeakHashMap对于一个给定的键，其映射的存在并不阻止垃圾回收器对该键的回收，
+回收以后，其条目从映射中有效地移除。
+WeakHashMap使用ReferenceQueue实现的这种机制。
