@@ -7,33 +7,52 @@ ThreadPoolExecutor(
 	RejectedExecutionHandler handler)
 
 参数含义：
-corePoolSize : int 工作的Worker的数量。
+corePoolSize : int 
+	工作的Worker的数量。
 	当工作线程的数量小于corePoolSize时，任务来时，会继续启动新线程，并不重用之前空闲的线程
 	当工作线程的数量超过corePoolSize时，任务来时，才开始重用之前的线程处理任务
-maximumPoolSize : int 线程池中持有的Worker的最大数量
-keepAliveTime : long 当超过Workder的数量corePoolSize的时候，如果没有新的任务提交，超过corePoolSize的Worker的最长等待时间。超过这个时间之后，一部分Worker将被回收。
-unit : TimeUnit keepAliveTime的单位
-workQueue : BlockingQueue 缓存任务的队列, 这个队列只缓存提交的Runnable任务。
-threadFactory : ThreadFactory 产生线程的“工厂”
-handler : RejectedExecutionHandler 当一个任务被提交的时候，如果所有Worker都在工作并且超过了缓存队列的容量的时候。会交给这个Handler处理。Java 中提供了几种默认的实现，AbortPolicy, CallerRunsPolicy, DiscardOldestPolicy, DiscardPolicy。
-			
-------------------------------例子：
+maximumPoolSize : int 
+	线程池中持有的Worker的最大数量
+keepAliveTime : long 
+	当超过Workder的数量corePoolSize的时候，如果没有新的任务提交，超过corePoolSize的Worker的最长等待时间。超过这个时间之后，一部分Worker将被回收。
+unit : TimeUnit 
+	keepAliveTime的单位
+workQueue : BlockingQueue 
+	缓存任务的队列, 这个队列只缓存提交的Runnable任务。
+threadFactory : ThreadFactory 
+	产生线程的“工厂”
+handler : RejectedExecutionHandler 
+	当一个任务被提交的时候，如果所有Worker都在工作并且超过了缓存队列的容量的时候。会交给这个Handler处理。Java 中提供了几种默认的实现，AbortPolicy, CallerRunsPolicy, DiscardOldestPolicy, DiscardPolicy。
+
+例子：
 new ThreadPoolExecutor(6, 6, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 
-之下为asynctask中的THREAD_POOL_EXECUTOR的构建：
+------------------------------asynctask中的THREAD_POOL_EXECUTOR的构建
 private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
-private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
+// We want at least 2 threads and at most 4 threads in the core pool,
+// preferring to have 1 less than the CPU count to avoid saturating
+// the CPU with background work
+private static final int CORE_POOL_SIZE = Math.max(2, Math.min(CPU_COUNT - 1, 4));
 private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
-private static final int KEEP_ALIVE = 1;
-private static final BlockingQueue<Runnable> sPoolWorkQueue = new LinkedBlockingQueue<Runnable>(128);
+private static final int KEEP_ALIVE_SECONDS = 30;
 private static final ThreadFactory sThreadFactory = new ThreadFactory() {
     private final AtomicInteger mCount = new AtomicInteger(1);
+
     public Thread newThread(Runnable r) {
         return new Thread(r, "AsyncTask #" + mCount.getAndIncrement());
     }
 };
-Executor THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(
-	CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, 
-	KEEP_ALIVE, TimeUnit.SECONDS, 
-    sPoolWorkQueue, 
-    sThreadFactory);
+private static final BlockingQueue<Runnable> sPoolWorkQueue = new LinkedBlockingQueue<Runnable>(128);
+
+/**
+ * An {@link Executor} that can be used to execute tasks in parallel.
+ */
+public static final Executor THREAD_POOL_EXECUTOR;
+
+static {
+    ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
+            CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
+            sPoolWorkQueue, sThreadFactory);
+    threadPoolExecutor.allowCoreThreadTimeOut(true);
+    THREAD_POOL_EXECUTOR = threadPoolExecutor;
+}

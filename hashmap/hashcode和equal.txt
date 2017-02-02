@@ -1,15 +1,15 @@
-²Î¼û£º
-Java ÖĞÕıÈ·Ê¹ÓÃ hashCode ºÍ equals ·½·¨
+å‚è§ï¼š
+Java ä¸­æ­£ç¡®ä½¿ç”¨ hashCode å’Œ equals æ–¹æ³•
 	http://www.oschina.net/question/82993_75533?fromerr=c7LtkvBW
 	
-Á½¸ö¶ÔÏóµÄ£¬
-hashcodeÖµÏàÍ¬µÄ£¬equal²»Ò»¶¨Îªtrue
-equalÎªtrueµÄ£¬hashcodeÒ»¶¨ÏàÍ¬
+ä¸¤ä¸ªå¯¹è±¡çš„ï¼Œ
+hashcodeå€¼ç›¸åŒçš„ï¼Œequalä¸ä¸€å®šä¸ºtrue
+equalä¸ºtrueçš„ï¼Œhashcodeä¸€å®šç›¸åŒ
 
-¶ÔÏóµÄhashCode()·½·¨·µ»ØµÄÊÇ£ºÕâ¸ö¶ÔÏó´æ´¢µÄÄÚ´æµØÖ·µÄ±àºÅ
+å¯¹è±¡çš„hashCode()æ–¹æ³•è¿”å›çš„æ˜¯ï¼šè¿™ä¸ªå¯¹è±¡å­˜å‚¨çš„å†…å­˜åœ°å€çš„ç¼–å·
 
-Ê¹ÓÃ³¡¾°£º
+ä½¿ç”¨åœºæ™¯ï¼š
 hashmap
-	Í¨¹ıkeyµÄhashcodeÕÒµ½Ë÷Òı±íÖĞµÄÎ»ÖÃ£¬Í¨¹ıkey.equalsÕÒµ½entry
+	é€šè¿‡keyçš„hashcodeæ‰¾åˆ°ç´¢å¼•è¡¨ä¸­çš„ä½ç½®ï¼Œé€šè¿‡key.equalsæ‰¾åˆ°entry
 hashset
-	µ±Ìí¼ÓÒ»¸öeleÊ±£¬Í¨¹ıeleµÄhashcodeºÍeleµÄequals À´ÅĞ¶Ï ¸ÃeleÊÇ·ñÒÑ¾­´æÔÚÓÚsetÖĞ
+	å½“æ·»åŠ ä¸€ä¸ªeleæ—¶ï¼Œé€šè¿‡eleçš„hashcodeå’Œeleçš„equals æ¥åˆ¤æ–­ è¯¥eleæ˜¯å¦å·²ç»å­˜åœ¨äºsetä¸­
