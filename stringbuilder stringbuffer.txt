@@ -1,0 +1,3 @@
+stringbuffer是线程安全的
+
+stringbuilder不是线程安全的

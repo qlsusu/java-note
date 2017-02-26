@@ -1,17 +1,15 @@
-eclipseÖĞ
+eclipseä¸­
 run configurations
-	arguments£¬Èç£º·ÖÅä1g
+	argumentsï¼Œå¦‚ï¼šåˆ†é…1g
 		-Xmx1024M
-»òÕß
+æˆ–è€…
 java
 	installed jres
-		Ñ¡Ôñjre,edit
-			default vm argumentsÖĞÌîÈë
+		é€‰æ‹©jre,edit
+			default vm argumentsä¸­å¡«å…¥
 
-ÎªÏß³ÌÉèÖÃ¶ÑÕ»£¨ÎªÁË£º±ÜÃâÉî²ãµİ¹éÊ±£¬Å×³öÒì³££©£º
+ä¸ºçº¿ç¨‹è®¾ç½®å †æ ˆï¼ˆä¸ºäº†ï¼šé¿å…æ·±å±‚é€’å½’æ—¶ï¼ŒæŠ›å‡ºå¼‚å¸¸ï¼‰ï¼š
 		
-¹ØÓÚjvmµÄÄÚ´æ¸ü¶àµÄ½âÊÍ
+å…³äºjvmçš„å†…å­˜æ›´å¤šçš„è§£é‡Š
 	http://my.oschina.net/xianggao/blog/83823
 	http://unixboy.iteye.com/blog/174173
-
-
