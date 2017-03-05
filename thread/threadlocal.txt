@@ -4,3 +4,13 @@ Implements a thread-local storage, that is, a variable for which each thread has
 All threads share the same ThreadLocal object, but each sees a different value when accessing it, and changes made by one thread do not affect the other threads. 
 
 The implementation supports null values.
+
+例子：
+/** 
+ * 借助ThreadLocal完成：每个线程第一次调用时，初始化SimpleDateFormat对象 
+ */  
+private static ThreadLocal<SimpleDateFormat> threadLocal = new ThreadLocal<SimpleDateFormat>(){  
+    protected synchronized SimpleDateFormat initialValue() {  
+        return new SimpleDateFormat(DATE_PARTEN);  
+    }  
+};  

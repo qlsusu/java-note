@@ -1,0 +1,5 @@
+参见：
+GC那些事儿--Android内存优化第一弹
+	http://www.jianshu.com/p/5db05db4f5ab
+
+JVM使用分代式的内存管理方式, 将Heap分成三代 --- 新生代, 老一代, 持久代.

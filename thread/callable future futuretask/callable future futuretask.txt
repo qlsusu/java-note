@@ -9,11 +9,9 @@ Callable<V>:
 2）Callable 的任务执行后可返回值，而 Runnable 的任务是不能返回值的。
 3）call() 方法可以抛出异常，run()方法不可以的。
 4）运行 Callable 任务可以拿到一个 Future 对象，表示异步计算的结果。
-它提供了检查计算是否完成的方法，以等待计算的完成，并检索计算的结果。
-通过 Future 对象可以了解任务执行情况，可取消任务的执行，还可获取执行结果。
 
 Future<V>:
-可以获得callable的执行结果，也提供了诸如cancel之类的方法
+通过 Future 对象可以了解任务执行情况，可取消任务的执行，还可获取执行结果（期间等待计算的完成）。
 V get()throws InterruptedException,ExecutionException：如有必要，等待计算完成，然后获取其结果。
 	当调用get时，如果结果还没有获得，将会阻塞当前线程，直到结果被计算出来
 cancel(boolean mayInterruptIfRunning)
