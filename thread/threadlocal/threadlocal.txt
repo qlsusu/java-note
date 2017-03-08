@@ -14,3 +14,7 @@ private static ThreadLocal<SimpleDateFormat> threadLocal = new ThreadLocal<Simpl
         return new SimpleDateFormat(DATE_PARTEN);  
     }  
 };  
+
+threadlocal是如何保存信息的，参见：
+	深入理解ThreadLocal（一）
+		http://mp.weixin.qq.com/s?__biz=MzI0MjE3OTYwMg==&mid=401548278&idx=1&sn=573d1cdf31a57db293b2b108e8d5c88b&scene=21#wechat_redirect
