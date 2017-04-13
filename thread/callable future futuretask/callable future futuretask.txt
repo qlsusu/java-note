@@ -8,7 +8,9 @@ Callable<V>:
 1）Callable 接口下的方法是 call()，Runnable 接口的方法是 run()。
 2）Callable 的任务执行后可返回值，而 Runnable 的任务是不能返回值的。
 3）call() 方法可以抛出异常，run()方法不可以的。
-4）运行 Callable 任务可以拿到一个 Future 对象，表示异步计算的结果。
+4）运行 Callable 任务可以拿到一个 Future 对象，
+  通过Future对象可以了解任务执行情况，可取消任务的执行，还可获取执行结果
+5）配合ExecutorService使用时，execute(runnable),submit(callable)
 
 Future<V>:
 通过 Future 对象可以了解任务执行情况，可取消任务的执行，还可获取执行结果（期间等待计算的完成）。
@@ -21,6 +23,9 @@ cancel(boolean mayInterruptIfRunning)
 		正在执行
       如果mayInterruptIfRunning为false，则会继续执行，只是，结束后不会调用onPostExecute，而是执行onCancelled
       如果mayInterruptIfRunning为true，则会尝试中断
+isDone
+  任务是否执行完毕
+  非阻塞方法
 
 FutureTask:
 实现了 Runnable 和 Future

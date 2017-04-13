@@ -10,9 +10,14 @@ Java 并发 学习笔记
 
 主要方法：
 submit 可以提交一个任务
-shutdown()：不会立即的终止线程池，而是要等所有任务缓存队列中的任务都执行完后才终止，但再也不会接受新的任务（再添加时会抛出RejectedExecutionException）。
-shutdownNow()：立即终止线程池，并尝试打断正在执行的任务（通过thread.interrupt的方式），并且清空任务缓存队列，返回尚未执行的任务。
+shutdown()：不会立即的终止线程池，而是要等所有 任务缓存队列中的任务都执行完后才终止，但再也不会接受新的任务（再添加时会抛出RejectedExecutionException）。
+shutdownNow()：立即终止线程池，并尝试打断正在执行的任务（通过thread.interrupt的方式），并且清空任务缓存队列，返回尚未执行的任务。也不会接受新的任务
 invokeXXX 批量执行任务
+--
+awaitTermination(long timeout, TimeUnit unit)
+	返回值类型：boolean
+	是一个阻塞方法，直到：所有的任务执行完毕，或者，等待时间到，或者，线程被interrupt
+	需要在shutdown后被调用，返回值才有效
 
 一些线程池：
 CachedThreadExecutor 工作线程的数量没有上限(Integer的最大值), 有需要就创建新线程。

@@ -1,16 +1,30 @@
+class Task implements Callable<Integer>{
+    @Override
+    public Integer call() throws Exception {
+        System.out.println("子线程在进行计算");
+        Thread.sleep(3000);
+        int sum = 0;
+        for(int i=0;i<100;i++)
+            sum += i;
+        return sum;
+    }
+}
+
 public class Test {
     public static void main(String[] args) {
         //第一种方式
         ExecutorService executor = Executors.newCachedThreadPool();
         Task task = new Task();
         FutureTask<Integer> futureTask = new FutureTask<Integer>(task);
-        executor.submit(futureTask);
+        //本质上：submit一个callable，会返回一个future
+        Future<Integer> future = executor.submit(futureTask);
         executor.shutdown();
          
         //第二种方式，注意这种方式和第一种方式效果是类似的(本质上，都是基于runnable特性)，只不过一个使用的是ExecutorService，一个使用的是Thread
         /*
         Task task = new Task();
         FutureTask<Integer> futureTask = new FutureTask<Integer>(task);
+        //本质上：使用runnable
         Thread thread = new Thread(futureTask);
         thread.start();
         */
@@ -35,14 +49,3 @@ public class Test {
     }
 }
 
-class Task implements Callable<Integer>{
-    @Override
-    public Integer call() throws Exception {
-        System.out.println("子线程在进行计算");
-        Thread.sleep(3000);
-        int sum = 0;
-        for(int i=0;i<100;i++)
-            sum += i;
-        return sum;
-    }
-}
