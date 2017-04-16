@@ -20,6 +20,9 @@ unit : TimeUnit
 	keepAliveTime的单位
 workQueue : BlockingQueue 
 	缓存任务的队列, 这个队列只缓存提交的Runnable任务。
+	如果你提交任务时，线程池队列已满，这时会发生什么
+		如果你使用的LinkedBlockingQueue，也就是无界队列的话，没关系，继续添加任务到阻塞队列中等待执行，因为LinkedBlockingQueue可以近乎认为是一个无穷大的队列，可以无限存放任务；
+		如果你使用的是有界队列比方说ArrayBlockingQueue的话，任务首先会被添加到ArrayBlockingQueue中，ArrayBlockingQueue满了，则会使用拒绝策略RejectedExecutionHandler处理满了的任务，默认是AbortPolicy。
 threadFactory : ThreadFactory 
 	产生线程的“工厂”
 handler : RejectedExecutionHandler 

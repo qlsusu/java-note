@@ -1,0 +1,18 @@
+StackTraceElement[] stackTrace = thread1.getStackTrace();
+for (StackTraceElement s : stackTrace) {
+    sb.append(s.toString() + "\n");
+}
+
+信息举例:
+02-21 00:26:26.408 2999-3014/com.zhy.testlp E/TAG: 
+java.lang.VMThread.sleep(Native Method)
+   java.lang.Thread.sleep(Thread.java:1013)
+   java.lang.Thread.sleep(Thread.java:995)
+   com.zhy.testlp.MainActivity$2.onClick(MainActivity.java:70)
+   android.view.View.performClick(View.java:4438)
+   android.view.View$PerformClick.run(View.java:18422)
+   android.os.Handler.handleCallback(Handler.java:733)
+   android.os.Handler.dispatchMessage(Handler.java:95)
+
+有什么用：
+如thread1在进行耗时操作，在规定时间内未处理完任务，则打印该线程的堆栈来查看 其卡在哪个操作上
