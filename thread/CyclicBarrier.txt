@@ -1,0 +1,26 @@
+形象的描述：
+N个人赛跑，只有N个人都说准备好了，各自才开始去跑
+
+int partyCount = 3;
+final CyclicBarrier barrier = new CyclicBarrier(partyCount);
+
+for (int i = 0; i < partyCount; i++) {
+    new Thread(new Runnable() {
+        @Override
+        public void run() {
+            try {
+                //模拟准备事项
+                TimeUnit.SECONDS.sleep(1);
+
+                //必须在partyCount个不同的线程上，调用了barrier.await()，之后的逻辑才能被执行
+                barrier.await();
+
+                readyToDoThing();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (BrokenBarrierException e) {
+                e.printStackTrace();
+            }
+        }
+    }).start();
+}

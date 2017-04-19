@@ -1,4 +1,6 @@
 参见：
+Java 并发编程 : volatile 关键字解析
+	http://mp.weixin.qq.com/s/WPHqv2RpT8ZM9gbQgXWx3Q
 Java 并发 学习笔记
 	http://www.jianshu.com/p/cb1a23bc82d0
 高并发Java（3）：Java内存模型和线程安全 
