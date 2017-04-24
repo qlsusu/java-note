@@ -1,0 +1,19 @@
+参见：
+Java 中正确使用 hashCode 和 equals 方法
+	http://www.oschina.net/question/82993_75533?fromerr=c7LtkvBW
+Android 面试准备之「equals 和 == 」
+	https://androidzzt.github.io/2017/03/28/Android-%E9%9D%A2%E8%AF%95%E5%87%86%E5%A4%87%E4%B9%8B%E3%80%8Cequals-%E5%92%8C-%E3%80%8D/
+	
+两个对象的
+	equal为true的，hashcode一定相同
+	hashcode值相同的，equal不一定为true
+
+对象的hashCode()方法返回的是：
+返回对象的哈希码，可根据哈希码确定 对象在散列表中的位置
+	散列表本质是数组存储，通过 key-value 的形式存储数据，所以当取 value 的时候，实际上取数组某个位置的元素，并且以 key的hashCode 作为 value在数组中的位置。
+
+使用场景：
+hashmap
+	通过key的hashcode找到索引表中的位置，通过key.equals找到entry
+hashset
+	当添加一个ele时，通过ele的hashcode和ele的equals 来判断 该ele是否已经存在于set中
