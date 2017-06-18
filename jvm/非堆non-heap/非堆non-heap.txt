@@ -1,0 +1,7 @@
+存放了什么：
+永久代
+	方法区
+	interned字符串
+编码缓存
+	Just In Time (JIT)编译
+	因为：Java 字节码解释的速度没有直接在 JVM 主机 CPU 上运行的 native 码运行那么快。为了提升性能，Oracle Hotspot VM 查看那些定期执行 “热” 的字节码区域，并将它们编译成 native 码

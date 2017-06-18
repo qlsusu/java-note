@@ -1,0 +1,35 @@
+参见：
+【Java】泛型中 extends 和 super 的区别？
+	https://itimetraveler.github.io/2016/12/27/%E3%80%90Java%E3%80%91%E6%B3%9B%E5%9E%8B%E4%B8%AD%20extends%20%E5%92%8C%20super%20%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/
+
+PECS（Producer Extends Consumer Super）原则：
+频繁往外读取内容的，适合用上界Extends。
+经常往里插入的，适合用下界Super。
+
+------------------------------例子
+class Plate<T>{
+    private T item;
+    public Plate(T t){item=t;}
+    public void set(T t){item=t;}
+    public T get(){return item;}
+}
+
+//注意：此处并没有指名T的类型，仅仅是说 T是Fruit的子类
+Plate<? extends Fruit> p=new Plate<Apple>(new Apple());
+//不能存入任何元素，因为：没有指名T的类型，编辑器不知道T是Apple还是什么
+p.set(new Fruit());    //Error
+p.set(new Apple());    //Error
+//因为T的Fruit的子类，那么T对象肯定是Fruit
+Fruit newFruit1=p.get();
+Object newFruit2=p.get();
+Apple newFruit3=p.get();    //Error
+
+//注意：此处并没有指名T的类型，仅仅是说 T是Fruit的父类
+Plate<? super Fruit> p=new Plate<Fruit>(new Fruit());
+//存入元素正常
+p.set(new Fruit());
+p.set(new Apple());
+//读取出来的东西只能存放在Object类里。
+Apple newFruit3=p.get();    //Error
+Fruit newFruit1=p.get();    //Error
+Object newFruit2=p.get();

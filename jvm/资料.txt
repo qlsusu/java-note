@@ -1,0 +1,11 @@
+参考：
+JVM 内部原理（一）— 概述
+	http://www.cnblogs.com/richaaaard/p/6140859.html
+CPU如何执行指令（CS/IP）
+	http://www.sohu.com/a/118926423_464082
+栈帧、局部变量表、操作数栈
+	http://wangwengcn.iteye.com/blog/1622195
+栈帧
+	http://blog.csdn.net/yxysdcl/article/details/5569351
+esp和ebp寄存器
+	http://blog.csdn.net/happy987818/article/details/51509449

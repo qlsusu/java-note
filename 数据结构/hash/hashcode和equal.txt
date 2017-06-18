@@ -1,0 +1,15 @@
+参见：
+Java 中正确使用 hashCode 和 equals 方法
+	http://www.oschina.net/question/82993_75533?fromerr=c7LtkvBW
+Android 面试准备之「equals 和 == 」
+	https://androidzzt.github.io/2017/03/28/Android-%E9%9D%A2%E8%AF%95%E5%87%86%E5%A4%87%E4%B9%8B%E3%80%8Cequals-%E5%92%8C-%E3%80%8D/
+
+散列表本质是数组存储，通过 key-value 的形式存储数据，所以当取 value 的时候，先拿 key的hashCode 确定 value在数组中的位置。
+hashset和hashmap等 均采用了散列表结构，
+	先通过hash(key.hashcode)来确定 散列表中的位置
+	后，通过entry.key.equals来找到该entry
+	
+两个对象的
+	equals如果相等，那么hashcode一定相同
+	hashcode值相同的，但，equals不一定相等
+

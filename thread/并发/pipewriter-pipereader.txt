@@ -2,4 +2,5 @@
 Java_io体系之PipedWriter、PipedReader简介、走进源码及示例——14
 	http://blog.csdn.net/crave_shy/article/details/17202977
 
-使用PipedWriter/PipedReader也可以方便的在线程之间传递数据。
+线程间通信的一种方式：
+PipedWriter/PipedReader

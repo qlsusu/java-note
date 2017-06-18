@@ -1,0 +1,4 @@
+字节流主要由InputStream和OutputStream作为基类，
+字符流则主要由Reader和Writer作为基类。
+
+将字节流转换为字符流：InputStreamReader和OutputStreamWriter

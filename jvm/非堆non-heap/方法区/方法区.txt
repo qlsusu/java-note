@@ -1,0 +1,36 @@
+就是.class
+查看字节码：javap -v -p -s -sysinfo -constants xxpackage/XXClass.class
+
+------------------------------都存放了什么：
+Classloader 引用（Classloader Reference）
+运行时常量池（Run Time Constant Pool）
+	数字（Numeric Constants）
+	字符串
+	类引用
+	字段引用（Field References）
+	方法引用（Method Reference）
+字段数据（Field Data）
+	按字段（Per Field）
+		名称（Name）
+		类型（Type）
+		修饰符（Modifiers）
+		属性（Attributes）
+方法数据
+	按方法（Per Method）
+		名称（Name）
+		返回类型（Return Type）
+		参数类型#有序（Parameter Types in order）
+		修饰符（Modifiers）
+		属性（Attributes）
+方法代码
+	按方法（Per Method）
+		字节码（Bytecodes）
+		操作数栈大小（Operand Stack Size）
+		本地变量大小（Local Variable Size）
+		本地变量表（Local Variable Table）
+		异常表（Exception Table）
+			按异常来处理（Per Exception Handling）
+				开始点（Start Point）
+				终结点（End Point）
+				处理代码的程序计数器偏移（PC Offset for Handler Code）
+				被捕获的异常类的常量池的索引（Constant Pool Index for Exception Class Being Caught）

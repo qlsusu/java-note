@@ -1,0 +1,15 @@
+参见：
+Hashmap
+	http://www.baike.com/wiki/hashmap&prd=so_1_doc
+
+HashMap实际上是一个“链表散列”的数据结构，即数组和链表的结合体。
+所有hash(key.hashcode)相同的 entry，会组成一条链
+
+有了key.hashcode，为什么还需要hash()：
+hash()为了：
+	将hashcode映射到一个索引值（如：hashcode为20000，但是索引值只能在[0,10]中）
+	将entry的分布更加的均匀
+	减少hash冲突
+
+如何查找：
+先根据 hash(key.hashcode) 来找到索引表中的位置，然后通过key.equals来找到具体的key（进而找到entry）

@@ -1,0 +1,30 @@
+栈帧是针对于方法的
+
+每个栈帧包含了：
+本地变量数组（Local variable array）
+	方法执行所需要的所有变量，包括 this 的引用
+	类型：
+		boolean
+		byte
+		char
+		long
+		short
+		int
+		float
+		double
+		reference
+		returnAddress
+			returnAddress类型是为字节码指令jsr、jsr_w和ret服务的，它指向了一条字节码指令的地址
+			如：当调用了其他方法B，那么记录方法B调用结束后，本方法中下一条指令的执行地址
+	分配单元：
+		long 和 double 会占两个连续的槽（因为它们是64位）
+		其他的类型都只占一个槽
+操作数栈（Operand stack）
+	编译后的字节码指令 将值从 本地变量数组 和 操作栈之间移动
+	例子：
+		int i;
+		0: iconst_0    // Push 0 to top of the operand stack
+		1: istore_1    // Pop value from top of operand stack and store as local variable 1
+返回值（Return value）
+引用：当前方法所在类使用的常量池
+	当 Java 类编译后，变量和方法 的引用 都作为 标识引用 存于类的常量池中

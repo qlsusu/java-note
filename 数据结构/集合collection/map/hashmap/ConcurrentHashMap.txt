@@ -1,0 +1,11 @@
+参见：
+聊聊并发（四）——深入分析ConcurrentHashMap
+	http://www.infoq.com/cn/articles/ConcurrentHashMap
+
+ConcurrentHashMap的并发机制：
+HashTable容器在竞争激烈的并发环境下表现出效率低下的原因是所有访问HashTable的线程都必须竞争同一把锁，
+那假如容器里有多把锁，每一把锁用于锁容器其中一部分数据，那么当多线程访问容器里不同数据段的数据时，线程间就不会存在锁竞争，从而可以有效的提高并发访问效率，
+这就是ConcurrentHashMap所使用的锁分段技术，首先将数据分成一段一段的存储，然后给每一段数据配一把锁，当一个线程占用锁访问其中一个段数据的时候，其他段的数据也能被其他线程访问。
+
+ConcurrentHashMap的并发度就是segment的大小，默认为16，这意味着最多同时可以有16条线程操作ConcurrentHashMap，这也是ConcurrentHashMap对Hashtable的最大优势，
+任何情况下，Hashtable能同时有两条线程获取Hashtable中的数据

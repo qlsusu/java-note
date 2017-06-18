@@ -1,0 +1,1 @@
+散列表本质是数组存储，通过 key-value 的形式存储数据，所以当取 value 的时候，先拿 key的hashCode 确定 value在数组中的位置。
