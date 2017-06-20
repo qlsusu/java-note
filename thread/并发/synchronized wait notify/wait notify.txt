@@ -17,17 +17,6 @@ synchronized(obj) {
 	obj.notify();
 }
 
-下述场景会有什么问题（当wait变成了这种形式）：
-while(!condition) {
-	synchronized(obj) {
-　　		obj.wait();
-　　}
-　　obj.doSomething();
-}
-问题：
-wait和notify的逻辑 在不同的线程上执行，当执行完wait的while中的条件判断后（设condition为false），开始执行notify的逻辑，并执行完毕，后继续wait中的剩余逻辑
-随后，obj.wait被执行，但是之后，再没有线程执行obj.notify，则wait逻辑永远不会再被唤醒
-
 需要注意的概念是：
 　　# 调用obj的wait(), notify()方法前，必须获得obj锁，也就是必须写在synchronized(obj){...} 代码段内。
 　　# 调用obj.wait()后，线程A就释放了obj的锁，否则线程B无法获得obj锁，也就无法在synchronized(obj){...} 代码段内唤醒A。

@@ -1,15 +1,16 @@
 参见：
+java hashmap工作原理
+	http://www.importnew.com/16599.html
 Hashmap
 	http://www.baike.com/wiki/hashmap&prd=so_1_doc
 
-HashMap实际上是一个“链表散列”的数据结构，即数组和链表的结合体。
-所有hash(key.hashcode)相同的 entry，会组成一条链
+HashMap将数据 存储到 多个单向Entry链表中（有时这些链表也被称为桶bucket或者容器orbins）
 
-有了key.hashcode，为什么还需要hash()：
-hash()为了：
-	将hashcode映射到一个索引值（如：hashcode为20000，但是索引值只能在[0,10]中）
-	将entry的分布更加的均匀
-	减少hash冲突
+HashMap实际上是一个“链表散列”的数据结构，即 数组（元素为桶） 和 链表（indexof(rehash(key.hashcode))相同的 entry 会组成一条链） 的结合体。
+
+为什么需要rehash：
+将entry的分布更加的均匀
+减少hash冲突
 
 如何查找：
 先根据 hash(key.hashcode) 来找到索引表中的位置，然后通过key.equals来找到具体的key（进而找到entry）

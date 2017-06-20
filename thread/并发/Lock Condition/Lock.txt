@@ -1,8 +1,16 @@
+参见：
+Java线程(八)：锁对象Lock-同步问题更完美的处理方式
+	http://blog.csdn.net/ghsau/article/details/7461369
+
 java.util.concurrent.locks.Lock
 实现提供了比使用synchronized 方法和语句可获得的更广泛的锁定操作
 
+Lock相当于 需要互斥访问的资源
+
 lock申请的锁需要手动释放
-而且，必须放在finally块中
+而且，必须放在finally块中，
+为什么需要try.catch.finally这种结构：
+	在临界区（lock()和unlock()之间的代码）在执行的过程中，可能会抛出异常
 
 ----------------------------例子：
 public class LockTest {

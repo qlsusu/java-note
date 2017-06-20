@@ -1,4 +1,9 @@
 参见：
+Java并发编程的总结与思考
+	http://www.jianshu.com/p/053943a425c3#
+Java 并发性和多线程
+	http://wiki.jikexueyuan.com/project/java-concurrent/
+	是一个系列
 Java 并发编程 : volatile 关键字解析
 	http://mp.weixin.qq.com/s/WPHqv2RpT8ZM9gbQgXWx3Q
 Java 并发 学习笔记
