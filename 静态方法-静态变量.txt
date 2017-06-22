@@ -1,0 +1,14 @@
+public class Father {
+    public static int age = 1;
+
+    public static void staticLogic(){
+        System.out.println("father static logic");
+        System.out.println("age:"+age);
+    }
+}
+
+public class Son extends Father{
+    public static int age = 2;
+}
+
+调用Son.staticLogic方法时，打印的age的值为 1（而不是在Son中定义的2）

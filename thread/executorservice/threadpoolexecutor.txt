@@ -1,31 +1,52 @@
+参见：
+ThreadPoolExecutor使用和思考(上)-线程池大小设置与BlockingQueue的三种实现区别
+	http://dongxuan.iteye.com/blog/901689
+
 ThreadPoolExecutor(
-	int corePoolSize, 
-	int maximumPoolSize, 
-	long keepAliveTime, 
-	TimeUnit unit, 
-	BlockingQueue<Runnable> workQueue, 
+	int corePoolSize,
+	int maximumPoolSize,
+	long keepAliveTime,
+	TimeUnit unit,
+	BlockingQueue<Runnable> workQueue,
+	ThreadFactory threadFactory,
 	RejectedExecutionHandler handler)
 
-参数含义：
-corePoolSize : int 
-	工作的Worker的数量。
+工作原理：
+corePoolSize : int
 	当工作线程的数量小于corePoolSize时，任务来时，会继续启动新线程，并不重用之前空闲的线程
-	当工作线程的数量超过corePoolSize时，任务来时，才开始重用之前的线程处理任务
+	当工作线程的数量超过corePoolSize时，任务来时，
+		如果有线程处于空闲状态，那么复用该线程来处理任务
+		否则，将任务添加到队列中
+workQueue : BlockingQueue 
+	如果你使用的是类似LinkedBlockingQueue的无界队列，那么任务可以一直被添加进来
+	如果你使用的是有界队列比方说ArrayBlockingQueue的话，如果ArrayBlockingQueue满了
+		会开启新线程来处理队列中的任务，
+			如果总的线程数超过了maximumPoolSize，则会使用RejectedExecutionHandler来处理该任务
+handler : RejectedExecutionHandler 
+	Java 中提供了几种默认的实现，AbortPolicy, CallerRunsPolicy, DiscardOldestPolicy, DiscardPolicy。
+	默认是AbortPolicy
 maximumPoolSize : int 
 	线程池中持有的Worker的最大数量
 keepAliveTime : long 
-	全部worker的数量大于corePoolSize，且有一些worker已经完成了任务，当等待的这段时间里，如果还没有新任务被提交，那么一部分Worker将被回收。
+	全部worker的数量大于corePoolSize，且有一些worker已经完成了任务，在等待的这段时间里，如果还没有新任务被提交，那么一部分Worker将被回收。
 unit : TimeUnit 
 	keepAliveTime的单位
-workQueue : BlockingQueue 
-	缓存任务的队列, 这个队列只缓存提交的Runnable任务。
-	如果你提交任务时，线程池队列已满，这时会发生什么
-		如果你使用的LinkedBlockingQueue，也就是无界队列的话，没关系，继续添加任务到阻塞队列中等待执行，因为LinkedBlockingQueue可以近乎认为是一个无穷大的队列，可以无限存放任务；
-		如果你使用的是有界队列比方说ArrayBlockingQueue的话，任务首先会被添加到ArrayBlockingQueue中，ArrayBlockingQueue满了，则会使用拒绝策略RejectedExecutionHandler处理满了的任务，默认是AbortPolicy。
 threadFactory : ThreadFactory 
 	产生线程的“工厂”
-handler : RejectedExecutionHandler 
-	当一个任务被提交的时候，如果所有Worker都在工作并且超过了缓存队列的容量的时候。会交给这个Handler处理。Java 中提供了几种默认的实现，AbortPolicy, CallerRunsPolicy, DiscardOldestPolicy, DiscardPolicy。
+
+ThreadPoolExecutor是Executors类的底层实现，如：
+public static ExecutorService newFixedThreadPool(int nThreads) {  
+	return new ThreadPoolExecutor(
+		nThreads, nThreads,  
+		0L, TimeUnit.MILLISECONDS,  
+		new LinkedBlockingQueue<Runnable>());  
+}
+public static ExecutorService newCachedThreadPool() {  
+	return new ThreadPoolExecutor(
+		0, Integer.MAX_VALUE,  
+		60L, TimeUnit.SECONDS,  
+		new SynchronousQueue<Runnable>());  
+}  
 
 例子：
 new ThreadPoolExecutor(6, 6, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());

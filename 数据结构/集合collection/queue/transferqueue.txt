@@ -1,0 +1,31 @@
+参见：
+Java 7中的TransferQueue
+	http://ifeve.com/java-transfer-queue/
+
+TransferQueue和BlockingQueue的比较：
+除了 其本身也提供了put/take等 放入/取出的阻塞方法 之外
+也提供了transfer系列方法
+	transfer(e)
+		e被放入到队列尾部
+		线程1会一直阻塞，直到在线程2上 将e取出
+		注意：队列是fifo性质，e在插入之前，队列中可能还存在了其他元素，而元素是从头取出，那么，只有 在按顺序的条件下 e被取出时，线程1才被唤醒
+	tryTransfer(E e)
+		e被放入到队列尾部
+		如果e被取出，就返回true
+		否则，返回false
+		最后，不管如何，e均被移出队列
+	tryTransfer(E e, long timeout, TimeUnit unit)
+		e被放入到队列尾部
+		如果e被取出，就取出
+		否则，等待timeout时长后，再判断e是否被取出（期间，线程1被阻塞）
+			如果被取出，就取出
+		最后，不管如何，e均被移出队列
+	--
+	hasWaitingConsumer()：
+		判断是否存在消费者线程。
+	getWaitingConsumerCount()：
+		获取所有等待获取元素的消费线程数量。
+	size()：
+		因为队列的异步特性，检测当前队列的元素个数需要逐一迭代，可能会得到一个不太准确的结果，尤其是在遍历时有可能队列发生更改。
+	批量操作：
+		类似于addAll，removeAll, retainAll, containsAll, equals, toArray等方法，API不能保证一定会立刻执行。因此，我们在使用过程中，不能有所期待，这是一个具有异步特性的队列。

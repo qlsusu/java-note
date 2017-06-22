@@ -1,0 +1,52 @@
+其内存缓存容量为0
+则，put(e)时，会因为超出了 队列容量限制 而被阻塞
+其意味着：生产者生产的数据 必须要得到消费，生产者才能继续下去
+
+transfer算法：
+采用所谓双重数据结构(dual data structures)。
+之所以叫双重，其原因是方法都是通过两个步骤完成：保留与完成。
+比如消费者线程从一个队列中取元素，发现队列为空，他就生成一个空元素放入队列,所谓空元素就是数据项字段为空。
+然后消费者线程在这个字段上旅转等待。这叫保留。
+直到一个生产者线程意欲向队例中放入一个元素，这里他发现最前面的元素的数据项字段为NULL，他就直接把自已数据填充到这个元素中，即完成了元素的传送。
+
+----------------------------------------例子：
+private static void testSynchronousQueue() {
+    final SynchronousQueue<String> queue = new SynchronousQueue<>();
+
+    Thread produceThread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            System.out.println("produce!!");
+            try {
+                queue.put("1");
+                System.out.println("put 1!");
+                queue.put("2");
+                System.out.println("put 2");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    });
+    produceThread.start();
+
+    Thread consumeThread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            System.out.println("consume!!!");
+            String content = null;
+            try {
+                content = queue.take();
+                System.out.println("take content:" + content);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    });
+    consumeThread.start();
+}
+
+结果：
+produce!!
+consume!!!
+put 1!
+take content:1

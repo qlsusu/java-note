@@ -1,0 +1,5 @@
+参见：
+聊聊并发（七）——Java中的阻塞队列
+	http://www.infoq.com/cn/articles/java-blocking-queue
+java Queue中 remove/poll, add/offer, element/peek区别
+	http://blog.csdn.net/ustcjackylau/article/details/42454779

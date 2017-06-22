@@ -12,5 +12,12 @@ HashMap实际上是一个“链表散列”的数据结构，即 数组（元素
 将entry的分布更加的均匀
 减少hash冲突
 
-如何查找：
-先根据 hash(key.hashcode) 来找到索引表中的位置，然后通过key.equals来找到具体的key（进而找到entry）
+get(key)原理：
+rehash(key.hashcode) 得到 hash值
+将该hash值映射到某个桶
+遍历桶内的entry
+	该hash值==entry.hash 为true，且
+		都找到桶了，为什么还要比较hash值：经过了rehash的 不同的hash值，可能最终被映射到不同的桶上。
+		entry中已经有一个字段来保存该hash值了，参见：entry数据结构.png
+	key.equals(entry.key) 为true
+
