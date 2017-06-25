@@ -8,9 +8,17 @@ java.util.concurrent.locks.Lock
 Lock相当于 需要互斥访问的资源
 
 lock申请的锁需要手动释放
-而且，必须放在finally块中，
+而且，需要放在finally块中，
 为什么需要try.catch.finally这种结构：
 	在临界区（lock()和unlock()之间的代码）在执行的过程中，可能会抛出异常
+
+lock的释放 可以在其他线程中进行
+相较于synchronized，可认为 synchronized的锁只能在 本线程的 本方法(本方法的同步块)中来释放
+
+ReentrantLock提供了 访问者的公平性（线程1和线程2，都在等待该lock，但是线程1先等的，那么lock被释放后，线程1将获得锁）：
+public ReentrantLock(boolean fair) {
+    sync = fair ? new FairSync() : new NonfairSync();
+}
 
 ----------------------------例子：
 public class LockTest {

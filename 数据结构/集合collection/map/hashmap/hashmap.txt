@@ -1,6 +1,10 @@
 参见：
+图解集合4：HashMap
+	http://www.cnblogs.com/xrq730/p/5030920.html
 java hashmap工作原理
 	http://www.importnew.com/16599.html
+深入Java集合学习系列：HashMap的实现原理
+	http://zhangshixi.iteye.com/blog/672697
 Hashmap
 	http://www.baike.com/wiki/hashmap&prd=so_1_doc
 
@@ -9,8 +13,8 @@ HashMap将数据 存储到 多个单向Entry链表中（有时这些链表也被
 HashMap实际上是一个“链表散列”的数据结构，即 数组（元素为桶） 和 链表（indexof(rehash(key.hashcode))相同的 entry 会组成一条链） 的结合体。
 
 为什么需要rehash：
-将entry的分布更加的均匀
-减少hash冲突
+减少hash冲突（针对于不同key，可能会产生相同的keycode），将entry的分布更加的均匀
+
 
 get(key)原理：
 rehash(key.hashcode) 得到 hash值
@@ -20,4 +24,9 @@ rehash(key.hashcode) 得到 hash值
 		都找到桶了，为什么还要比较hash值：经过了rehash的 不同的hash值，可能最终被映射到不同的桶上。
 		entry中已经有一个字段来保存该hash值了，参见：entry数据结构.png
 	key.equals(entry.key) 为true
+
+key.hashcode应该是不变的:
+如果key.hashcode变了，那么rehash可能也会变化，
+	那么映射到的桶 可能也会变化，
+	就算桶不会变化，从该桶中来找entry时，会先拿rehash的值来进行比较，则，有可能就找不到entry
 

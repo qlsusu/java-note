@@ -3,6 +3,8 @@
 	http://www.jianshu.com/p/b8197dd2934c
 Java并发编程：Callable、Future和FutureTask
 	http://www.cnblogs.com/dolphin0520/p/3949310.html
+深入学习 FutureTask
+  http://mp.weixin.qq.com/s/lwaOYr96cAOtSVhuE2vGNg
 
 Callable<V>:
 1）Callable 接口下的方法是 call()，Runnable 接口的方法是 run()。

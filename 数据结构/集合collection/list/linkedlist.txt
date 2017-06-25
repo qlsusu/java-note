@@ -1,0 +1,32 @@
+参见：
+图解集合2：LinkedList
+	http://www.cnblogs.com/xrq730/p/5005347.html
+
+一个双向链表
+get(index)时，先比较index和size>>1，后决定从 链头 还是 链尾 的位置进行查找
+
+初始状态：head和tail是同一个对象，且值为null
+	head->tail->head
+	head.next=tail
+	tail.next=head
+	--
+	head.previous=tail
+	tail.previous=head
+	
+当add了一个a时，a变成了tail，则此刻结构为：
+	head->a->head
+当又add了b时，b变成了tail，则结构为：
+	head->a->b->head
+	
+设链表结构为：
+	head a b c
+在b位置插入d，结构变为：head a d b c
+需要做的事情：
+	d.next=b;
+	d.previous=b.previous
+	--
+	d.previous.next=d;
+	d.next.previous=d;
+当删除b时，结构为：head a d c
+	b.previous.next=b.next
+	b.next.previous=b.previous

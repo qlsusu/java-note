@@ -1,0 +1,28 @@
+参见：
+Java CAS 和ABA问题
+	http://www.cnblogs.com/549294286/p/3766717.html
+JAVA并发编程学习笔记之CAS操作
+	http://blog.csdn.net/aesop_wubo/article/details/7537960
+原子操作(CAS)
+	http://286.iteye.com/blog/2295165
+
+Compare And Set/Swap
+CAS操作包含三个操作数——内存位置（V）、预期原值（A）、新值(B)。
+如果内存位置的值与预期原值相匹配，那么处理器会自动将该位置值更新为新值。否则，处理器不做任何操作
+最后，无论哪种情况，它都会在CAS指令之前返回该位置的值
+
+在jdk里面可以由UnSafe提供一个针对于volatile变量的操作，其原理是 直接调用的CPU的CAS动作 
+	现代的CPU提供了特殊的指令，可以自动更新共享数据，而且能够检测到其他线程的干扰，而 compareAndSet() 就用这些代替了锁定。
+
+----------------------------AtomicInteger的++i的cas实现方式：
+public final int incrementAndGet() {
+    for (;;) {
+        int current = get();
+        int next = current + 1;
+        if (compareAndSet(current, next))
+            return next;
+    }
+}
+public final boolean compareAndSet(int expect, int update) {
+    return unsafe.compareAndSwapInt(this, valueOffset, expect, update);
+}

@@ -1,0 +1,13 @@
+参见：
+关于RandomAccess接口的研究
+	http://www.blogjava.net/lzqdiy/archive/2007/04/22/112578.html
+
+用来表明其支持快速（通常是固定时间）随机访问
+在对List特别的遍历算法中，要尽量来判断是属于RandomAccess(如ArrayList)还是SequenceAccess(如LinkedList），
+因为适合RandomAccess List的遍历算法，用在SequenceAccess List上就差别很大，
+即对于实现了RandomAccess接口的类实例而言，此循环
+	for (int i=0, i<list.size(); i++)
+		list.get(i);
+的运行速度要快于以下循环：
+	for (Iterator i=list.iterator(); i.hasNext(); )
+		i.next();

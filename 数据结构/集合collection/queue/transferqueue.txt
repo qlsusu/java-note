@@ -1,12 +1,17 @@
 参见：
 Java 7中的TransferQueue
 	http://ifeve.com/java-transfer-queue/
+JDK7中TransferQueue的使用以及TransferQueue与SynchronousQueue的差别
+	http://blog.csdn.net/aitangyong/article/details/46472643
+阻塞队列之LinkedTransferQueue
+	http://www.cnblogs.com/duanxz/p/3398446.html
 
 TransferQueue和BlockingQueue的比较：
 除了 其本身也提供了put/take等 放入/取出的阻塞方法 之外
 也提供了transfer系列方法
 	transfer(e)
 		e被放入到队列尾部
+			和SynchronousQueue相比，虽然 put所在线程 都在 消费者take之前 被阻塞，但是，其队列size为1，但是SynchronousQueue的队列size为0
 		线程1会一直阻塞，直到在线程2上 将e取出
 		注意：队列是fifo性质，e在插入之前，队列中可能还存在了其他元素，而元素是从头取出，那么，只有 在按顺序的条件下 e被取出时，线程1才被唤醒
 	tryTransfer(E e)
@@ -29,3 +34,15 @@ TransferQueue和BlockingQueue的比较：
 		因为队列的异步特性，检测当前队列的元素个数需要逐一迭代，可能会得到一个不太准确的结果，尤其是在遍历时有可能队列发生更改。
 	批量操作：
 		类似于addAll，removeAll, retainAll, containsAll, equals, toArray等方法，API不能保证一定会立刻执行。因此，我们在使用过程中，不能有所期待，这是一个具有异步特性的队列。
+
+TransferQueue vs SynchronousQueue
+1. transferqueue在synchronousqueue的基础上，还提供了blockingqueue的功能
+2. SynchronousQueue implementation uses dual queues (for waiting producers and waiting consumers) and protects both queues with a single lock. 
+The LinkedTransferQueue implementation uses CAS operations to form a nonblocking implementation and that is at the heart of avoiding serialization bottlenecks.
+
+transfer算法：
+采用所谓双重数据结构(dual data structures)。
+之所以叫双重，其原因是方法都是通过两个步骤完成：保留与完成。
+比如消费者线程从一个队列中取元素，发现队列为空，他就生成一个空元素放入队列,所谓空元素就是数据项字段为空。
+然后消费者线程在这个字段上旅转等待。这叫保留。
+直到一个生产者线程意欲向队例中放入一个元素，这里他发现最前面的元素的数据项字段为NULL，他就直接把自已数据填充到这个元素中，即完成了元素的传送。

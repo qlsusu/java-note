@@ -1,0 +1,20 @@
+参见：
+阻塞队列之LinkedTransferQueue
+	http://www.cnblogs.com/duanxz/p/3398446.html
+
+悲观锁
+一旦一个线程持有了资源，那么其他等待该资源的线程 都会被阻塞，直到该资源被释放
+如：synchronized, Lock等
+
+乐观锁
+不加锁而是假设没有冲突而去完成某项操作，如果因为冲突失败就重试，直到成功为止
+如：CAS操作
+
+悲观锁应用在激烈竞争的场景
+乐观锁应使用在非激烈竞争的场景，
+
+乐观锁           	----->  	悲观锁
+AtomicInteger   	----->  	Lock + volatile int
+AtomicLong      	----->  	Lock + volatile long
+AtomicReference 	----->  	Lock + volatile
+LinkedTransferQueue -----> 		LinkedBlockingQueueπ

@@ -1,0 +1,20 @@
+参见：
+HashMap 和 HashTable 到底哪不同 ？
+	http://mp.weixin.qq.com/s/bB72EBUYaDlqCizBkFM_PQ
+	
+扩容：
+hashtable每次扩容为原来的2n+1
+hashmap每次扩容位原来的2n
+
+hashtable的数组大小 素数，那么entry的分布要均匀些
+而hashmap的数组大小为2的幂，当得到hash值后，映射到桶上时，可以直接采用&运算，速度要快些
+	但是，引发了分布不均匀的问题，那么采用rehash来打散数据
+
+初始容量大小
+当你指定了容量大小，hashmap会将其变为2的幂
+而对于hashtable，你指定了多少 最终就是多少
+
+hashmap支持null key和null value
+
+hashtable是线程安全的，其实现方式，仅仅是在方法头上加入synchronized
+hashmap不是线程安全的，concurrenthashmap是，其针对于桶进行同步，在不改变桶数量时，在同一个桶上，可以并发访问，

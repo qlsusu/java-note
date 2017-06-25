@@ -1,9 +1,13 @@
+参见：
+Java并发编程：CountDownLatch、CyclicBarrier和Semaphore
+    http://www.cnblogs.com/dolphin0520/p/3920397.html
+
 形象的描述：
 N个人赛跑，只有N个人都说准备好了，各自才开始去跑
 
+例子：
 int partyCount = 3;
 final CyclicBarrier barrier = new CyclicBarrier(partyCount);
-
 for (int i = 0; i < partyCount; i++) {
     new Thread(new Runnable() {
         @Override
@@ -12,7 +16,7 @@ for (int i = 0; i < partyCount; i++) {
                 //模拟准备事项
                 TimeUnit.SECONDS.sleep(1);
 
-                //必须在partyCount个不同的线程上，调用了barrier.await()，之后的逻辑才能被执行
+                //必须partyCount个不同的线程，都喊 准备好了 （即是：调用了barrier.await()），之下的逻辑才能被执行
                 barrier.await();
 
                 readyToDoThing();
@@ -24,3 +28,16 @@ for (int i = 0; i < partyCount; i++) {
         }
     }).start();
 }
+
+之后的运行任务 作为参数的构造函数：
+CyclicBarrier barrier  = new CyclicBarrier(partyCount, new Runnable() {
+    @Override
+    public void run() {
+        readyToDoThing();
+    }
+});
+
+重用：
+如：一伙人要顺序做A和B两件事情，且，做A和做B之前，大家都要说准备好
+使用CyclicBarrier来完成该行为：做A之前，大家都要准备好
+之后，复用同一个CyclicBarrier对象来完成该行为：做B之前，大家都要准备好

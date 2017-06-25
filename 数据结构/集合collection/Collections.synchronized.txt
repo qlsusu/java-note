@@ -1,0 +1,1 @@
+用Collections.synchronizedList方法把你的ArrayList变成一个线程安全的List

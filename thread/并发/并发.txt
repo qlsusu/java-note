@@ -1,6 +1,8 @@
 参见：
 Java并发编程的总结与思考
 	http://www.jianshu.com/p/053943a425c3#
+并发编程网
+	http://ifeve.com/
 Java 并发性和多线程
 	http://wiki.jikexueyuan.com/project/java-concurrent/
 	是一个系列

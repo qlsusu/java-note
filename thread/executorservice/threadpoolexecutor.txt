@@ -1,6 +1,8 @@
 参见：
 ThreadPoolExecutor使用和思考(上)-线程池大小设置与BlockingQueue的三种实现区别
 	http://dongxuan.iteye.com/blog/901689
+ThreadPoolExecutor使用和思考(中)-keepAliveTime及拒绝策略
+	http://dongxuan.iteye.com/blog/902571
 
 ThreadPoolExecutor(
 	int corePoolSize,
@@ -16,15 +18,16 @@ corePoolSize : int
 	当工作线程的数量小于corePoolSize时，任务来时，会继续启动新线程，并不重用之前空闲的线程
 	当工作线程的数量超过corePoolSize时，任务来时，
 		如果有线程处于空闲状态，那么复用该线程来处理任务
-		否则，将任务添加到队列中
+		否则，将任务添加到队列中（offer()方式）
 workQueue : BlockingQueue 
-	如果你使用的是类似LinkedBlockingQueue的无界队列，那么任务可以一直被添加进来
+	如果你使用的是类似LinkedBlockingQueue的无界队列，那么任务B可以一直被添加进来
 	如果你使用的是有界队列比方说ArrayBlockingQueue的话，如果ArrayBlockingQueue满了
-		会开启新线程来处理队列中的任务，
-			如果总的线程数超过了maximumPoolSize，则会使用RejectedExecutionHandler来处理该任务
+		会开启新线程来处理 任务B（注意：并不是：从队列中 取出一个任务，来执行该任务，后将任务B添加到队列中）
+			如果总的线程数超过了maximumPoolSize，则会使用RejectedExecutionHandler来处理任务B
 handler : RejectedExecutionHandler 
 	Java 中提供了几种默认的实现，AbortPolicy, CallerRunsPolicy, DiscardOldestPolicy, DiscardPolicy。
 	默认是AbortPolicy
+	具体参见：参考：ThreadPoolExecutor使用和思考(中)-keepAliveTime及拒绝策略
 maximumPoolSize : int 
 	线程池中持有的Worker的最大数量
 keepAliveTime : long 
@@ -34,7 +37,10 @@ unit : TimeUnit
 threadFactory : ThreadFactory 
 	产生线程的“工厂”
 
-ThreadPoolExecutor是Executors类的底层实现，如：
+例子：
+new ThreadPoolExecutor(6, 6, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+
+------------------------------ThreadPoolExecutor是Executors类的底层实现，如：
 public static ExecutorService newFixedThreadPool(int nThreads) {  
 	return new ThreadPoolExecutor(
 		nThreads, nThreads,  
@@ -43,13 +49,16 @@ public static ExecutorService newFixedThreadPool(int nThreads) {
 }
 public static ExecutorService newCachedThreadPool() {  
 	return new ThreadPoolExecutor(
-		0, Integer.MAX_VALUE,  
-		60L, TimeUnit.SECONDS,  
-		new SynchronousQueue<Runnable>());  
-}  
-
-例子：
-new ThreadPoolExecutor(6, 6, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+		0, Integer.MAX_VALUE,
+		60L, TimeUnit.SECONDS,
+		new SynchronousQueue<Runnable>());
+} 
+public static ExecutorService newFixedThreadPool(int nThreads) {  
+	return new ThreadPoolExecutor(
+		nThreads, nThreads,  
+		0L, TimeUnit.MILLISECONDS,  
+		new LinkedBlockingQueue<Runnable>());  
+	}  
 
 ------------------------------asynctask中的THREAD_POOL_EXECUTOR的构建
 private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();

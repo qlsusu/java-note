@@ -1,0 +1,2 @@
+栈空间用光了会引发StackOverflowError，
+而堆和常量池空间不足则会引发OutOfMemoryError。
