@@ -23,6 +23,7 @@ public final int incrementAndGet() {
             return next;
     }
 }
+
 public final boolean compareAndSet(int expect, int update) {
     return unsafe.compareAndSwapInt(this, valueOffset, expect, update);
 }

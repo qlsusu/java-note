@@ -4,3 +4,4 @@ Java_io体系之PipedWriter、PipedReader简介、走进源码及示例——14
 
 线程间通信的一种方式：
 PipedWriter/PipedReader
+pipewriter.connect(pipereader)

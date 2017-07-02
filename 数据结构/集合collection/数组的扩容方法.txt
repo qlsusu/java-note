@@ -1,0 +1,5 @@
+Arrays#copyOf(int[] original, int newLength)
+System.public static native void arraycopy(
+	Object src,  int  srcPos,
+	Object dest, int destPos,
+	int length);

@@ -1,0 +1,64 @@
+buffer本质上是一块 可以写入数据，然后可以从中读取数据 的内存
+
+使用Buffer读写数据的步骤：
+1. 写入数据到Buffer
+2. 调用flip()方法
+	其将Buffer从写模式切换到读模式
+	将position设置成0，将limit设置成为 之前position的数值
+3. 从Buffer中读取数据
+	在读模式下，可以读取之前写入到buffer的所有数据
+4. 调用clear()方法或者compact()方法
+	clear()方法会清空整个缓冲区
+	compact()方法只会清除已经读过的数据
+
+属性
+capacity
+	buffer的容量
+position
+	读模式/写模式下的 当前读/写位置
+limit
+	最大能 读/写 到什么位置
+	如：写模式下，写到position的位置，那么读模式下，limit为该position
+--
+其提供的方法（如：rewind, clear/compact等），均是在改变诸如position,limit等属性，如：
+//设file中的内容为：hello world
+fileChannel.read(buffer);
+//切换到读模式，position变为0,limit为之前写入buffer时的position
+buffer.flip();
+//读取一个byte
+buffer.get();
+//在position为1的位置处写下 1
+buffer.put((byte)'1');
+//position为0
+buffer.rewind();
+//结果为h1llo world
+while(buffer.hasRemaining()){
+    System.out.print((char)buffer.get());
+}
+
+类型：
+ByteBuffer
+ShortBuffer
+IntBuffer
+LongBuffer
+FloatBuffer
+DoubleBuffer
+CharBuffer
+MappedByteBuffer
+
+如何生成对象：
+ByteBuffer buf = ByteBuffer.allocate(48);
+
+如何写：
+channel.read(buffer)
+	其代表了从channel中读取了多少个单元（如byte,char等，根据buffer的类型而定）
+	返回-1代表：已经从channel中读取不到数据了
+	返回0代表：channel中还有数据，但是buffer中已经满了（不能再写入数据了）
+buffer.put()
+
+如何读：
+channel.write(buffer)
+buffer.get()
+
+rewind:
+将position设置为0，则可以重新从头读么

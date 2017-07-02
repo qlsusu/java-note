@@ -1,0 +1,55 @@
+为什么使用selector：
+让一个线程来操作多个channel
+
+实践准则：
+对所有的可选择通道使用同一个选择器
+只使用一个线程监控通道的就绪状态
+并将对就绪选择通道的服务委托给其他线程
+    1、使用一个协调好的工作线程池来处理接收到的数据，当然线程池的大小是可以调整的
+    2、或者，通道根据功能由不同的工作线程来处理，它们可能是日志线程、命令/控制线程、状态请求线程等
+
+例子：
+Selector selector;
+//------线程1上
+selector = Selector.open();
+//Channel必须处于非阻塞模式下（而filechannel是阻塞式的）
+channel.configuselreBlocking(false);
+//注册感兴趣的channel（该channel是一个selectablechannel），以及感兴趣的事件
+//可以在一个channel上注册多个感兴趣的事件，如：SelectionKey.OP_READ | SelectionKey.OP_WRITE
+SelectionKey key = channel.register(selector, SelectionKey.OP_READ);
+while (true) {
+	//自上次调用select()方法后，有多少个channel就绪
+	//就绪：某个注册的channel的 某个注册时的感兴趣的事件 发生
+	//该方法将会阻塞
+	//还有几个重载的方法：
+	//select(long timeout)：最长会阻塞timeout ms
+	//selectNow()：不会阻塞，而是直接返回就绪的个数
+    int readyChannels = selector.select();
+    if (readyChannels == 0) continue;
+    //有一些channel就绪，对它们进行遍历
+    Set selectedKeys = selector.selectedKeys();
+    Iterator keyIterator = selectedKeys.iterator();
+    while (keyIterator.hasNext()) {
+    	//selectionKey.channel()得到channel
+    	//selectionKey.selector()得到selector
+    	//selectionKey.readyOps()得到哪些感兴趣的事件发生了
+        SelectionKey key = keyIterator.next();
+        //selectionKey.interestOps()得到对哪些事情感兴趣
+        if (key.isAcceptable()) {
+            //Tests whether this key's channel is ready to accept a new socket connection.
+        } else if (key.isConnectable()) {
+            //Tests whether this key's channel has either finished, or failed to finish, its socket-connection operation.
+        } else if (key.isReadable()) {
+            // a channel is ready for reading
+        } else if (key.isWritable()) {
+            // a channel is ready for writing
+        }
+        keyIterator.remove();
+    }
+}
+//使用完毕后，关闭selector，注册的channel并不会被关闭
+selector.close();
+
+//------线程2上
+//线程1因为调用了selector.select()而有可能被阻塞，那么在其他线程上调用wakeup，将立刻 使得线程1继续进行下去
+selector.wakeup();

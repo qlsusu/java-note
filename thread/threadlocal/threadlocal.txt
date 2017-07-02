@@ -1,20 +1,21 @@
-它是给每一个线程都创建一个变量的副本，并保持副本之间相互独立，互不干扰
+参见：
+深入理解ThreadLocal（一）
+	http://mp.weixin.qq.com/s?__biz=MzI0MjE3OTYwMg==&mid=401548278&idx=1&sn=573d1cdf31a57db293b2b108e8d5c88b&scene=21#wechat_redirect
 
-Implements a thread-local storage, that is, a variable for which each thread has its own value. 
-All threads share the same ThreadLocal object, but each sees a different value when accessing it, and changes made by one thread do not affect the other threads. 
+如：有一个threadlocal对象，它在多个线程间共享，但
+	在线程1上，threadlocal.set(value1)
+	在线程2上，threadlocal.set(value2)
+则，虽然多个线程在访问同一个threadlocal对象，但是，每个线程都对应了一个value对象
 
-The implementation supports null values.
+应用场景：
+Looper:private static void prepare(boolean quitAllowed) {
+    if (sThreadLocal.get() != null) {
+        throw new RuntimeException("Only one Looper may be created per thread");
+    }
+    sThreadLocal.set(new Looper(quitAllowed));
+}
+即是：每个线程都对应了looper对象
 
-例子：
-/** 
- * 借助ThreadLocal完成：每个线程第一次调用时，初始化SimpleDateFormat对象 
- */  
-private static ThreadLocal<SimpleDateFormat> threadLocal = new ThreadLocal<SimpleDateFormat>(){  
-    protected synchronized SimpleDateFormat initialValue() {  
-        return new SimpleDateFormat(DATE_PARTEN);  
-    }  
-};  
-
-threadlocal是如何保存信息的，参见：
-	深入理解ThreadLocal（一）
-		http://mp.weixin.qq.com/s?__biz=MzI0MjE3OTYwMg==&mid=401548278&idx=1&sn=573d1cdf31a57db293b2b108e8d5c88b&scene=21#wechat_redirect
+实现原理：
+每个thread有一个threadlocalmap（可以认为是一个map，也是通过key的rehash值 将key映射到桶）
+entry.key是 threadlocal对象的 弱引用，value是threadlocal.set时的值（如果在threadlocal.get时，该值还没有被设置，那么就调用threadlocal.initialValue来对值进行初始化）

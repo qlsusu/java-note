@@ -1,0 +1,43 @@
+Channel
+既可以从channel中读取数据，又可以写数据到channel。
+channel可以异步地读写。
+
+channel对应了一个源，
+要读取源的数据，需要 通过该channel，先将该数据读入到buffer中，后再读取buffer中的数据
+	channel.read(buffer)
+要写入数据到源，需要先将数据写入到buffer，后再通过该channel，将buffer中的数据写入到源
+	channel.write(buffer)
+	
+类型
+FileChannel
+	读写文件
+	参见：http://ifeve.com/file-channel/
+DatagramChannel
+	通过udp读写网络数据
+SocketChannel
+	通过tcp读写网络数据
+ServerSocketChannel
+	监听新进来的tcp连接
+	对于每个tcp连接，都会建立一个socketchannel
+
+transformFrom(针对于filechannel):
+RandomAccessFile fromFile = new RandomAccessFile("fromFile.txt", "rw");
+FileChannel      fromChannel = fromFile.getChannel();
+//
+RandomAccessFile toFile = new RandomAccessFile("toFile.txt", "rw");
+FileChannel      toChannel = toFile.getChannel();
+//
+long position = 0;
+long count = fromChannel.size();
+toChannel.transferFrom(position, count, fromChannel);
+
+transformTo(针对于filechannel):
+RandomAccessFile fromFile = new RandomAccessFile("fromFile.txt", "rw");
+FileChannel      fromChannel = fromFile.getChannel();
+//
+RandomAccessFile toFile = new RandomAccessFile("toFile.txt", "rw");
+FileChannel      toChannel = toFile.getChannel();
+//
+long position = 0;
+long count = fromChannel.size();
+fromChannel.transferTo(position, count, toChannel);

@@ -5,11 +5,13 @@ java hashmap工作原理
 	http://www.infoq.com/cn/articles/ConcurrentHashMap
 
 并发核心原理：并发仅仅针对于桶（同一个桶的put操作，或，put操作触发了扩容 导致 桶的个数发生了变化）
-设hashmap有n个桶，
-当m个线程，
-	都是在进行get，那么没有问题
-	当在put，且没有引发 扩容，且，针对于的是不同的桶，那么没有问题
+最优情况：
+	设hashmap有n个桶，
+	当n个线程，
+		都是在进行get，那么没有问题
+		当在put，且没有引发 扩容，且，针对于的是不同的桶，那么没有问题
 
+--------------------------------之下为老的内容
 
 ConcurrentHashMap的并发机制：
 HashTable容器在竞争激烈的并发环境下表现出效率低下的原因是所有访问HashTable的线程都必须竞争同一把锁，
