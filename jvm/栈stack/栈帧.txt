@@ -1,8 +1,9 @@
 栈帧是针对于方法的
 
 每个栈帧包含了：
-本地变量数组（Local variable array）
+局部变量区域
 	方法执行所需要的所有变量，包括 this 的引用
+	分配单元为slot(4个字节)，long double因为占据了8个字节，那么使用2个slot，其余类型均使用1个slot
 	类型：
 		boolean
 		byte

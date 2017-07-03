@@ -2,13 +2,16 @@
 查看字节码：javap -v -p -s -sysinfo -constants xxpackage/XXClass.class
 
 ------------------------------都存放了什么：
-Classloader 引用（Classloader Reference）
 运行时常量池（Run Time Constant Pool）
-	数字（Numeric Constants）
-	字符串
-	类引用
-	字段引用（Field References）
-	方法引用（Method Reference）
+	字符串（针对于代码中，出现字符串的任何位置）
+	数值（只针对于 static final 来生成）
+	Methodref Fieldref（在 方法的 源码中，使用了 什么变量 和 什么方法；可以是 自身类的，也可以是 其他类的）
+		Class.NameAndType
+			UTF8.UTF8:UTF8
+	Class
+		其中有父类，引用的其他类
+	--
+	运行时才生成的常量，如：String.intern()
 字段数据（Field Data）
 	按字段（Per Field）
 		名称（Name）
@@ -34,3 +37,8 @@ Classloader 引用（Classloader Reference）
 				终结点（End Point）
 				处理代码的程序计数器偏移（PC Offset for Handler Code）
 				被捕获的异常类的常量池的索引（Constant Pool Index for Exception Class Being Caught）
+静态区
+	存储静态变量
+	静态块
+classloader对象的引用
+class对象的引用

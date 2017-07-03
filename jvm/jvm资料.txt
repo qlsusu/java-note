@@ -1,4 +1,6 @@
 参考：
+类和对象运行时在内存里是怎么样的？各种变量、方法在运行时是怎么交互的？
+	http://www.jianshu.com/p/1b2ded9db25d
 JVM 内部原理（一）— 概述
 	http://www.cnblogs.com/richaaaard/p/6140859.html
 CPU如何执行指令（CS/IP）
