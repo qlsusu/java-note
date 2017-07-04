@@ -17,7 +17,7 @@
 		returnAddress
 			returnAddress类型是为字节码指令jsr、jsr_w和ret服务的，它指向了一条字节码指令的地址
 			如：当调用了其他方法B，那么记录方法B调用结束后，本方法中下一条指令的执行地址
-	分配单元：
+	分配单元slot：
 		long 和 double 会占两个连续的槽（因为它们是64位）
 		其他的类型都只占一个槽
 操作数栈（Operand stack）
