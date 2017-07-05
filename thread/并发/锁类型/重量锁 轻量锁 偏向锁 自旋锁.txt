@@ -1,0 +1,3 @@
+参见：
+synchronized、锁、多线程同步的原理是咋样的
+	http://www.jianshu.com/p/5dbb07c8d5d5

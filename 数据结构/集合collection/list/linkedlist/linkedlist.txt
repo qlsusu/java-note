@@ -19,14 +19,14 @@ get(index)时，先比较index和size>>1，后决定从 链头 还是 链尾 的
 	head->a->b->head
 	
 设链表结构为：
-	head a b c
-在b位置插入d，结构变为：head a d b c
+	head a b c head
+在b位置插入d，结构变为：head a d b c head
 需要做的事情：
 	d.next=b;
 	d.previous=b.previous
 	--
 	d.previous.next=d;
 	d.next.previous=d;
-当删除b时，结构为：head a d c
+当删除b时，结构为：head a d c head
 	b.previous.next=b.next
 	b.next.previous=b.previous

@@ -1,0 +1,18 @@
+参见：
+40个Java多线程问题总结
+	http://www.cnblogs.com/xrq730/p/5060921.html
+阻塞队列之LinkedTransferQueue
+	http://www.cnblogs.com/duanxz/p/3398446.html
+
+悲观锁
+访问共享资源时，认为冲突总是发生，在共享资源上加锁
+如：synchronized, Lock等
+
+乐观锁
+访问共享资源时，认为冲突不总是发生，使用cas操作（一个原子操作）来完成对共享资源的访问。当冲突发生时，期望值就不符合要求，再此情况下，使用者需要考虑重试逻辑
+
+乐观锁           	----->  	悲观锁
+AtomicInteger   	----->  	Lock + volatile int
+AtomicLong      	----->  	Lock + volatile long
+AtomicReference 	----->  	Lock + volatile
+LinkedTransferQueue -----> 		LinkedBlockingQueueπ
