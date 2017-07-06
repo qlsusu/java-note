@@ -1,0 +1,17 @@
+参见：
+Java虚拟机5：Java垃圾回收（GC）机制详解
+	http://www.cnblogs.com/xrq730/p/4836700.html
+Major GC和Full GC的区别是什么？触发条件呢？
+	https://www.zhihu.com/question/41922036
+--
+Minor GC、Major GC和Full GC之间的区别
+	http://www.importnew.com/15820.html
+
+哪些对象是垃圾：
+gcroot不可达某对象时，该对象认为是垃圾
+
+gc的触发时机（本质上，要看gc收集器的策略，参见：Major GC和Full GC的区别是什么？触发条件呢？中的回答2）：
+对象A的内存申请发生在年轻代，当年轻代中 没有足够大的一块连续内存 来满足对象A的要求时，minor gc被触发
+经历了多次minor gc后，仍存活的对象，会被移至年老代，当年老代中的空间 不足以 放入该存活对象时，major gc会触发
+
+无论是minor gc还是marjor gc，都会触发STW（stop the world），只是各个垃圾收集器表现的效果不同

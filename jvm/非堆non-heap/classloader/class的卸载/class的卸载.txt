@@ -1,0 +1,2 @@
+通过boot strap classloader，extclassloader, appclassloader加载的类，均不会被卸载
+而通过继承classloader加载的类，可以被卸载

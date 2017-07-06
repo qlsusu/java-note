@@ -1,0 +1,3 @@
+参见：
+Java虚拟机3：常用JVM命令参数
+	http://www.cnblogs.com/xrq730/p/4830692.html
