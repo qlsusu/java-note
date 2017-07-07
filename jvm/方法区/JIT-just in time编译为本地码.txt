@@ -1,0 +1,11 @@
+参见：
+Java虚拟机11：运行期优化
+	http://www.cnblogs.com/xrq730/p/4857820.html
+
+Just In Time (JIT) 会将 热点(hotspot code)编译为 本地码
+为什么存在：Java 字节码 解释的速度 没有直接在 JVM主机CPU上运行的 native码 运行那么快。
+解释 vs 编译成native码：第一次运行时，解释的方式 会较快些，因为它省去了编译的时间，但是从后续的执行效率来看，native码的效率更高
+
+哪些可以认为是hotspot code:
+1. 经常被执行的方法
+2. 某个方法不经常被执行，但是其内部拥有经常被执行的循环体

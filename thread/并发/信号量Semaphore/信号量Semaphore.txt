@@ -1,0 +1,32 @@
+代表什么：
+共享资源一次可以被多少个线程访问
+当信号量个数为1时：可以认为是一个Lock，即是：一个真实的 互斥资源
+
+其对应着 哲学家就餐的问题
+
+acquire
+如果当前信号量的个数值>0，那么可以 申请得到
+否则，申请不到，申请线程将被阻塞
+--
+信号量 的初始个数值可以<0
+
+公平属性：Semaphore(int permits, boolean fair)
+即是：线程A和线程B（线程A先申请）都acquire该信号量，但是却都失败而阻塞时，待到线程C release了该信号量后，线程A将获得该信号量（因为其先申请）
+
+哲学家就餐问题
+只有N个叉子，却有M个人来共同使用
+解决思路：
+	两类信号量：可以使用叉子的许可信号量，叉子信号量（一个真实的互斥资源）
+	当就餐时，先拿到使用叉子的许可
+	后，获取叉子资源
+
+方法：
+public void acquire() throws InterruptedException {  }     //获取一个许可，在获得该许可之前，线程将一直阻塞
+public void acquire(int permits) throws InterruptedException { }    //和上述方法相比，不同的是：获取permits个信号
+public void release() { }          //释放一个许可
+public void release(int permits) { }    //释放permits个许可
+--
+public boolean tryAcquire() { };    //尝试获取一个许可，若获取成功，则立即返回true，若获取失败，则立即返回false
+public boolean tryAcquire(long timeout, TimeUnit unit) throws InterruptedException { };  //尝试获取一个许可，若在指定的时间内获取成功，则立即返回true，否则则立即返回false
+public boolean tryAcquire(int permits) { }; //尝试获取permits个许可，若获取成功，则立即返回true，若获取失败，则立即返回false
+public boolean tryAcquire(int permits, long timeout, TimeUnit unit) throws InterruptedException { }; //尝试获取permits个许可，若在指定的时间内获取成功，则立即返回true，否则则立即返回false
