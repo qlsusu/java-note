@@ -1,4 +1,6 @@
 参考：
+Java虚拟机 系列教程
+	http://www.cnblogs.com/xrq730/category/731395.html
 类和对象运行时在内存里是怎么样的？各种变量、方法在运行时是怎么交互的？
 	http://www.jianshu.com/p/1b2ded9db25d
 JVM 内部原理（一）— 概述
