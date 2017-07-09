@@ -17,7 +17,7 @@
 		为静态变量分配内存，并设置默认值
 	resolve
 		常量池有一些符号引用（符号引用代表了 该类需要使用 其他类/自身类的 什么变量、什么方法），需要将这些符号引用变成直接引用
-		直接引用 能定位到目标（变量 或者 方法），则意味着 目标类被加载到内存中
+		如果直接引用 能定位到目标（变量 或者 方法），则意味着 目标类被加载到内存中
 			父类会被链接
 			而引用的第三方类，会在执行代码指令时，才进行classload
 		也意味着 自身类和目标类（可以是父类，引用的第三方类） 链接在一起了
@@ -35,7 +35,7 @@ ExtClassLoader
 AppClassLoader
 用户自定义类加载器（java.lang.ClassLoader的子类）
 	有什么用：可以load一个 网络上的class，后，调用该class的方法
-	如何实现：复写findClass(String name)
+	如何实现：复写findClass(String name)，而不是复写loadclass（这样，可以复用 双亲委派机制，也建议这样做）
 		其最终被java.lang.ClassLoader#loadClass(java.lang.String name, boolean resolve)所调用，该方法内部采用了 父亲委托加载机制
 		当获取了byte[]后，可通过java.lang.ClassLoader#defineClass(String name, byte[] b, int off, int len)来产生class对象
 --

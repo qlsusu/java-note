@@ -1,2 +1,6 @@
-通过boot strap classloader，extclassloader, appclassloader加载的类，均不会被卸载
-而通过继承classloader加载的类，可以被卸载
+如何判定一个类可以被卸载：
+classloader是自定义的
+	通过boot strap classloader，extclassloader, appclassloader加载的类，均不会被卸载
+不存在该类实例
+加载该类的classloader被认为是垃圾
+没有任何地方 再使用该class对象（无论是直接引用，还是通过反射的方式）

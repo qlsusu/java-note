@@ -1,0 +1,6 @@
+步骤：
+让Java类实现Serializable接口。
+通过ObjectInputStream、ObjectOutputStream来读取、保存Java对象
+
+serialversionuid
+当要根据 字节流 来构建实体时（反序列化），首先判断字节流中的serialversionuid是否和实体类的serialversionuid是否相同，如果相同，就进行反序列化，如果不相同，则抛出异常

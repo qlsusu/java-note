@@ -1,0 +1,48 @@
+public class SerializableObject implements Serializable
+{
+    private static final long serialVersionUID = 1L;
+    
+    private String str0;
+    private transient String str1;
+    private static String str2 = "abc";
+    
+    public SerializableObject(String str0, String str1)
+    {
+        this.str0 = str0;
+        this.str1 = str1;
+    }
+    
+    public String getStr0()
+    {
+        return str0;
+    }
+
+    public String getStr1()
+    {
+        return str1;
+    }
+    
+    private void writeObject(java.io.ObjectOutputStream s) throws Exception
+    {
+        System.out.println("我想自己控制序列化的过程");
+        //调用os默认的序列化方法，来序列化str0
+        s.defaultWriteObject();
+        //自定义序列化方式，如：针对于transient变量（默认其不参与到序列化处理）
+        s.writeInt(str1.length());
+        for (int i = 0; i < str1.length(); i++)
+            s.writeChar(str1.charAt(i));
+    }
+    
+    private void readObject(java.io.ObjectInputStream s) throws Exception
+    {
+        System.out.println("我想自己控制反序列化的过程");
+        //调用is默认的反序列化方法，来读取str0
+        s.defaultReadObject();
+        //读取时的顺序 需要和 写入时的顺序 保持一致
+        int length = s.readInt();
+        char[] cs = new char[length];
+        for (int i = 0; i < length; i++)
+            cs[i] = s.readChar();
+        str1 = new String(cs, 0, length);
+    }
+}

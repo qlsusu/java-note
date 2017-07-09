@@ -1,0 +1,5 @@
+分为：
+statement
+preparedstatement
+callablestatement
+	对应于 存储过程

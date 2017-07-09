@@ -1,0 +1,3 @@
+class.public InputStream getResourceAsStream(String name)
+如果name不以/开头，那么从 .class所在的package处 来查找名为name的资源
+如果name以/开头，那么从classpath中来找 名为name的资源

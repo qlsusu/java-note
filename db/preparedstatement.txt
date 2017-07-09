@@ -1,0 +1,30 @@
+参见：
+JDBC为什么要使用PreparedStatement而不是Statement
+	http://www.importnew.com/5006.html
+PreparedStatement IN语句
+	http://flwcy.coding.me/2016/07/21/03-preparedstatement-in/
+
+--------------------为什么使用preparedstatement（而不使用statement）:
+执行速度比statement更快，因为：sql语句会发送给数据库做预处理
+防止攻击
+	恶意攻击举例：
+		strSQL = "SELECT * FROM users WHERE name = '" + userName + "' and pw = '"+ passWord +"';"
+		userName = "1' OR '1'='1";
+		passWord = "1' OR '1'='1";
+		则，strSQL = "SELECT * FROM users WHERE name = '1' OR '1'='1' and pw = '1' OR '1'='1';"
+	如果使用preparedstatement
+		当参数值为：1' OR 1=1时
+		SELECT * FROM users WHERE name = '1'' OR 1=1'
+能够参数化
+
+--------------------in方案
+preparedstatement不允许 一个参数却拥有多个值，如：
+	select * from user where name in(?)
+	preparedstatement.setstring(1, "'bill','sheme'");
+解决方式：
+	目标：
+		select * from user where name in(?,?,?)
+		preparedstatement.setstring(1, "bill");
+		preparedstatement.setstring(2, "sheme");
+		preparedstatement.setstring(3, "qiqi");
+	则根据要填入的参数值，动态生成sql语句，进而构建preparedstatement，后，为该preparedstatement设置参数

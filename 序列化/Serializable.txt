@@ -1,3 +1,0 @@
-步骤：
-让Java类实现Serializable接口。
-通过ObjectInputStream、ObjectOutputStream来读取、保存Java对象

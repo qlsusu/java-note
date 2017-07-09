@@ -1,0 +1,21 @@
+public void addStudent(String studentName, int studentAge, String studentPhone) throws Exception
+{
+    Connection connection = DBConnection.mysqlConnection;
+    //设置不自动提交
+    connection.setAutoCommit(false);
+    PreparedStatement ps = connection.prepareStatement("insert into student values(null,?,?,?)");
+    ps.setString(1, studentName);
+    ps.setInt(2, studentAge);
+    ps.setString(3, studentPhone);
+    try
+    {
+        ps.executeUpdate();
+        //提交
+        connection.commit();
+    } 
+    catch (Exception e)
+    {
+        e.printStackTrace();
+        connection.rollback();
+    }
+}

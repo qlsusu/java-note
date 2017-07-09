@@ -1,3 +1,6 @@
 stringbuffer是线程安全的
 
 stringbuilder不是线程安全的
+
+string中的+：
+每次+操作，都会产生一个stringbuilder对象，后调用append方法，后tostring产生一个string对象

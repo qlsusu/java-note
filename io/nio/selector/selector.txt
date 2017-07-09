@@ -22,7 +22,7 @@ while (true) {
 	//就绪：某个注册的channel的 某个注册时的感兴趣的事件 发生
 	//该方法将会阻塞
 	//还有几个重载的方法：
-	//select(long timeout)：最长会阻塞timeout ms
+	//select(long timeout)：最长会阻塞timeout ms，超时后，返回
 	//selectNow()：不会阻塞，而是直接返回就绪的个数
     int readyChannels = selector.select();
     if (readyChannels == 0) continue;
