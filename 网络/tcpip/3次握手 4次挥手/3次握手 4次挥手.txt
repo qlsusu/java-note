@@ -1,0 +1,28 @@
+3次握手
+client请求建立连接：SYN=1, seq=m（其中m代表了本次请求）
+	client处于：sync_send状态
+server收到该请求后，回复：我的回复是针对于你的请求m的（ACK=1, ack=m+1），同时我也请求建立连接（SYN=1, seq=n）
+	server处于：sync_receive状态
+client收到server的回复，检查该回复是针对于自己的m请求的，并回复：我的回复是针对于你的请求n的（ACK=1,ack=n+1），同时我发送一个消息(seq=m+1)
+	client处于：establish状态
+server收到client的回复，检查该回复
+	server处于：establish状态
+
+为什么3次握手：
+假设：2次握手就建立连接，即是：server收到client的请求后，就建立连接点，来等待client的数据到来
+当client发了一次请求，而由于中间节点的原因，该请求一直没有到达server，导致：client又向服务器发送了一次请求，该请求server收到了，然后彼此建立了连接点
+而等该连接关闭后，之前client发的第一次请求到达了Server，server又为此建立了连接点，在等待client的数据到来，后其向client发送了响应
+而client并不会理会该响应，并不会向server发送数据，则server白白浪费了 自己建立的连接点资源
+
+4次挥手
+client发送消息：我发完数据了：FIN=1, seq=m
+server收到该响应，知道client发送完数据了，回复：ACK=1, ack=m+1, seq=n（但是，我还没有发送完数据给你）
+server继续向client发送数据，直到发送完，向client发送消息：我发完数据了：FIN=1, seq=x，这是对你之前发送完数据那次来讲的（ACK=1, ack=m+1）
+client收到该响应，知道server发送完数据了，回复：知道了（ACK=1, ack=x+1）,seq=m+1
+	client在发出数据后，等待2*MSL后，close
+server收到响应后，close
+
+为什么4次挥手：
+发送FIN，仅仅是在表明，我的数据已经发送完了，但是对方还没有告诉 他的数据也发送完了，也即是：对方可能还会继续发送数据给我，所以，我的连接点还不能关闭，
+
+	

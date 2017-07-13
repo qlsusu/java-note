@@ -1,0 +1,1 @@
+当使用socketserver.accept从accept队列中取出一个连接后，使用一个线程来处理该socket(向该socket收发数据)

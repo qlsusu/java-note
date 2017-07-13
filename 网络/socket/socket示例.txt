@@ -9,7 +9,7 @@ public class EchoServer
         
         try
         {
-            // 实例化监听端口
+            // 监听指定端口
             ss = new ServerSocket(1111);
         } 
         catch (IOException e)
@@ -20,7 +20,10 @@ public class EchoServer
         Socket incoming = null;
         while (true)
         {
+            //从accept队列中取出一个连接
             incoming = ss.accept();
+            //可以得到client的ip和port
+            SocketAddress clientAddress = incoming.getRemoteSocketAddress();  
             pw = new PrintWriter(incoming.getOutputStream(), true);
             // 先将字节流通过InputStreamReader转换为字符流，之后将字符流放入缓冲之中
             br = new BufferedReader(new InputStreamReader(incoming.getInputStream()));

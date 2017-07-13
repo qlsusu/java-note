@@ -92,6 +92,7 @@ public class SelectorClient
                 int port = 1234;
                 SocketChannel sc = SocketChannel.open();
                 sc.configureBlocking(false);
+                //连接host:port
                 sc.connect(new InetSocketAddress(REMOTE_IP, port));
                 while (!sc.finishConnect())
                 {

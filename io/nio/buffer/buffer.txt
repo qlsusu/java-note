@@ -62,3 +62,21 @@ buffer.get()
 
 rewind:
 将position设置为0，则可以重新从头读么
+
+一个读写示例：
+private void readDataFromSocket(SelectionKey sk) throws Exception
+{
+    SocketChannel sc = (SocketChannel)sk.channel();
+    bb.clear();
+    while (sc.read(bb) > 0)
+    {
+    	//bytebuffer从写模式 变成 读模式
+        bb.flip();
+        while (bb.hasRemaining())
+        {
+            System.out.print((char)bb.get());
+        }
+        System.out.println();
+        bb.clear();
+    }
+}
