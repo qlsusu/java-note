@@ -1,0 +1,33 @@
+参见：
+Java多种方式自定义序列化
+	http://blog.csdn.net/huzhigenlaohu/article/details/51674513
+
+步骤：
+让Java类实现Serializable接口。
+通过ObjectInputStream、ObjectOutputStream来读取、保存Java对象
+
+serialversionuid
+序列化时，会将类的serialversionuid写入
+当要根据 字节流 来构建实体时（反序列化），首先判断字节流中的serialversionuid是否和实体类的serialversionuid是否相同，如果相同，就进行反序列化，如果不相同，则抛出异常
+在android stuido中，如何自动生成：
+	preferences->Inspections->serialization issues->Serializable class without 'serialVersionUID' 勾上
+
+序列化时
+系统会先调用writeReplace方法（一般很少重写该方法）
+	private Object writeReplace() throws ObjectStreamException
+接着调用writeobject方法
+	private void writeObject(ObjectOutputStream out) throws IOException
+	在该方法中，一般第一句话：out.defaultWriteObject();
+
+反序列化时
+系统会先调用readobject方法
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+	在该方法中，一般第一句话：in.defaultReadObject();
+接着调用readResolve方法（一般很少重写该方法）
+	private Object readResolve() throws ObjectStreamException
+
+-----------------------Externalizable
+其提供了 类似于 Serializable相关的两个方法，只是是public类型的：
+	public void writeExternal(ObjectOutput out) throws IOException
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
+实现了Externalizable的类 需要提供默认的构造方法

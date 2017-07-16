@@ -17,49 +17,58 @@ public class EchoServer
             System.err.println("Could not listen on port:1111");
             System.exit(1);
         }
-        Socket incoming = null;
+
+        Executor service = Executors.newCachedThreadPool();
         while (true)
         {
             //从accept队列中取出一个连接
-            incoming = ss.accept();
-            //可以得到client的ip和port
-            SocketAddress clientAddress = incoming.getRemoteSocketAddress();  
-            pw = new PrintWriter(incoming.getOutputStream(), true);
-            // 先将字节流通过InputStreamReader转换为字符流，之后将字符流放入缓冲之中
-            br = new BufferedReader(new InputStreamReader(incoming.getInputStream()));
-            // 提示信息
-            pw.println("Hello!...");
-            pw.println("Enter BYE to exit");
-            pw.flush(); 
-            // 没有异常则不断循环
-            while (true)
-            {
-                // 只有当用户输入时才返回数据
-                String str = br.readLine();
-                // 当用户连接断掉时会返回空值null
-                if (str == null)
-                {
-                    // 退出循环
-                    break;
-                }
-                else
-                {
-                    // 对用户输入字符串加前缀Echo并将此信息打印到客户端
-                    pw.println("Echo：" + str);
-                    pw.flush();
-                    // 退出命令，equalsIgnoreCase()是不区分大小写的
-                    if ("BYE".equalsIgnoreCase(str.trim()))
+            final Socket incoming = ss.accept();
+
+            //开启一个线程来处理该socket
+            threadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    //可以得到client的ip和port
+                    SocketAddress clientAddress = incoming.getRemoteSocketAddress();  
+                    pw = new PrintWriter(incoming.getOutputStream(), true);
+                    // 先将字节流通过InputStreamReader转换为字符流，之后将字符流放入缓冲之中
+                    br = new BufferedReader(new InputStreamReader(incoming.getInputStream()));
+                    // 提示信息
+                    pw.println("Hello!...");
+                    pw.println("Enter BYE to exit");
+                    pw.flush(); 
+                    // 没有异常则不断循环
+                    while (true)
                     {
-                        break;
+                        // 只有当用户输入时才返回数据
+                        String str = br.readLine();
+                        // 当用户连接断掉时会返回空值null
+                        if (str == null)
+                        {
+                            // 退出循环
+                            break;
+                        }
+                        else
+                        {
+                            // 对用户输入字符串加前缀Echo并将此信息打印到客户端
+                            pw.println("Echo：" + str);
+                            pw.flush();
+                            // 退出命令，equalsIgnoreCase()是不区分大小写的
+                            if ("BYE".equalsIgnoreCase(str.trim()))
+                            {
+                                break;
+                            }
+                        }
                     }
+                    // 该socket的相关资源都close掉
+                    pw.close();
+                    br.close();
+                    incoming.close();
                 }
-            }
-            // 该close的资源都close掉
-            pw.close();
-            br.close();
-            incoming.close();
-            ss.close();
+            });
         }
+
+        ss.close();
     }
 }
 

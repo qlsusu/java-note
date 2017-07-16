@@ -1,0 +1,3 @@
+http请求是无状态的
+即是，同一用户以此请求path1和path2（它们的host/port均相同，只是path不同）
+服务器不知道这两次请求来自同一个客户端（不传送cookies/session的前提下）

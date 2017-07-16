@@ -1,0 +1,71 @@
+参见：
+HTTP 的长连接和短连接
+	http://blog.jobbole.com/104108/
+为什么说基于TCP的移动端IM仍然需要心跳保活？
+	http://www.52im.net/thread-281-1-1.html
+HTTP长连接和短连接
+	http://www.cnblogs.com/0201zcr/p/4694945.html
+HTTP持久连接
+	https://zh.wikipedia.org/wiki/HTTP%E6%8C%81%E4%B9%85%E8%BF%9E%E6%8E%A5#cite_note-1
+Android 之长连接实现
+	https://juejin.im/entry/57861b50128fe100603b1df8
+	使用MINA来实现长连接
+
+什么是连接：
+client server双方 仅仅管理着连接的状态（消耗着 tcp端口，内存等资源）（并不是一个真实的物理的连接）
+
+什么是tcp长连接：
+client和server经过 tcp三次握手后，建立了tcp通道，后发送数据，当数据发送完毕后，通道不close
+	后续，向同一个server（host:ip）传送的数据，都走该通道
+需要 client和server都支持长连接，才能最终建立长连接
+	如server可以完全忽视请求头中的keep-alive，而是主动发起4次挥手
+	或，server可以设置一个 超时时间，在该时间内不发送数据，则关闭连接
+	或，对于同一个tcp通道，在N次请求后，就关闭该tcp通道
+tcp默认是长连接
+心跳机制（不建议开启）：
+	当client长时间（2小时）不发送数据到server，server遍会发送一个检测包（发送一个ACK空数据），
+		如果client回复ack，证明连接正常
+		如果client回复rst，说明连接退出
+		如果client回复fin，说明连接崩溃
+		如果client未回应，继续发送超时检测（75s一次，共10次）来继续检测client是否存在
+	如果到最后也没有收到client的响应，那么server的该连接端断掉
+	--
+	如何开启：
+		setsockopt将SOL_SOCKET.SO_KEEPALIVE设置为1
+		其他的设置选项：tcp_keepalive_time/tcp_keepalive_probes/tcp_keepalive_intvl
+
+tcp长连接有什么用：
+下次client再与server通信（发送/接收数据 或 使用连接池来建立一条新的连接（host/port相同））时，
+不会
+	进行DNS解析，也不会重新经过tcp三次握手来建立连接
+而是
+	直接使用之前建立好的连接
+
+应用场景：
+client-server交互频繁，且长连接个数有限
+连接池
+push
+
+有什么缺点：
+当client已经失效，但是server并不知道（或是很少时间后才知道），而server还在 维持着对应该client的连接状态（tcp端口，内存等）
+server需要检测哪些 所谓的长连接 已经失效，增加无谓的消耗
+
+----------------------------http长连接
+request/response头的 connection:keep-alive
+	在http1.1中，默认请求头中 都加 keep-alive
+
+什么是http心跳：
+tcp还是维持长连接，上层 定时发送一些检测包（如：5分钟，10分钟等），来告知对方还在线
+--
+有了tcp的超时检测，为什么还需要 单独发送心跳包：
+http的长连接 反应在 应用层（在应用的层面，client是否还在线）
+	而tcp的长连接 反应在 底层的连接层（client的ip:port 是否还与 server的ip:port建立着连接）
+在一个tcp连接上，如果长时间没有数据交换，那么会被 中间节点（如：防火墙，运营商）断掉
+tcp的心跳检测 太慢
+
+如何实现http长连接：
+client发送心跳包给server，server在收到该消息后，指定client下次心跳包的发送延迟
+
+HTTP 流水线技术
+在同一个tcp通道上，多个http请求可以并发执行
+目前，server还没有很好的支持

@@ -1,9 +1,20 @@
+参见：
+理解TCP序列号（Sequence Number）和确认号（Acknowledgment Number）
+	http://m.blog.csdn.net/a19881029/article/details/38091243
+TCP三次握手、四次挥手及状态转换图
+	http://www.cnblogs.com/wujing-hubei/p/5699773.html
+wireshark怎么抓包、wireshark抓包详细图文教程
+	http://www.cnblogs.com/the-tops/p/5651306.html
+
+说明：
+下文中ACK=x的含义是：ACK状态位为1，ack=x
+
 3次握手
 client请求建立连接：SYN=1, seq=m（其中m代表了本次请求）
 	client处于：sync_send状态
-server收到该请求后，回复：我的回复是针对于你的请求m的（ACK=1, ack=m+1），同时我也请求建立连接（SYN=1, seq=n）
+server收到该请求后，回复：我收到了（ACK=m+1），同时我也请求建立连接（SYN=1, seq=n）
 	server处于：sync_receive状态
-client收到server的回复，检查该回复是针对于自己的m请求的，并回复：我的回复是针对于你的请求n的（ACK=1,ack=n+1），同时我发送一个消息(seq=m+1)
+client收到server的回复，检查该回复是针对于自己的m请求的（因为：m请求的seq.next为m+1），并回复：我收到了（ACK=n+1，seq=m+1）
 	client处于：establish状态
 server收到client的回复，检查该回复
 	server处于：establish状态
@@ -16,13 +27,14 @@ server收到client的回复，检查该回复
 
 4次挥手
 client发送消息：我发完数据了：FIN=1, seq=m
-server收到该响应，知道client发送完数据了，回复：ACK=1, ack=m+1, seq=n（但是，我还没有发送完数据给你）
-server继续向client发送数据，直到发送完，向client发送消息：我发完数据了：FIN=1, seq=x，这是对你之前发送完数据那次来讲的（ACK=1, ack=m+1）
-client收到该响应，知道server发送完数据了，回复：知道了（ACK=1, ack=x+1）,seq=m+1
+server收到该响应，知道client发送完数据了，回复：ACK=m+1, seq=n（但是，我还没有发送完数据给你）
+server继续向client发送数据，直到发送完，向client发送消息：我发完数据了：FIN=1, seq=x，ACK=m+1（因为发送的消息必须携带ACK，seq）
+client收到该响应，知道server发送完数据了，回复：知道了（ACK=x+1）,seq=m+1
 	client在发出数据后，等待2*MSL后，close
+		MSL(最大分段生存期)指明TCP报文在Internet上最长生存时间,RFC 1122建议是2分钟,
+		为什么要等：当server也发送了FIN，那么我反馈ACK，但是该反馈可能丢失 导致server没有收到。而server迟迟没有收到 自己发送的FIN的反馈，那么会试图再次发送FIN
+			则，client在这2MSL时间内，还是可以重新发送ACK反馈
 server收到响应后，close
 
 为什么4次挥手：
-发送FIN，仅仅是在表明，我的数据已经发送完了，但是对方还没有告诉 他的数据也发送完了，也即是：对方可能还会继续发送数据给我，所以，我的连接点还不能关闭，
-
-	
+我发送FIN，仅仅是在表明，我的数据已经发送完了，但是对方还没有告诉 他的数据也发送完了，也即是：对方可能还会继续发送数据给我，所以，我的连接点还不能关闭

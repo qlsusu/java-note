@@ -1,0 +1,20 @@
+参见：
+基于NIO的长连接的实现已开放到github
+	http://blog.csdn.net/yangbutao/article/details/18505831
+
+连接：
+ip1:port1 要与 ip2:port2要建立连接（各自维护 各自连接点的状态）
+http连接 本质上 建立在tcp连接上（http为应用层，而tcp属于传输层，高层的数据 由低层来传输）
+也即是：多个不同的httpconnection（host,port相同，仅仅path不同），可以使用同一个tcp连接
+
+连接池的一种思路：
+>>>向server发送请求
+当有请求call时，为该call分配connection（tcp连接可能会被新建，根据当前连接池中 已经存在的连接数）
+call 在 connection.requestMakeExecutor（ExecutorService类型）中来 makeRequestData()
+将call的输出（包含call.id）放入到connection.toSendMsgQueue(blockingqueue类型)中
+针对于该queue，存在 deliver 来取数据，并写入到connection.outputstream中 来传送消息到服务器（采用新线程）
+--
+>>>server返回了响应
+deliver同时会从connection.inputstream中读取server响应（阻塞）（采用新线程）
+当读取到响应时，确定该响应是针对于那个call的（根据call.id）
+call 在 connection.responseHandleExecutor（ExecutorService类型）中来 handleResponse()

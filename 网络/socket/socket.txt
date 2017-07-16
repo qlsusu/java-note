@@ -1,3 +1,5 @@
 参见：
+java tcp/ip socket 系列教程
+	http://blog.csdn.net/mmc_maodun/article/category/1767297
 Java Socket
 	http://www.cnblogs.com/xrq730/p/5087354.html

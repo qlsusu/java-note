@@ -1,0 +1,33 @@
+Frame 244: 290 bytes on wire (2320 bits), 290 bytes captured (2320 bits) on interface 0
+Ethernet II, Src: Tp-LinkT_7b:cd:62 (ec:88:8f:7b:cd:62), Dst: Apple_ed:f1:66 (8c:29:37:ed:f1:66)
+Internet Protocol Version 4, Src: 112.25.53.229, Dst: 192.168.1.106
+Transmission Control Protocol, Src Port: 80, Dst Port: 63470, Seq: 134068, Ack: 1311, Len: 236
+//要发送的数据，被分割到多个tcp数据中（segment）包括 自身的这次tcp消息
+[95 Reassembled TCP Segments (134303 bytes): #85(1440), #86(1440), #87(1440), #88(1440), #91(147), #92(1440), #93(1440), #94(1440), #95(1440), #100(1440), #101(1440), #103(1440), #105(1440), #106(1440), #107(1440), #111(1440), #112(1440), #]
+Hypertext Transfer Protocol
+    HTTP/1.1 200 OK\r\n
+    Server: nginx\r\n
+    Date: Sat, 15 Jul 2017 09:59:45 GMT\r\n
+    Content-Type: text/html\r\n
+    Content-Length: 133340\r\n
+    Connection: close\r\n
+    Last-Modified: Sat, 15 Jul 2017 09:55:46 GMT\r\n
+    Vary: Accept-Encoding\r\n
+    Expires: Sat, 15 Jul 2017 10:00:44 GMT\r\n
+    Cache-Control: max-age=60\r\n
+    X-Powered-By: shci_v1.03\r\n
+    Content-Encoding: gzip\r\n
+    Age: 1\r\n
+    Via: http/1.1 cnc.beixian.ha2ts4.205 (ApacheTrafficServer/4.2.1.1 [cMsSfW]), http/1.1 cmcc.beijing.ha2ts4.32 (ApacheTrafficServer/4.2.1.1 [cMsSfW]), http/1.1 cmcc.nanjing.ha2ts4.239 (ApacheTrafficServer/4.2.1.1 [cRs f ])\r\n
+    X-Cache: MISS.205\r\n
+     [truncated]X-Via-CDN: f=edge,s=cmcc.nanjing.ha2ts4.235.nb.sinaedge.com,c=183.206.166.165;f=Edge,s=cmcc.nanjing.ha2ts4.239,c=112.25.53.235;f=edge,s=cmcc.beijing.ha2ts4.23.nb.sinaedge.com,c=112.25.53.239;f=Edge,s=cmcc.beijing.ha2ts4.32,c=11
+    X-Cache: MISS.32\r\n
+    X-Cache: HIT.239\r\n
+    \r\n
+    [HTTP response 1/1]
+    [Time since request: 0.110034000 seconds]
+    [Request in frame: 81]
+    Content-encoded entity body (gzip): 133340 bytes -> 602693 bytes
+    File Data: 602693 bytes
+Line-based text data: text/html
+    //其中为html内容，位于流中

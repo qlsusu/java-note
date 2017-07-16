@@ -13,7 +13,7 @@ public class SelectorServer
         }
         // 打开一个ServerSocketChannel
         ServerSocketChannel ssc = ServerSocketChannel.open();
-        // 获取ServerSocketChannel绑定的Socket
+        // 获取ServerSocketChannel绑定的ServerSocket
         ServerSocket ss = ssc.socket();
         // 设置ServerSocket监听的端口
         ss.bind(new InetSocketAddress(port));

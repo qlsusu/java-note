@@ -1,0 +1,3 @@
+参见：
+TCP通信流程解析
+	http://blog.csdn.net/phunxm/article/details/5836034

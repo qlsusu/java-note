@@ -1,0 +1,39 @@
+参见：
+彻底弄懂 Http 缓存机制 - 基于缓存策略三要素分解法
+	https://mp.weixin.qq.com/s/qOMO0LIdA47j3RjhbCWUEQ
+从WebView缓存聊到Http 的缓存机制 | 掘金技术征文
+	https://juejin.im/post/58fcda27a22b9d0065a394d2
+HTTP缓存控制小结
+	http://imweb.io/topic/5795dcb6fb312541492eda8c
+MVP架构实现的Github客户端(4-加入网络缓存)
+	http://www.jianshu.com/p/faa46bbe8a2e
+
+为什么使用缓存：
+当client已经收到了资源，如果该资源仍然新鲜，那么不需要再次请求服务器
+就算client向server发送了请求，server对 client要请求的资源进行检查，如果该资源没有发生改变，就发送很少的信息（而不是整个资源）告诉client：资源没变，请继续使用该资源
+
+----------------------当本次请求服务器时，是否能够使用缓存：
+1. 之前是否缓存了server的响应：
+判断 之前请求的响应中的 cache-control
+	缓存了：当值为：max-age,public,private,no-cache时
+	没有缓存：当值为：no-store
+
+2. 缓存过期时间：
+之前请求的响应 的时间 + max age
+
+3. 判断缓存是否过期
+当缓存没有过期时
+	可直接读取缓存
+在缓存过期时
+	再次请求server，并附带上 资源标识（ETAG）和资源修改时间（last-modified）（这两个值 由上次请求的响应 提供）
+		可将该值分别附在请求头 if-none-match 和 if-modified-since 上
+		这些请求头意味着：server需要检查：资源是否不存在 或 资源是否再次修改。当这些条件有一个为真时，就认为资源真的过期
+	server收到请求后，判断资源是否真的过期了
+		如果没有过期，返回304给client（而不是返回整个资源），则client可以继续使用缓存
+		如果过期了，返回新的资源给client
+
+当cache-control 设置的是 max-age=多少秒
+如果来自请求头：client要求server返回一个资源，该资源的新鲜期 < max age
+如果来自响应头：server告诉client：该资源在max age时间内，都是新鲜的，
+	同时提供该资源的id（etag），和资源的最近修改时间（last-modified）
+	
