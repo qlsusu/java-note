@@ -1,0 +1,20 @@
+指定单次任务，在xx delay之后
+	public ScheduledFuture<?> schedule(Runnable command, 
+		long delay, TimeUnit unit);
+	public <V> ScheduledFuture<V> schedule(Callable<V> callable, 
+		long delay, TimeUnit unit);
+
+指定定时任务
+	第i个任务开始执行 和 第i+1任务开始执行 之间，间隔delay
+		public ScheduledFuture<?> scheduleAtFixedRate(Runnable command,
+			long initialDelay,
+			long period,
+			TimeUnit unit);
+	第i个任务执行完 和 第i+1任务开始执行 之间，间隔period
+		public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command,
+			long initialDelay,
+			long delay,
+			TimeUnit unit);
+
+关于shutdownNow
+当第一个任务还开始执行之前（要经过initialDelay个延时），调用shutdownnow，那么第一个任务不会执行

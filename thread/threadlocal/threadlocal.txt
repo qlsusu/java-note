@@ -17,5 +17,19 @@ Looper:private static void prepare(boolean quitAllowed) {
 即是：每个线程都对应了looper对象
 
 实现原理：
-每个thread有一个threadlocalmap（可以认为是一个map，也是通过key的rehash值 将key映射到桶）
-entry.key是 threadlocal对象的 弱引用，value是threadlocal.set时的值（如果在threadlocal.get时，该值还没有被设置，那么就调用threadlocal.initialValue来对值进行初始化）
+每个thread有一个threadlocalmap，其可以认为是一个map，其内部定义了entry，使用entry[]来存储entry
+	entry（本质上是threadlocal的weakreference）:
+		entry.key为entry.get()
+		entry.value为threadlocal的set时的值）
+也是通过entry.key的rehash值（本质上是threadlocal.threadLocalHashCode），
+	threadlocal的hash值 并不是通过自身计算得来，而是通过分配（通过ThreadLocal.static AtomicInteger nextHashCode.getAndAdd(HASH_INCREMENT)）
+将entry映射到桶中
+	针对于桶，未采用链表形式，而是，桶中只有一个entry
+--
+threadlocal.set 会调用 threadlocalmap.set(threadlocal, value):
+	使用entry.key.hashcode & (entry[].len-1)来定位在数组中的位置i
+		如果该位置上已经有数据，那么
+			判断该位置上原有entry的key 是否为 该threadlocal，如果是，那么更新 原有entry.value，结束
+			判断该位置上 原有的entry的key 是否为null（因为entry是threadlocal的weakreference），如果为null，那么更新该entry的 key和value，结束
+			移动到 数组的下一个位置（有可能循环到第0个位置）
+		如果该位置上没有数据，那么生成entry（这是key和value）并放入到该位置

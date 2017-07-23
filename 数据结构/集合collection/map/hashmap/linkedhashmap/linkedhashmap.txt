@@ -1,0 +1,5 @@
+参见：
+图解集合6：LinkedHashMap
+	http://www.cnblogs.com/xrq730/p/5052323.html
+
+linkedhashmap可定义 遍历时采用什么顺序

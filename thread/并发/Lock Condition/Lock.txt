@@ -25,6 +25,10 @@ public ReentrantLock(boolean fair) {
 如果一个线程已经持有了该lock，那么该线程还是可以继续lock.lock()
 那么，在该线程中，必须调用 和lock()次数相同的unlock()，才能够释放该锁
 
+Lock.lock() vs Lock.lockInterruptibly()
+lockInterruptibly()会抛出InterruptedException。则当在线程threadA上执行lockInterruptibly()，但是还没有获得该lock，而在外部调用 threadA.interrupt()，那么将抛出异常
+而lock()并不会发生异常
+
 ----------------------------例子：
 public class LockTest {
 	public static void main(String[] args) {
