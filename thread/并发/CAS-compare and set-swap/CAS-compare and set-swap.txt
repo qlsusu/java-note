@@ -9,7 +9,7 @@ JAVA并发编程学习笔记之CAS操作
 	http://286.iteye.com/blog/2295165
 
 Compare And Set/Swap
-CAS操作包含三个操作数——内存位置（V）、预期原值（A）、新值(B)。
+CAS操作包含三个操作数——内存位置（V（field在对象中的offset））、预期原值（A）、新值(B)。
 如果内存位置的值与预期原值相匹配，那么处理器会自动将该位置值更新为新值。否则，处理器不做任何操作
 最后，无论哪种情况，它都会在CAS指令之前返回该位置的值
 cas需要和volatile配合使用
@@ -20,6 +20,12 @@ cas需要和volatile配合使用
 ----------------------------AtomicInteger的++i的cas实现方式：
 >>>1.8版本
 public final int incrementAndGet() {
+    //atomicinteger.value是当前值
+    //在执行该fetch-and-add指令时，先判断当前offset位置的field的值是否为value
+    //如果不是的话，将再次执行（当条件不满足时，将一直循环下去），并使用新的value值来进行判断
+    //如果是的话，那么执行add操作
+    //U.getAndAddInt将返回执行add操作之前的 值
+    //则，因为是incrementandget，那么需要返回add后的值，则需要 结果+1
     return U.getAndAddInt(this, VALUE, 1) + 1;
 }
 其中VALUE为：U.objectFieldOffset(AtomicInteger.class.getDeclaredField("value"));
@@ -30,7 +36,9 @@ public final int incrementAndGet() {
             int v;
             do {
                 v = getIntVolatile(o, offset);
-            } while (!compareAndSwapInt(o, offset, v, v + delta));
+            }
+            //如果不满足条件（field的值并不是v），将会一直循环下去（在下次循环时，更新value的值）
+            while (!compareAndSwapInt(o, offset, v, v + delta));
             return v;
         }
         public native int getIntVolatile(Object o, long offset);
@@ -41,6 +49,8 @@ public final int incrementAndGet() {
     for (;;) {
         int current = get();
         int next = current + 1;
+        //compareandset只会执行一次，如果成功，就将field的值设置为next，如果失败（该field的值并不是get()返回的值），就返回false
+        //当成功时，退出循环，否则，一直循环下去
         if (compareAndSet(current, next))
             return next;
     }
