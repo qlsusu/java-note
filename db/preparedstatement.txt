@@ -22,9 +22,9 @@ preparedstatement不允许 一个参数却拥有多个值，如：
 	select * from user where name in(?)
 	preparedstatement.setstring(1, "'bill','sheme'");
 解决方式：
-	目标：
+	目标样子：
 		select * from user where name in(?,?,?)
 		preparedstatement.setstring(1, "bill");
 		preparedstatement.setstring(2, "sheme");
 		preparedstatement.setstring(3, "qiqi");
-	则根据要填入的参数值，动态生成sql语句，进而构建preparedstatement，后，为该preparedstatement设置参数
+	则根据要填入的参数值，动态生成sql语句（即是：()中有多少个?），进而构建preparedstatement，后，为该preparedstatement设置参数
