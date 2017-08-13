@@ -18,20 +18,20 @@ class对象的引用
 	运行时才生成的常量，如：String.intern()
 --
 字段数据（Field Data）
-	按字段（Per Field）
+	按字段（Per Field）为单位
 		名称（Name）
 		类型（Type）
 		修饰符（Modifiers）
 		属性（Attributes）
 方法数据
-	按方法（Per Method）
+	按方法（Per Method）为单位
 		名称（Name）
 		返回类型（Return Type）
 		参数类型#有序（Parameter Types in order）
 		修饰符（Modifiers）
 		属性（Attributes）
 方法代码
-	按方法（Per Method）
+	按方法（Per Method）为单位
 		字节码（Bytecodes）
 		操作数栈大小（Operand Stack Size）
 		本地变量大小（Local Variable Size）
