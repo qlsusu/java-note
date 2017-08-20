@@ -2,5 +2,40 @@ stringbuffer是线程安全的
 
 stringbuilder不是线程安全的
 
-string中的+：
-每次+操作，都会产生一个stringbuilder对象，后调用append方法，后tostring产生一个string对象
+------------------------string中的+：
+
+例子：
+String a = "hello ";
+String b = "world ";
+String c = "there ";
+for (int j = 0; j < 10; j++) {
+	String d = a + b + c + "here";
+}
+
+对应的字节码为：
+75: new           #6                  // class java/lang/StringBuilder
+78: dup
+79: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+82: aload_2
+83: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+86: aload_3
+87: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+90: aload         4
+92: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+95: ldc           #19                 // String here
+97: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+100: invokevirtual #11                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+103: astore        6
+
+其中，LocalVariableTable:
+Start  Length  Slot  Name   Signature
+  105      25     6     d   Ljava/lang/String;
+   68      68     5     j   I
+    0     137     0  this   Lbean/byteinfo/ByteInfo;
+    2     135     1     i   I
+   58      79     2     a   Ljava/lang/String;
+   61      76     3     b   Ljava/lang/String;
+   65      72     4     c   Ljava/lang/String;
+
+从上述字节码可以看出：
+在一次for循环中，产生了一个stringbuilder对象，并执行了4次append操作，一次tostring操作

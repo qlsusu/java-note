@@ -65,6 +65,7 @@ public class SelectorServer
         bb.clear();
         while (sc.read(bb) > 0)
         {
+            //将写模式切换为读模式
             bb.flip();
             while (bb.hasRemaining())
             {

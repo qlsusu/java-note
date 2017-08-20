@@ -22,7 +22,7 @@ corePoolSize : int
 workQueue : BlockingQueue 
 	如果你使用的是类似LinkedBlockingQueue的无界队列，那么任务B可以一直被添加进来
 	如果你使用的是有界队列比方说ArrayBlockingQueue的话，如果队列满了，导致任务B不能被添加到队列中
-		会开启新线程来处理 任务B（注意：并不是：从队列中 取出一个任务，来执行该任务，后将任务B添加到队列中）
+		会 尝试 开启新线程来处理 任务B（注意：并不是：从队列中 取出一个现有的任务，来执行该任务，后将 任务B 添加到队列中）
 			如果总的线程数超过了maximumPoolSize，则会使用RejectedExecutionHandler来处理任务B
 handler : RejectedExecutionHandler 
 	Java 中提供了几种默认的实现，AbortPolicy, CallerRunsPolicy, DiscardOldestPolicy, DiscardPolicy。

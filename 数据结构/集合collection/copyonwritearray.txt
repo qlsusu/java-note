@@ -30,4 +30,4 @@ public class CopyOnWriteArrayList<E> implements List<E>, RandomAccess, Cloneable
 }
 
 缺点：
-对于修改，都需要进行数组的拷贝，当元素比较多时，很定很慢
+对于修改，都需要进行数组的拷贝，当元素比较多时，肯定很慢

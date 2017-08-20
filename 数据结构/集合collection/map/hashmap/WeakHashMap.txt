@@ -1,3 +1,8 @@
-WeakHashMap对于一个给定的键，其映射的存在并不阻止垃圾回收器对该键的回收，
-回收以后，其条目从映射中有效地移除。
-WeakHashMap使用ReferenceQueue实现的这种机制。
+参见：
+WeakHashMap和HashMap的区别
+	http://blog.csdn.net/yangzl2008/article/details/6980709
+
+其内部entry<k,v> extends weakreference<k>
+	类似于threadlocalmap.entry
+当key没有被其他地方强引用时，gc时，将会对key进行回收
+当进行map的遍历操作，如：map.size时，会将key对应的value置空，并将该entry移除（通过expungeStaleEntries）

@@ -28,8 +28,14 @@ private void requestGet(HashMap<String, String> paramsMap) {
         urlConn.setRequestProperty("Content-Type", "application/json");
         //设置客户端与服务连接类型
         urlConn.addRequestProperty("Connection", "Keep-Alive");
+        //设置 服务器返回的数据要进行gzip压缩
+        //android默认开启了gzip
+        //如果服务器返回了gzip压缩后的数据，那么读取conn.getcontentlength时，返回-1
+        urlConn.setRequestProperty("Accept-Encoding", "gzip");
+
         // 开始连接
         urlConn.connect();
+        
         // 判断请求是否成功
         if (urlConn.getResponseCode() == 200) {
             // 获取返回的数据

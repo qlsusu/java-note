@@ -1,91 +1,108 @@
-查看字节码，命令：
-javap -v -p -s -sysinfo -constants out/production/test/bean/byteinfo/ByteInfo.class
+javap -v -p -s -sysinfo -constants out/production/test/bean/byteinfo/ByteInfo.class > byteinfo.txt
 
-字节码信息：
 Classfile /Users/qlong/project-idea/test/out/production/test/bean/byteinfo/ByteInfo.class
-  Last modified 2017-7-4; size 1189 bytes
-  MD5 checksum 6393a8f95fb25f84de302e938fbd0778
+  Last modified 2017-8-20; size 1531 bytes
+  MD5 checksum 32f2deb2a073bb34fabd69c8278a8fc9
   Compiled from "ByteInfo.java"
 public class bean.byteinfo.ByteInfo extends bean.byteinfo.FatherBean
   minor version: 0
   major version: 52
   flags: ACC_PUBLIC, ACC_SUPER
 Constant pool:
-   #1 = Methodref          #3.#42         // bean/byteinfo/FatherBean."<init>":()V
-   #2 = Fieldref           #19.#43        // bean/byteinfo/ByteInfo.age:I
-   #3 = Class              #44            // bean/byteinfo/FatherBean
-   #4 = Fieldref           #19.#45        // bean/byteinfo/ByteInfo.fatherBean:Lbean/byteinfo/FatherBean;
-   #5 = Fieldref           #46.#47        // java/lang/System.out:Ljava/io/PrintStream;
-   #6 = Class              #48            // java/lang/StringBuilder
-   #7 = Methodref          #6.#42         // java/lang/StringBuilder."<init>":()V
-   #8 = String             #49            // i:
-   #9 = Methodref          #6.#50         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
-  #10 = Methodref          #6.#51         // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
-  #11 = Methodref          #6.#52         // java/lang/StringBuilder.toString:()Ljava/lang/String;
-  #12 = Methodref          #53.#54        // java/io/PrintStream.println:(Ljava/lang/String;)V
-  #13 = String             #55            // hello
-  #14 = Methodref          #53.#56        // java/io/PrintStream.println:(I)V
-  #15 = Fieldref           #19.#57        // bean/byteinfo/ByteInfo.desc:Ljava/lang/String;
-  #16 = Fieldref           #19.#58        // bean/byteinfo/ByteInfo.staticAge:I
-  #17 = Fieldref           #19.#59        // bean/byteinfo/ByteInfo.staticFatherBean:Lbean/byteinfo/FatherBean;
-  #18 = Fieldref           #19.#60        // bean/byteinfo/ByteInfo.staticFinalFatherBean:Lbean/byteinfo/FatherBean;
-  #19 = Class              #61            // bean/byteinfo/ByteInfo
-  #20 = Utf8               staticFinalAge
-  #21 = Utf8               I
-  #22 = Utf8               ConstantValue
-  #23 = Integer            2
-  #24 = Utf8               staticAge
-  #25 = Utf8               age
-  #26 = Utf8               fatherBean
-  #27 = Utf8               Lbean/byteinfo/FatherBean;
-  #28 = Utf8               staticFatherBean
-  #29 = Utf8               staticFinalFatherBean
-  #30 = Utf8               <init>
-  #31 = Utf8               ()V
-  #32 = Utf8               Code
-  #33 = Utf8               LineNumberTable
-  #34 = Utf8               LocalVariableTable
-  #35 = Utf8               this
-  #36 = Utf8               Lbean/byteinfo/ByteInfo;
-  #37 = Utf8               method1
-  #38 = Utf8               i
-  #39 = Utf8               <clinit>
-  #40 = Utf8               SourceFile
-  #41 = Utf8               ByteInfo.java
-  #42 = NameAndType        #30:#31        // "<init>":()V
-  #43 = NameAndType        #25:#21        // age:I
-  #44 = Utf8               bean/byteinfo/FatherBean
-  #45 = NameAndType        #26:#27        // fatherBean:Lbean/byteinfo/FatherBean;
-  #46 = Class              #62            // java/lang/System
-  #47 = NameAndType        #63:#64        // out:Ljava/io/PrintStream;
-  #48 = Utf8               java/lang/StringBuilder
-  #49 = Utf8               i:
-  #50 = NameAndType        #65:#66        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
-  #51 = NameAndType        #65:#67        // append:(I)Ljava/lang/StringBuilder;
-  #52 = NameAndType        #68:#69        // toString:()Ljava/lang/String;
-  #53 = Class              #70            // java/io/PrintStream
-  #54 = NameAndType        #71:#72        // println:(Ljava/lang/String;)V
-  #55 = Utf8               hello
-  #56 = NameAndType        #71:#73        // println:(I)V
-  #57 = NameAndType        #74:#75        // desc:Ljava/lang/String;
-  #58 = NameAndType        #24:#21        // staticAge:I
-  #59 = NameAndType        #28:#27        // staticFatherBean:Lbean/byteinfo/FatherBean;
-  #60 = NameAndType        #29:#27        // staticFinalFatherBean:Lbean/byteinfo/FatherBean;
-  #61 = Utf8               bean/byteinfo/ByteInfo
-  #62 = Utf8               java/lang/System
-  #63 = Utf8               out
-  #64 = Utf8               Ljava/io/PrintStream;
-  #65 = Utf8               append
-  #66 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
-  #67 = Utf8               (I)Ljava/lang/StringBuilder;
-  #68 = Utf8               toString
-  #69 = Utf8               ()Ljava/lang/String;
-  #70 = Utf8               java/io/PrintStream
-  #71 = Utf8               println
-  #72 = Utf8               (Ljava/lang/String;)V
-  #73 = Utf8               (I)V
-  #74 = Utf8               desc
-  #75 = Utf8               Ljava/lang/String;
+   #1 = Methodref          #3.#56         // bean/byteinfo/FatherBean."<init>":()V
+   #2 = Fieldref           #24.#57        // bean/byteinfo/ByteInfo.age:I
+   #3 = Class              #58            // bean/byteinfo/FatherBean
+   #4 = Fieldref           #24.#59        // bean/byteinfo/ByteInfo.fatherBean:Lbean/byteinfo/FatherBean;
+   #5 = Fieldref           #60.#61        // java/lang/System.out:Ljava/io/PrintStream;
+   #6 = Class              #62            // java/lang/StringBuilder
+   #7 = Methodref          #6.#56         // java/lang/StringBuilder."<init>":()V
+   #8 = String             #63            // i:
+   #9 = Methodref          #6.#64         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #10 = Methodref          #6.#65         // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+  #11 = Methodref          #6.#66         // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #12 = Methodref          #67.#68        // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #13 = String             #69            // hello
+  #14 = Methodref          #67.#70        // java/io/PrintStream.println:(I)V
+  #15 = Fieldref           #24.#71        // bean/byteinfo/ByteInfo.desc:Ljava/lang/String;
+  #16 = String             #72            // hello
+  #17 = String             #73            // world
+  #18 = String             #74            // there
+  #19 = String             #75            // here
+  #20 = Fieldref           #24.#76        // bean/byteinfo/ByteInfo.staticAge:I
+  #21 = String             #77            // byte info static
+  #22 = Fieldref           #24.#78        // bean/byteinfo/ByteInfo.staticFatherBean:Lbean/byteinfo/FatherBean;
+  #23 = Fieldref           #24.#79        // bean/byteinfo/ByteInfo.staticFinalFatherBean:Lbean/byteinfo/FatherBean;
+  #24 = Class              #80            // bean/byteinfo/ByteInfo
+  #25 = Utf8               staticFinalAge
+  #26 = Utf8               I
+  #27 = Utf8               ConstantValue
+  #28 = Integer            2
+  #29 = Utf8               staticAge
+  #30 = Utf8               age
+  #31 = Utf8               fatherBean
+  #32 = Utf8               Lbean/byteinfo/FatherBean;
+  #33 = Utf8               staticFatherBean
+  #34 = Utf8               staticFinalFatherBean
+  #35 = Utf8               <init>
+  #36 = Utf8               ()V
+  #37 = Utf8               Code
+  #38 = Utf8               LineNumberTable
+  #39 = Utf8               LocalVariableTable
+  #40 = Utf8               this
+  #41 = Utf8               Lbean/byteinfo/ByteInfo;
+  #42 = Utf8               method1
+  #43 = Utf8               d
+  #44 = Utf8               Ljava/lang/String;
+  #45 = Utf8               j
+  #46 = Utf8               i
+  #47 = Utf8               a
+  #48 = Utf8               b
+  #49 = Utf8               c
+  #50 = Utf8               StackMapTable
+  #51 = Class              #80            // bean/byteinfo/ByteInfo
+  #52 = Class              #81            // java/lang/String
+  #53 = Utf8               <clinit>
+  #54 = Utf8               SourceFile
+  #55 = Utf8               ByteInfo.java
+  #56 = NameAndType        #35:#36        // "<init>":()V
+  #57 = NameAndType        #30:#26        // age:I
+  #58 = Utf8               bean/byteinfo/FatherBean
+  #59 = NameAndType        #31:#32        // fatherBean:Lbean/byteinfo/FatherBean;
+  #60 = Class              #82            // java/lang/System
+  #61 = NameAndType        #83:#84        // out:Ljava/io/PrintStream;
+  #62 = Utf8               java/lang/StringBuilder
+  #63 = Utf8               i:
+  #64 = NameAndType        #85:#86        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #65 = NameAndType        #85:#87        // append:(I)Ljava/lang/StringBuilder;
+  #66 = NameAndType        #88:#89        // toString:()Ljava/lang/String;
+  #67 = Class              #90            // java/io/PrintStream
+  #68 = NameAndType        #91:#92        // println:(Ljava/lang/String;)V
+  #69 = Utf8               hello
+  #70 = NameAndType        #91:#93        // println:(I)V
+  #71 = NameAndType        #94:#44        // desc:Ljava/lang/String;
+  #72 = Utf8               hello
+  #73 = Utf8               world
+  #74 = Utf8               there
+  #75 = Utf8               here
+  #76 = NameAndType        #29:#26        // staticAge:I
+  #77 = Utf8               byte info static
+  #78 = NameAndType        #33:#32        // staticFatherBean:Lbean/byteinfo/FatherBean;
+  #79 = NameAndType        #34:#32        // staticFinalFatherBean:Lbean/byteinfo/FatherBean;
+  #80 = Utf8               bean/byteinfo/ByteInfo
+  #81 = Utf8               java/lang/String
+  #82 = Utf8               java/lang/System
+  #83 = Utf8               out
+  #84 = Utf8               Ljava/io/PrintStream;
+  #85 = Utf8               append
+  #86 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #87 = Utf8               (I)Ljava/lang/StringBuilder;
+  #88 = Utf8               toString
+  #89 = Utf8               ()Ljava/lang/String;
+  #90 = Utf8               java/io/PrintStream
+  #91 = Utf8               println
+  #92 = Utf8               (Ljava/lang/String;)V
+  #93 = Utf8               (I)V
+  #94 = Utf8               desc
 {
   private static final int staticFinalAge = 2;
     descriptor: I
@@ -130,8 +147,8 @@ Constant pool:
         20: return
       LineNumberTable:
         line 6: 0
-        line 9: 4
-        line 11: 9
+        line 15: 4
+        line 17: 9
       LocalVariableTable:
         Start  Length  Slot  Name   Signature
             0      21     0  this   Lbean/byteinfo/ByteInfo;
@@ -140,7 +157,7 @@ Constant pool:
     descriptor: ()V
     flags: ACC_PUBLIC
     Code:
-      stack=3, locals=2, args_size=1
+      stack=3, locals=7, args_size=1
          0: iconst_2
          1: istore_1
          2: getstatic     #5                  // Field java/lang/System.out:Ljava/io/PrintStream;
@@ -164,18 +181,73 @@ Constant pool:
         48: aload_0
         49: getfield      #15                 // Field desc:Ljava/lang/String;
         52: invokevirtual #12                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
-        55: return
+        55: ldc           #16                 // String hello
+        57: astore_2
+        58: ldc           #17                 // String world
+        60: astore_3
+        61: ldc           #18                 // String there
+        63: astore        4
+        65: iconst_0
+        66: istore        5
+        68: iload         5
+        70: bipush        10
+        72: if_icmpge     136
+        75: new           #6                  // class java/lang/StringBuilder
+        78: dup
+        79: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+        82: aload_2
+        83: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        86: aload_3
+        87: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        90: aload         4
+        92: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        95: ldc           #19                 // String here
+        97: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       100: invokevirtual #11                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       103: astore        6
+       105: getstatic     #5                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       108: new           #6                  // class java/lang/StringBuilder
+       111: dup
+       112: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+       115: aload_2
+       116: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       119: aload         6
+       121: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       124: invokevirtual #11                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       127: invokevirtual #12                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       130: iinc          5, 1
+       133: goto          68
+       136: return
       LineNumberTable:
-        line 16: 0
-        line 17: 2
-        line 18: 27
-        line 19: 35
-        line 20: 45
-        line 21: 55
+        line 24: 0
+        line 25: 2
+        line 26: 27
+        line 27: 35
+        line 28: 45
+        line 31: 55
+        line 32: 58
+        line 33: 61
+        line 36: 65
+        line 37: 75
+        line 38: 105
+        line 36: 130
+        line 40: 136
       LocalVariableTable:
         Start  Length  Slot  Name   Signature
-            0      56     0  this   Lbean/byteinfo/ByteInfo;
-            2      54     1     i   I
+          105      25     6     d   Ljava/lang/String;
+           68      68     5     j   I
+            0     137     0  this   Lbean/byteinfo/ByteInfo;
+            2     135     1     i   I
+           58      79     2     a   Ljava/lang/String;
+           61      76     3     b   Ljava/lang/String;
+           65      72     4     c   Ljava/lang/String;
+      StackMapTable: number_of_entries = 2
+        frame_type = 255 /* full_frame */
+          offset_delta = 68
+          locals = [ class bean/byteinfo/ByteInfo, int, class java/lang/String, class java/lang/String, class java/lang/String, int ]
+          stack = []
+        frame_type = 250 /* chop */
+          offset_delta = 67
 
   static {};
     descriptor: ()V
@@ -183,19 +255,26 @@ Constant pool:
     Code:
       stack=2, locals=0, args_size=0
          0: iconst_1
-         1: putstatic     #16                 // Field staticAge:I
-         4: new           #3                  // class bean/byteinfo/FatherBean
-         7: dup
-         8: invokespecial #1                  // Method bean/byteinfo/FatherBean."<init>":()V
-        11: putstatic     #17                 // Field staticFatherBean:Lbean/byteinfo/FatherBean;
-        14: new           #3                  // class bean/byteinfo/FatherBean
-        17: dup
-        18: invokespecial #1                  // Method bean/byteinfo/FatherBean."<init>":()V
-        21: putstatic     #18                 // Field staticFinalFatherBean:Lbean/byteinfo/FatherBean;
-        24: return
+         1: putstatic     #20                 // Field staticAge:I
+         4: sipush        1000
+         7: putstatic     #20                 // Field staticAge:I
+        10: getstatic     #5                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        13: ldc           #21                 // String byte info static
+        15: invokevirtual #12                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        18: new           #3                  // class bean/byteinfo/FatherBean
+        21: dup
+        22: invokespecial #1                  // Method bean/byteinfo/FatherBean."<init>":()V
+        25: putstatic     #22                 // Field staticFatherBean:Lbean/byteinfo/FatherBean;
+        28: new           #3                  // class bean/byteinfo/FatherBean
+        31: dup
+        32: invokespecial #1                  // Method bean/byteinfo/FatherBean."<init>":()V
+        35: putstatic     #23                 // Field staticFinalFatherBean:Lbean/byteinfo/FatherBean;
+        38: return
       LineNumberTable:
         line 8: 0
-        line 12: 4
-        line 13: 14
+        line 11: 4
+        line 12: 10
+        line 18: 18
+        line 19: 28
 }
 SourceFile: "ByteInfo.java"

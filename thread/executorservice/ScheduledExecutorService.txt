@@ -17,4 +17,4 @@
 			TimeUnit unit);
 
 关于shutdownNow
-在任务开始执行之前（如：第0个任务，要经过initialDelay才执行，后续的任务也有可能要经过指定延时才执行），调用shutdownnow，那么该任务就不会得到执行
+在任务开始执行之前（如：第0个任务，要经过initialDelay才执行，后续的任务也有可能要经过指定延时才执行），调用shutdownnow，那么该任务就不会得到执行（而不是执行interrupt，因为该任务还没有真实的运行）

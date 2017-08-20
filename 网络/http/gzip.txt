@@ -1,0 +1,119 @@
+参见：
+聊聊HTTP gzip压缩与常见的Android网络框架
+	http://www.cnblogs.com/ct2011/p/5835990.html
+
+客户端和服务器都可以压缩数据，并传输压缩后的数据 给对方
+对方在收到收据后，对压缩数据进行解压
+
+gzip是一种压缩选择
+
+对于客户端
+在android现在的版本上，客户请求会默认添加gzip支持，即是：urlConnection.setRequestProperty("Accept-Encoding", "gzip");
+而服务器返回了gzip压缩后的数据，会在响应头中声明：Content-Encoding gzip
+当我们调用urlConnection.getinputstream，那么会得到 解压后的 数据流
+--
+客户端也可以向服务器传送经过gzip压缩后的数据（而服务器必须明白 客户端传递的是压缩后的数据，进而解压该数据）
+
+----------------------------如何 压缩和解压缩
+/**
+ * Gzip 压缩数据
+ *
+ * @param unGzipStr
+ * @return
+ */
+public static String compressForGzip(String unGzipStr) {
+
+    if (TextUtils.isEmpty(unGzipStr)) {
+        return null;
+    }
+    try {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        GZIPOutputStream gzip = new GZIPOutputStream(baos);
+        gzip.write(unGzipStr.getBytes());
+        gzip.close();
+        byte[] encode = baos.toByteArray();
+        baos.flush();
+        baos.close();
+        return Base64Encoder.encode(encode);
+    } catch (UnsupportedEncodingException e) {
+        e.printStackTrace();
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+
+    return null;
+}
+
+/**
+ * Gzip解压数据
+ *
+ * @param gzipStr
+ * @return
+ */
+public static String decompressForGzip(String gzipStr) {
+    if (TextUtils.isEmpty(gzipStr)) {
+        return null;
+    }
+    byte[] t = Base64Decoder.decodeToBytes(gzipStr);
+    try {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ByteArrayInputStream in = new ByteArrayInputStream(t);
+        GZIPInputStream gzip = new GZIPInputStream(in);
+        byte[] buffer = new byte[BUFFERSIZE];
+        int n = 0;
+        while ((n = gzip.read(buffer, 0, buffer.length)) > 0) {
+            out.write(buffer, 0, n);
+        }
+        gzip.close();
+        in.close();
+        out.close();
+        return out.toString();
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+
+----------------------------判断传送的数据是否为gzip格式
+private String getJsonStringFromGZIP(HttpResponse response) {
+    String jsonString = null;
+    try {
+        InputStream is = response.getEntity().getContent();
+        BufferedInputStream bis = new BufferedInputStream(is);
+        bis.mark(2);
+        // 取前两个字节
+        byte[] header = new byte[2];
+        int result = bis.read(header);
+        // reset输入流到开始位置
+        bis.reset();
+        // 判断是否是GZIP格式
+        int headerData = getShort(header);
+        // Gzip 流 的前两个字节是 0x1f8b
+        if (result != -1 && headerData == 0x1f8b) {
+            LogUtil.d("HttpTask", " use GZIPInputStream  ");
+            is = new GZIPInputStream(bis);
+        } else {
+            LogUtil.d("HttpTask", " not use GZIPInputStream");
+            is = bis;
+        }
+        InputStreamReader reader = new InputStreamReader(is, "utf-8");
+        char[] data = new char[100];
+        int readSize;
+        StringBuffer sb = new StringBuffer();
+        while ((readSize = reader.read(data)) > 0) {
+            sb.append(data, 0, readSize);
+        }
+        jsonString = sb.toString();
+        bis.close();
+        reader.close();
+    } catch (Exception e) {
+        LogUtil.e("HttpTask", e.toString(),e);
+    }
+
+    LogUtil.d("HttpTask", "getJsonStringFromGZIP net output : " + jsonString );
+    return jsonString;
+}
+
+private int getShort(byte[] data) {
+    return (int)((data[0]<<8) | data[1]&0xFF);
+}

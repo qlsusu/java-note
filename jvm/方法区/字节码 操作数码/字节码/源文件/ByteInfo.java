@@ -6,6 +6,12 @@ package bean.byteinfo;
 public class ByteInfo extends FatherBean {
     private final static int staticFinalAge = 2;
     private static int staticAge = 1;
+
+    static {
+        staticAge = 1000;
+        System.out.println("byte info static");
+    }
+
     private int age = 1;
 
     private FatherBean fatherBean = new FatherBean();
@@ -18,5 +24,15 @@ public class ByteInfo extends FatherBean {
         System.out.println("hello");
         System.out.println(age);
         System.out.println(desc);
+
+        String a = "hello ";
+        String b = "world ";
+        String c = "there ";
+
+        for (int j = 0; j < 10; j++) {
+            String d = a + b + c + "here";
+            System.out.println(a + d);
+        }
     }
 }
+
