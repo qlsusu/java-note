@@ -38,7 +38,7 @@ class Data {
     private int data;// 共享数据  
     private ReadWriteLock rwl = new ReentrantReadWriteLock();     
     public void set(int data) {  
-        rwl.writeLock().lock();// 锁定 写锁  
+        rwl.writeLock().lock();// 申请 写锁  
         try {  
             System.out.println(Thread.currentThread().getName() + "准备写入数据");  
             try {  
@@ -53,7 +53,7 @@ class Data {
         }  
     }     
     public void get() {  
-        rwl.readLock().lock();// 锁定 读锁  
+        rwl.readLock().lock();// 申请 读锁  
         try {  
             System.out.println(Thread.currentThread().getName() + "准备读取数据");  
             try {  
