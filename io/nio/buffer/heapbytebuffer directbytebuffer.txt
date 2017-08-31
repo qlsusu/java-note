@@ -1,0 +1,72 @@
+参见：
+堆外内存之 DirectByteBuffer 详解
+	http://www.importnew.com/26334.html
+java之HeapByteBuffer&DirectByteBuffer以及回收DirectByteBuffer
+	http://blog.csdn.net/xieyuooo/article/details/7547435
+
+--------------------io访问过程：
+heap上的缓冲区 <-> 用户态的直接缓冲区（heap外） <-> 核心态的缓冲区 <-> io资源
+为什么需要 数据拷贝 在 heap上的缓冲区 <-> 用户态的直接缓冲区：
+	只有内核才能访问io，而内核需要 用户态上的一块连续的byte序列 来存放数据
+	如果heap上的缓冲区 直接和 内核交互，则产生问题：
+		heap上的内存 是受jvm管理的，则gc操作将使得 heap上的 垃圾对象被清除 有效对象被移动，则原先的那块用于存放io数据的 byte序列，此刻可能存放着别的对象
+		但，内核并不知道这些，它还是将数据 传入到 那块byte序列中
+
+--------------------如何分配
+heapbytebuffer
+ByteBuffer.allocate(int capacity);
+在堆上进行分配
+当使用heapbytebuffer类进行nio时，本质上，会创建一个临时性的directbytebuffer，并将数据复制到该buffer，后通过该buffer来和 内核的缓冲区进行交互
+	FileChannelImpl#read(ByteBuffer)
+		IOUtil#read(FileDescriptor var0, ByteBuffer var1, long var2, NativeDispatcher var4) throws IOException {
+	        if(var1.isReadOnly()) {
+	            throw new IllegalArgumentException("Read-only buffer");
+	        } else if(var1 instanceof DirectBuffer) {
+	            return readIntoNativeBuffer(var0, var1, var2, var4);
+	        } else {
+	        	//分配临时的directbytebuffer
+	            ByteBuffer var5 = Util.getTemporaryDirectBuffer(var1.remaining());
+
+	            int var7;
+	            try {
+	            	//将数据写入到directbytebuffer
+	                int var6 = readIntoNativeBuffer(var0, var5, var2, var4);
+	                var5.flip();
+	                if(var6 > 0) {
+	                	//将数据写入到heapbytebuffer
+	                    var1.put(var5);
+	                }
+
+	                var7 = var6;
+	            } finally {
+	            	//释放directbytebuffer,其中会调用cleaner.clean()
+	                Util.offerFirstTemporaryDirectBuffer(var5);
+	            }
+
+	            return var7;
+	        }
+    }
+
+directbytebuffer
+ByteBuffer.allocateDirect(int capacity);
+	unsafe.allocateMemory(size);
+并不是在heap上分配，而是在 用户态的直接内存上分配（则 该部分内存 并不收jvm控制）（通过unsafe进行）
+使用其进行io访问时，并不需要 heap上的缓冲区<->用户态的直接缓冲区 的数据拷贝，则性能有所提升
+最大可申请多少：-XX:MaxDirectMemorySize x[m|g]
+
+--------------------如何释放directbytebuffer：
+释放时机：
+system.gc
+申请直接内存失败时，会释放垃圾directbytebuffer对应的直接内存，有可能还会调用gc，则走
+
+自动释放：
+directbytebuffer包含了一个cleaner（其继承于虚引用）来引用directbytebuffer
+当gc发生时，该cleaner所引用的directbytebuffer可能被认为是垃圾（gcroot不可达它）
+参照于该处理：引用/当reference对应的真实对象被认为是垃圾时.txt，执行：
+	Cleaner#clean
+		DirectByteBuffer.Deallocator#run
+			Unsafe#freeMemory 来释放直接内存
+
+手动释放：
+为什么需要：gc可能没有那么及时
+((DirectBuffer)buffer).cleaner().clean()
