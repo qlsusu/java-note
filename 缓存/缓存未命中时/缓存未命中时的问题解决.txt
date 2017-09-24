@@ -1,0 +1,23 @@
+参见：
+【Java】缓存设计（1）
+	https://xesam.github.io/java/2017/03/17/cache-1.html
+
+场景：
+两个线程要并发访问缓存中的 同一个entry（相同的key）
+有可能该entry并未在缓存中，则需要进行entry.value的获取，后将该entry放入到缓存中
+那么该entry.value的获取，如果重复进行，会造成性能浪费
+
+应该：
+同一个entry（具有相同的key）的value的获取 在一个线程上进行
+
+思路：
+缓存的并不是具体的 具体的值，而是 获取值的 过程/结果
+获取值的 过程/结果：用further表示
+	通过future#run来 代表获取过程
+	通过future#get来 代表结果（如果结果还未产生完毕，会阻塞，但是，获取过程（future#run）并不会被（再次）触发）
+获取过程的触发：
+	往concurrenthashmap中，有效放置entry（value为future）（有效放置：不存在该entry时，才放置）
+		如何确保第一次放置：concurrenthashmap#putifabsent
+			该方法的返回值是：在放置之前的 entry.value
+			如果value为null，代表 该entry是一次被放置	
+		如果是有效放置，那么触发future#run

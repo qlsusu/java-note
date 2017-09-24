@@ -1,4 +1,6 @@
 参见：
+OkHttp3源码分析[缓存策略]
+	http://www.jianshu.com/p/9cebbbd0eeab
 彻底弄懂 Http 缓存机制 - 基于缓存策略三要素分解法
 	https://mp.weixin.qq.com/s/qOMO0LIdA47j3RjhbCWUEQ
 从WebView缓存聊到Http 的缓存机制 | 掘金技术征文

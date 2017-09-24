@@ -1,4 +1,6 @@
 参见：
+聊聊并发（一）深入分析Volatile的实现原理
+	http://ifeve.com/volatile/
 Java 并发编程 : volatile 关键字解析
 	http://mp.weixin.qq.com/s/WPHqv2RpT8ZM9gbQgXWx3Q
 Android并发编程之图文解析volatile关键字

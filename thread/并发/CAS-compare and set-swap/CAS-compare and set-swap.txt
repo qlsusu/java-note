@@ -8,14 +8,16 @@ JAVA并发编程学习笔记之CAS操作
 原子操作(CAS)
 	http://286.iteye.com/blog/2295165
 
-Compare And Set/Swap
+有什么用：
+代替锁，提高性能
+
+Unsafe.compareAndSwapInt(object, fieldOffset, expect, update);
+    fieldOffset = unsafe.objectFieldOffset(object所属的class.getDeclaredField(field名字));
 CAS操作包含三个操作数——内存位置（V（field在对象中的offset））、预期原值（A）、新值(B)。
 如果内存位置的值与预期原值相匹配，那么处理器会自动将该位置值更新为新值。否则，处理器不做任何操作
+    CAS是cpu的一个指令，其能在更新共享数据时，检测到其他线程的干扰
 最后，无论哪种情况，它都会在CAS指令之前返回该位置的值
 cas需要和volatile配合使用
-
-在jdk里面可以由UnSafe提供一个针对于volatile变量的操作，其原理是 直接调用的CPU的CAS动作 
-	现代的CPU提供了特殊的指令，可以自动更新共享数据，而且能够检测到其他线程的干扰，而 compareAndSet() 就用这些代替了锁定。
 
 ----------------------------AtomicInteger的++i的cas实现方式：
 >>>1.8版本

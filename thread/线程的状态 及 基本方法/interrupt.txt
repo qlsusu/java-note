@@ -25,3 +25,12 @@ public void run(){
 说明：
 即便是抛出了InterruptedException异常，Thread.currentThread().isInterrupted()返回了true
 也是由线程内部逻辑来判断：是否要退出执行
+
+如果先调用了interrupt，而后才执行诸如Thread.sleep等，也会抛出InterruptedException，如：
+Thread.currentThread().interrupt();
+//由于已经被中断了，所以sleep执行时，会抛出异常
+try{
+	Thread.sleep(1000);
+} catch(InterruptedException e) {
+	
+}

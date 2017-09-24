@@ -57,9 +57,9 @@ ByteBuffer.allocateDirect(int capacity);
 --------------------如何释放directbytebuffer：
 释放时机：
 system.gc
-申请直接内存失败时，会释放垃圾directbytebuffer对应的直接内存，有可能还会调用gc，则走
+申请直接内存失败时，会释放垃圾directbytebuffer对应的直接内存，有可能还会调用gc
 
-自动释放：
+为什么调用gc可以释放directbytebuffer：
 directbytebuffer包含了一个cleaner（其继承于虚引用）来引用directbytebuffer
 当gc发生时，该cleaner所引用的directbytebuffer可能被认为是垃圾（gcroot不可达它）
 参照于该处理：引用/当reference对应的真实对象被认为是垃圾时.txt，执行：
