@@ -1,6 +1,7 @@
 参见：
 理解TCP序列号（Sequence Number）和确认号（Acknowledgment Number）
 	http://m.blog.csdn.net/a19881029/article/details/38091243
+	通过抓取wireshark的方式
 TCP三次握手、四次挥手及状态转换图
 	http://www.cnblogs.com/wujing-hubei/p/5699773.html
 wireshark怎么抓包、wireshark抓包详细图文教程
@@ -38,3 +39,8 @@ server收到响应后，close
 
 为什么4次挥手：
 我发送FIN，仅仅是在表明，我的数据已经发送完了，但是对方还没有告诉 他的数据也发送完了，也即是：对方可能还会继续发送数据给我，所以，我的连接点还不能关闭
+
+为什么等待2MSL（2倍的 Maximum Segment Lifetime）
+参见：
+Time-wait状态(2MSL)一些理解
+	http://blog.csdn.net/overstack/article/details/8833894
