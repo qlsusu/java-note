@@ -1,0 +1,7 @@
+Source#read(Buffer sink, long byteCount)
+	目标 -> buffer (sink)
+Sink#write(Buffer source, long byteCount)	
+	buffer (source) -> 目标
+
+BufferedSource = Okio#buffer(Source)
+BufferedSink = Okio#buffer(Sink)

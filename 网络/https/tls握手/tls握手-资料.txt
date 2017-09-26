@@ -1,0 +1,16 @@
+参见：
+SSL/TLS 握手过程详解
+	http://www.jianshu.com/p/7158568e4867
+	使用wireshark抓包的方式 来解释 tls握手过程
+图解SSL/TLS协议
+	http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html
+	介绍了DH算法
+OKHttp源码解析(二)："前戏"——HTTP的那些事 - 简书
+	http://www.jianshu.com/p/116ebf3034d9
+
+如何通过3个随机数得到 对称的 通信密钥：
+通过密钥导出器
+
+为什么需要3个随机数 来产生 通信密钥：
+tls协议 并不相信 主机提供的随机数 是随机的
+如果仅仅使用第3个随机数（由客户端产生），那么 如果该随机数并不随机（如：就是一个固定的数值），那么其他人就有可能猜到 客户端-服务器的 通信密钥

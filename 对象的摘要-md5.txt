@@ -1,0 +1,28 @@
+当我们要比较 文件1和文件2 是否一样时，可以分别算的两个文件的md5，然后比较两个md5是否相等，如果md5相等，那么两个文件相等
+而不是：比较两个文件的字节数据是否完全一样，因为：当文件很大时，字节的比较耗时较久
+
+如何算的一个文件的md5:
+参见：
+MD5 简介，及其在 Java 中的实现方式
+	http://yifeng.studio/2017/06/13/md5-profile-and-implementation-in-java/
+public static String fileToMD5(String path){
+    try {
+        FileInputStream fis = new FileInputStream(path);
+        MessageDigest digest = MessageDigest.getInstance("MD5");
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = fis.read(buffer)) != -1) {
+            digest.update(buffer, 0, len);
+        }
+        fis.close();
+        BigInteger bigInt = new BigInteger(1, digest.digest());
+        return  bigInt.toString(16);
+    } catch (IOException | NoSuchAlgorithmException e){
+        e.printStackTrace();
+    }
+    return "";
+}
+性能：一个150M的文件，算的md5耗时：3s
+
+除了md5之外，其他的摘要算法为：
+SHA1, SHA256

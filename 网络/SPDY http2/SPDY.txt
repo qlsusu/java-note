@@ -1,0 +1,15 @@
+参见：
+OKHttp源码解析(二)："前戏"——HTTP的那些事 - 简书
+	http://www.jianshu.com/p/116ebf3034d9
+
+------------------------------SPDY
+
+由google于2012年提出
+
+优点：
+多路复用：不同的stream可以共享同一个 connection
+	相同的概念在okhttp中：
+	okhttp3.internal.connection.RealConnection#isEligible(Address address, @Nullable Route route){
+		if (allocations.size() >= allocationLimit || noNewStreams) return false;
+		...
+https传输
