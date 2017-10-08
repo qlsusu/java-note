@@ -16,7 +16,7 @@ TransferQueue和BlockingQueue的比较：
 		注意：队列是fifo性质，e在插入之前，队列中可能还存在了其他元素，而元素是从头取出，那么，只有 在按顺序的条件下 e被取出时，线程1才被唤醒
 	tryTransfer(E e)
 		e被放入到队列尾部
-		如果e被取出，就返回true
+		如果e能被立刻取出（意味着：此刻，已经有一个consumer在等待着e），就返回true
 		否则，返回false
 		最后，不管如何，e均被移出队列
 	tryTransfer(E e, long timeout, TimeUnit unit)
