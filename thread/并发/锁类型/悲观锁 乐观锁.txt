@@ -11,7 +11,7 @@
 乐观锁
 访问共享资源时，认为冲突不总是发生，使用cas操作（一个原子操作）来完成对共享资源的访问。当冲突发生时，期望值就不符合要求，再此情况下，使用者需要考虑重试逻辑
 
-乐观锁           	----->  	悲观锁
+乐观锁           		----->  	悲观锁
 AtomicInteger   	----->  	Lock + volatile int
 AtomicLong      	----->  	Lock + volatile long
 AtomicReference 	----->  	Lock + volatile

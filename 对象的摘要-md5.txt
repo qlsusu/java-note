@@ -1,6 +1,9 @@
 当我们要比较 文件1和文件2 是否一样时，可以分别算的两个文件的md5，然后比较两个md5是否相等，如果md5相等，那么两个文件相等
 而不是：比较两个文件的字节数据是否完全一样，因为：当文件很大时，字节的比较耗时较久
 
+md5
+message-digest algorithm 5（信息-摘要算法）
+
 如何算的一个文件的md5:
 参见：
 MD5 简介，及其在 Java 中的实现方式
@@ -16,6 +19,7 @@ public static String fileToMD5(String path){
         }
         fis.close();
         BigInteger bigInt = new BigInteger(1, digest.digest());
+        //32位
         return  bigInt.toString(16);
     } catch (IOException | NoSuchAlgorithmException e){
         e.printStackTrace();

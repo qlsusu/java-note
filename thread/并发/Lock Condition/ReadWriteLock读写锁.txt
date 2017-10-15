@@ -9,7 +9,6 @@ Java线程(八)：锁对象Lock-同步问题更完美的处理方式
 	但是读和读是不需要互斥的
 
 ------------------------------------例子
-
 public class ReadWriteLockTest {  
     public static void main(String[] args) {  
         final Data data = new Data();  
@@ -36,6 +35,7 @@ public class ReadWriteLockTest {
 
 class Data {      
     private int data;// 共享数据  
+    //接口ReadWriteLock
     private ReadWriteLock rwl = new ReentrantReadWriteLock();     
     public void set(int data) {  
         rwl.writeLock().lock();// 申请 写锁  

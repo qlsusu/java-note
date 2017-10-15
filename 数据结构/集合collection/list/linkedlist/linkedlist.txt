@@ -3,7 +3,9 @@
 	http://www.cnblogs.com/xrq730/p/5005347.html
 
 一个双向链表
-get(index)时，先比较index和size>>1，后决定从 链头 还是 链尾 的位置进行查找
+
+get(index)时，决定从 链头 还是 链尾 的位置进行查找
+依据：比较index 和 size>>1
 
 初始状态：head和tail是同一个对象，且值为null
 	head->tail->head

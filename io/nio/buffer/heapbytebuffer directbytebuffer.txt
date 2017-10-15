@@ -13,7 +13,7 @@ heap上的缓冲区 <-> 用户态的直接缓冲区（heap外） <-> 核心态�
 		但，内核并不知道这些，它还是将数据 传入到 那块byte序列中
 
 --------------------如何分配
-heapbytebuffer
+>>> heapbytebuffer
 ByteBuffer.allocate(int capacity);
 在堆上进行分配
 当使用heapbytebuffer类进行nio时，本质上，会创建一个临时性的directbytebuffer，并将数据复制到该buffer，后通过该buffer来和 内核的缓冲区进行交互
@@ -47,7 +47,7 @@ ByteBuffer.allocate(int capacity);
 	        }
     }
 
-directbytebuffer
+>>> directbytebuffer
 ByteBuffer.allocateDirect(int capacity);
 	unsafe.allocateMemory(size);
 并不是在heap上分配，而是在 用户态的直接内存上分配（则 该部分内存 并不收jvm控制）（通过unsafe进行）
@@ -56,8 +56,8 @@ ByteBuffer.allocateDirect(int capacity);
 
 --------------------如何释放directbytebuffer：
 释放时机：
-system.gc
-申请直接内存失败时，会释放垃圾directbytebuffer对应的直接内存，有可能还会调用gc
+. system.gc
+. 申请直接内存失败时，会释放垃圾directbytebuffer对应的直接内存，有可能还会调用gc
 
 为什么调用gc可以释放directbytebuffer：
 directbytebuffer包含了一个cleaner（其继承于虚引用）来引用directbytebuffer

@@ -2,13 +2,18 @@
 如果桶内 链表很长，当需要get(key)时，当定位一个桶后，需要 拿rehashed keycode来和 桶的每个entry的 进行比较，这是耗时的
 
 扩容都做了什么：
-翻倍桶的个数
-重新计算现有的entry的rehash 以及 重新 entry到桶 的映射
+翻倍 桶的个数
+重新计算现有的entry的rehash 以及 重新 将entry映射到桶
 
 带来了什么：
 桶内的链表长度就会变短，那么会提高检索性能
 
+消耗：
+重新将entry映射到桶中
+
 扩容时机：
 构造函数为：public HashMap(int initialCapacity, float loadFactor)
-其中initialCapacity为桶的初始个数，
+其中initialCapacity为桶的初始个数（默认为16），loadFactor默认为0.75
 当 当前entry总数 > 桶个数*loadFactor时，桶的个数会 *=2
+
+同步问题：

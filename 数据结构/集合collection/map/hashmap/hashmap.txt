@@ -15,7 +15,6 @@ HashMap实际上是一个“链表散列”的数据结构，即 数组（元素
 为什么需要rehash：
 减少hash冲突（针对于不同key，可能会产生相同的keycode），将entry的分布更加的均匀
 
-
 get(key)原理：
 rehash(key.hashcode) 得到 hash值
 将该hash值映射到某个桶

@@ -4,4 +4,4 @@
 
 说明：
 双向链表中，head和tail都是同一个：head
-即是：head->head, head<-head
+即是：head -> tail(head), head <- tail(head)

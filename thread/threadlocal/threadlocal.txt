@@ -8,7 +8,7 @@
 则，虽然多个线程在访问同一个threadlocal对象，但是，每个线程都对应了一个value对象
 
 应用场景：
-Looper:private static void prepare(boolean quitAllowed) {
+Looper#private static void prepare(boolean quitAllowed) {
     if (sThreadLocal.get() != null) {
         throw new RuntimeException("Only one Looper may be created per thread");
     }
@@ -23,6 +23,7 @@ Looper:private static void prepare(boolean quitAllowed) {
 		entry.value为threadlocal的set时的值）
 也是通过entry.key的rehash值（本质上是entry.get()（即是threadlocal）的threadLocalHashCode），
 	threadlocal的hash值 并不是通过自身计算得来，而是threadlocal对象被实例化时 被分配（通过ThreadLocal.static AtomicInteger nextHashCode.getAndAdd(HASH_INCREMENT)）
+		最终调用UnSafe#getAndAddInt(Object object, long fieldOffset, int delta)
 将entry映射到桶中
 	针对于桶，未采用链表形式，而是，桶中只有一个entry
 

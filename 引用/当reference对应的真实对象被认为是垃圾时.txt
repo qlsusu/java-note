@@ -1,5 +1,10 @@
 Reference的static块中启动了线程ReferenceHandler
-最终将调用：Reference#static boolean tryHandlePending(boolean var0) {
+最终将调用：
+while(true) {
+	Reference.tryHandlePending(true);
+}
+
+Reference#static boolean tryHandlePending(boolean var0) {
     Reference var1;
     Cleaner var2;
     try {
