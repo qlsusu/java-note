@@ -5,7 +5,7 @@ java之HeapByteBuffer&DirectByteBuffer以及回收DirectByteBuffer
 	http://blog.csdn.net/xieyuooo/article/details/7547435
 
 --------------------io访问过程：
-heap上的缓冲区 <-> 用户态的直接缓冲区（heap外） <-> 核心态的缓冲区 <-> io资源
+用户态的heap上的缓冲区 <-> 用户态的直接缓冲区（heap外） <-> 核心态的缓冲区 <-> io资源
 为什么需要 数据拷贝 在 heap上的缓冲区 <-> 用户态的直接缓冲区：
 	只有内核才能访问io，而内核需要 用户态上的一块连续的byte序列 来存放数据
 	如果heap上的缓冲区 直接和 内核交互，则产生问题：

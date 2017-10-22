@@ -1,0 +1,20 @@
+参见：
+内存屏障 | 并发编程网 – ifeve.com
+	http://ifeve.com/memory-barriers-or-fences/
+【死磕Java并发】—–深入分析volatile的实现原理-cmsblogs-chenssy
+	http://cmsblogs.com/?p=2092
+【死磕Java并发】—–Java内存模型之分析volatile-cmsblogs-chenssy
+	http://cmsblogs.com/?p=2148
+
+保障的是什么：
+. 可见性
+. 禁止重排序
+
+load/store屏障 使得
+在执行到相应的 load/store指令时，缓存中的数据是最新的
+
+load屏障
+load指令之后的 指令，在load指令之后执行（禁止重排序），且，刷新 其他cpu对共享变量的修改
+
+store屏障
+store指令之前的 指令，在store指令之前执行（禁止重排序），且，对变量的修改写入到主存

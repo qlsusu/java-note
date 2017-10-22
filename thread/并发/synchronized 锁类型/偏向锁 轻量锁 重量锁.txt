@@ -1,0 +1,63 @@
+参见：
+【死磕Java并发】—–深入分析synchronized的实现原理-cmsblogs-chenssy
+	http://cmsblogs.com/?p=2071
+java中的Synchronized 实现 - CSDN博客
+	http://blog.csdn.net/hsuxu/article/details/9472371
+Java偏向锁实现原理(Biased Locking)
+	http://blog.csdn.net/hsuxu/article/details/9472381
+Java轻量级锁原理详解(Lightweight Locking) - CSDN博客
+	http://blog.csdn.net/hsuxu/article/details/9472389
+Java虚拟机14：Java对象大小、对象内存布局及锁状态变化
+	http://www.cnblogs.com/xrq730/p/6928133.html
+synchronized、锁、多线程同步的原理是咋样的
+	http://www.jianshu.com/p/5dbb07c8d5d5
+
+java1.6对synchronized进行了优化：
+锁消除
+	变量1不会被其他线程所访问，那么针对于变量1的加锁操作，会被忽略
+	例子：
+	public void vectorTest(){
+		//vector不会被其他线程所访问，那么vector上的操作，如add，虽然有sync修饰，但是会被忽略
+        Vector<String> vector = new Vector<String>();
+        for(int i = 0 ; i < 10 ; i++){
+            vector.add(i + "");
+        }
+        System.out.println(vector);
+    }
+锁粗化
+	在一个方法中，几处均使用了synchronized
+	那么将这几个sync 合成 一个大的sync
+自旋锁（自适应 自旋锁）
+	参见：http://cmsblogs.com/?p=2071
+	用在轻量级锁的获取场景中
+	如果线程A已经持有了对象1的轻量级锁，而线程B又要请求该锁
+	那么线程B会等待一段时间（等待方式：执行一段无意义的循环），后再请求该锁，说不定就请求到了
+	这样就避免了 线程B被阻塞，而后又被唤醒
+	如何开启：-XX:+UseSpinning
+偏向锁，轻量锁
+
+锁状态有如下：
+无锁 - 偏向锁 - 轻量锁 - 重量锁
+
+一旦锁升级到 更高级别的锁 那么就降不回去
+
+为什么要有偏向锁/轻量锁：
+如：当线程1持有obj的锁，然后线程2请求该锁，后该线程2阻塞（在核心态完成），还没等阻塞操作完成，线程1就释放了锁，那么挂起线程2 本质上是一种性能浪费，
+那么只要线程2晚一些请求该锁，或者在请求时发现其他线程持有了该锁后，自身先不阻塞而挂起，而是等待一段时间再请求一下该锁（在有限次中），那么说不定就获得了该锁
+
+偏向锁：
+通过设置 对象的mark word中的 线程id为 自身的线程id（通过cas方式）来获得该锁
+	如果设置失败，那么说明 当前存在多线程竞争，那么偏向锁会升级为 轻量锁
+偏向锁不会被主动释放，而是其他线程在竞争该锁时，会在全局安全点时 挂起之前持有偏向锁的线程，后根据该线程的状态（是否运行），来决定是否
+	将该偏向所升级为 轻量级锁
+	释放该偏向锁
+如何禁用偏向锁
+	为什么：资源 是由多个线程共享的
+	-XX:-UseBiasedLocking=false
+	此种情况下，会进入到轻量级锁状态
+
+轻量锁：
+通过设置 对象的mark word中的 锁记录指针 指向 某线程的某一栈帧的锁记录（拷贝了 对象的mark word）（通过cas方式），来代表 该线程获得了该锁
+	如果设置失败
+		有可能该线程的其他栈帧 持有了该锁，那么进行判断
+		否则，多线程在竞争该锁，那么轻量锁会升级为重量锁

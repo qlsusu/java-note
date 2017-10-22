@@ -27,7 +27,7 @@ fileChannel.read(buffer);
 buffer.flip();
 //读取一个byte
 buffer.get();
-//在position为1的位置处写下 1
+//在position为1的位置处写下 数字1
 buffer.put((byte)'1');
 //position为0
 buffer.rewind();
@@ -70,7 +70,7 @@ private void readDataFromSocket(SelectionKey sk) throws Exception
     bb.clear();
     while (sc.read(bb) > 0)
     {
-    	//bytebuffer从写模式 变成 读模式
+    	//bytebuffer从写模式 变成 读模式：position变为0等
         bb.flip();
         while (bb.hasRemaining())
         {

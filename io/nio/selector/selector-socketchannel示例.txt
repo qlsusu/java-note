@@ -19,6 +19,7 @@ public class SelectorServer
         ss.bind(new InetSocketAddress(port));
         // 设置ServerSocketChannel为非阻塞模式
         ssc.configureBlocking(false);
+        
         // 打开一个选择器
         Selector selector = Selector.open();
         // 将ServerSocketChannel注册到选择器上去并监听accept事件
