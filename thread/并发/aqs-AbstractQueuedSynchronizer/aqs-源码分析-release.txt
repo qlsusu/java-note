@@ -1,0 +1,41 @@
+public final boolean release(int arg) {
+	//子类来实现tryRelease
+	if (tryRelease(arg)) {
+		Node h = head;
+		//唤醒后继节点.thread
+		if (h != null && h.waitStatus != 0)
+			unparkSuccessor(h);
+		return true;
+	}
+	return false;
+}
+
+//唤醒后继
+private void unparkSuccessor(Node node) {
+	//设置自身的status为0（完成？）
+	/*
+	 * If status is negative (i.e., possibly needing signal) try
+	 * to clear in anticipation of signalling.  It is OK if this
+	 * fails or if status is changed by waiting thread.
+	 */
+	int ws = node.waitStatus;
+	if (ws < 0)
+		compareAndSetWaitStatus(node, ws, 0);
+
+	//唤醒 有效的后继节点（未被cancel）.thread
+	/*
+	 * Thread to unpark is held in successor, which is normally
+	 * just the next node.  But if cancelled or apparently null,
+	 * traverse backwards from tail to find the actual
+	 * non-cancelled successor.
+	 */
+	Node s = node.next;
+	if (s == null || s.waitStatus > 0) {
+		s = null;
+		for (Node t = tail; t != null && t != node; t = t.prev)
+			if (t.waitStatus <= 0)
+				s = t;
+	}
+	if (s != null)
+		LockSupport.unpark(s.thread);
+}

@@ -1,0 +1,30 @@
+public final boolean releaseShared(int arg) {
+    if (tryReleaseShared(arg)) {//尝试释放资源
+        doReleaseShared();//唤醒后继结点
+        return true;
+    }
+    return false;
+}
+
+private void doReleaseShared() {
+	for (;;) {
+        Node h = head;
+        if (h != null && h != tail) {
+            int ws = h.waitStatus;
+            if (ws == Node.SIGNAL) {
+            	//设置head的ws为 0
+                if (!compareAndSetWaitStatus(h, Node.SIGNAL, 0))
+                    continue;
+                //唤醒后继，继续走doAcquireShared中的for循环
+                unparkSuccessor(h);
+            }
+            else if (ws == 0 &&
+                     !compareAndSetWaitStatus(h, 0, Node.PROPAGATE))
+                continue;
+        }
+        //当head没有发生变化，意味着后续节点没有获取资源成功（如果获取成功了，会修改head）
+        //则，不能再继续唤醒后续节点，则break
+        if (h == head)
+            break;
+    }
+}

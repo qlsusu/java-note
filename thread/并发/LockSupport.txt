@@ -1,0 +1,5 @@
+使得一个线程阻塞：
+在该线程上执行 LockSupport.park()
+
+唤醒一个thread1:
+LockSupport.unpark(thread1)

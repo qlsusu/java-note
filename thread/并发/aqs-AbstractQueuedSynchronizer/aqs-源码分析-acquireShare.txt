@@ -1,0 +1,60 @@
+用于获取共享锁
+public final void acquireShared(int arg) {
+	if (tryAcquireShared(arg) < 0)
+		doAcquireShared(arg);
+}
+
+tryAcquireShared的 返回值 含义：
+>0
+	自身能获取，仍然有资源
+=0
+	自身能获取，但没有资源
+<0
+	自身不能获取，因为没有资源
+	
+private void doAcquireShared(int arg) {
+    final Node node = addWaiter(Node.SHARED);//加入队列尾部
+    boolean failed = true;//是否成功标志
+    try {
+        boolean interrupted = false;//等待过程中是否被中断过的标志
+        //为何使用for循环，还是因为：当后继节点被唤醒时，会走该循环，来重新 试图获得资源
+        for (;;) {
+            final Node p = node.predecessor();//前驱
+			//如果前继是head，那么试图获得资源
+            if (p == head) {
+                int r = tryAcquireShared(arg);//尝试获取资源
+                if (r >= 0) {//成功
+					//自身将成为head，当还有剩余资源可以再唤醒之后的节点2
+					//当节点2的线程被唤醒，会重新执行for循环
+					//注意：此刻，节点2已经是新head（自身节点）的后继，会尝试获取资源
+					//当获取到资源后，其成为head，并唤醒他的后继
+                    setHeadAndPropagate(node, r);
+                    p.next = null; // help GC
+                    if (interrupted)//如果等待过程中被打断过，此时将中断补上。
+                        selfInterrupt();
+                    failed = false;
+                    return;
+                }
+            }
+            
+            //判断状态，寻找安全点，进入waiting状态，等着被unpark()或interrupt()
+            if (shouldParkAfterFailedAcquire(p, node) &&
+                parkAndCheckInterrupt())
+                interrupted = true;
+        }
+    } finally {
+        if (failed)
+            cancelAcquire(node);
+    }
+}	
+
+private void setHeadAndPropagate(Node node, int propagate) {
+    Node h = head; 
+    setHead(node);//head指向自己
+     //如果还有剩余量，继续唤醒下一个后继线程
+    if (propagate > 0 || h == null || h.waitStatus < 0) {
+        Node s = node.next;
+        if (s == null || s.isShared())
+            doReleaseShared();
+    }
+}
