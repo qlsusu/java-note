@@ -19,8 +19,8 @@ Looper#private static void prepare(boolean quitAllowed) {
 实现原理：
 每个thread有一个threadlocalmap，其可以认为是一个map，其内部定义了entry，使用entry[]来存储entry
 	entry（本质上是threadlocal的weakreference）:
-		entry.key为entry.get()
-		entry.value为threadlocal的set时的值）
+		entry.key为 entry.get()
+		entry.value为 threadlocal的set时的值）
 也是通过entry.key的rehash值（本质上是entry.get()（即是threadlocal）的threadLocalHashCode），
 	threadlocal的hash值 并不是通过自身计算得来，而是threadlocal对象被实例化时 被分配（通过ThreadLocal.static AtomicInteger nextHashCode.getAndAdd(HASH_INCREMENT)）
 		最终调用UnSafe#getAndAddInt(Object object, long fieldOffset, int delta)

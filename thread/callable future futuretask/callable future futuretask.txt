@@ -31,3 +31,6 @@ isDone
 
 FutureTask:
 实现了 Runnable 和 Future
+需要被提供执行体
+	FutureTask(Callable<V> callable)
+	FutureTask(Runnable runnable, V result)

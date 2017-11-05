@@ -12,7 +12,7 @@ class Task implements Callable<Integer>{
 
 public class Test {
     public static void main(String[] args) {
-        //第一种方式
+        //第一种方式，使用线程池
         ExecutorService executor = Executors.newCachedThreadPool();
         Task task = new Task();
         FutureTask<Integer> futureTask = new FutureTask<Integer>(task);
@@ -20,7 +20,7 @@ public class Test {
         Future<Integer> future = executor.submit(futureTask);
         executor.shutdown();
          
-        //第二种方式，注意这种方式和第一种方式效果是类似的(本质上，都是基于runnable特性)，只不过一个使用的是ExecutorService，一个使用的是Thread
+        //第二种方式，使用thread
         /*
         Task task = new Task();
         FutureTask<Integer> futureTask = new FutureTask<Integer>(task);
