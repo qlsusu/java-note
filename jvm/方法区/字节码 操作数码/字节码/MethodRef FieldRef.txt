@@ -1,0 +1,9 @@
+MethodRef		Class.NameAndType
+NameAndType		方法名:(参数类型)返回值类型
+如：bean/byteinfo/ByteInfo.sub:(IIJLjava/lang/String;)V
+	I为int，IJ为long，Ljava/lang/String;为string
+	V为void
+	
+FieldRef		Class.NameAndType
+NameAndType		字段名:字段类型
+如：bean/byteinfo/ByteInfo.age:I

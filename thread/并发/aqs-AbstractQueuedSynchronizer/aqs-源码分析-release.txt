@@ -2,7 +2,7 @@ public final boolean release(int arg) {
 	//子类来实现tryRelease
 	if (tryRelease(arg)) {
 		Node h = head;
-		//唤醒后继节点.thread
+		//唤醒head的 后继节点.thread
 		if (h != null && h.waitStatus != 0)
 			unparkSuccessor(h);
 		return true;
@@ -23,6 +23,7 @@ private void unparkSuccessor(Node node) {
 		compareAndSetWaitStatus(node, ws, 0);
 
 	//唤醒 有效的后继节点（未被cancel）.thread
+	//后继.thread被唤醒后，回到parkAndCheckInterrupt继续执行，并最终回到acquireQueued来执行for循环
 	/*
 	 * Thread to unpark is held in successor, which is normally
 	 * just the next node.  But if cancelled or apparently null,

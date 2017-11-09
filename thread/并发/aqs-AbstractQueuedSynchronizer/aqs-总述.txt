@@ -36,6 +36,7 @@ acquire时，开发者来定义 什么情况下可获得资源（tryAcquire）
 			或者，自身线程.interrupt
 			--
 			唤醒后，还是继续走 for循环流程
+			
 而release时，开发者来定义 什么情况下可释放资源（tryRelease）
 如果能释放掉资源 且 释放掉后允许唤醒后继节点，那么会唤醒后继节点.thread（离head最近的 未cancel的节点），使得其走 试图获得资源的流程
 
@@ -50,7 +51,9 @@ aqs提供了一种流程（阻塞 唤醒，以及 队列操作（Node的链表�
 
 ----------------关于interrupt
 对于 非interrupt方式：
-当Node被中断，其也会走 试图获得资源的for流程，如果获取不到，还是会再一次被阻塞
+当Node.thread被中断，LockSupport.park之后的流程会继续，则会走 试图获得资源的for流程，如果获取不到，还是会再一次被阻塞
+	也即是：即使在其他线程上，调用了本Node.thread.interrupt()，InterruptedException并不会被本线程捕捉
+而在其获取到资源后，其会主动 Node.thread.interrupt()（本线程此刻可以捕捉到InterruptedException了）
 
 也提供了interrupt的版本，如：
 acquireInterruptibly

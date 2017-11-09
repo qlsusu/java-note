@@ -9,7 +9,7 @@ public final void acquire(int arg) {
 . 该资源是否可以被请求（由子类的tryAcquire来实现）
 	如果可以请求得到，则线程未被阻塞，则继续执行
 	否则，生成一个节点（代表了本次请求），插入到链表尾部
-	阻塞线程（前继节点的status需要为SIGNAL，为：该前继节点释放资源后，需要唤醒后继节点（即是：自身节点）的thread）
+	阻塞线程（前继节点的status需要为SIGNAL，为了：该前继节点释放资源后，需要唤醒后继节点（即是：自身节点）的thread）
 
 //试图获得锁（基于队列（链表实现））
 //返回：node是否被interrupt
@@ -19,7 +19,7 @@ final boolean acquireQueued(final Node node, int arg) {
 		boolean interrupted = false;
 		//这里开启了一个for循环，为什么：
 		//当release资源时，会唤醒 head的后继Node的thread
-		//该thread被唤醒后，继续执行for循环：试图获得锁（当获取到锁后，自身称为head节点）
+		//该thread被唤醒后，继续执行for循环：试图获得锁（当获取到锁后，自身成为head节点）
 		//--
 		//为什么head的后继节点可以试图获得锁：
 		//当一个节点释放资源时，head节点仍然存在于链表中，而后继节点被唤醒后，可以获得资源
@@ -42,6 +42,7 @@ final boolean acquireQueued(final Node node, int arg) {
 }
 
 //设置前继节点的waitStatus为SIGNAL
+//返回：是否当前前继的ws为SIGNAL
 private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
 	int ws = pred.waitStatus;
 	if (ws == Node.SIGNAL)
@@ -53,7 +54,7 @@ private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
 	//CANCELED值为1（也只有该status是>0的）
 	//如果前继的状态为cancel，那么向前寻找一个status不为cancel的节点，并使其成为node的前继
 	//注意：此刻，函数返回值为false，则之后会再次进入acquireQueued的for循环中
-	//有可能经过调整，node的前继就为head了，可以试图获得资源了
+	//则有可能经过该前继的调整，node的前继就为head了，可以试图获得资源了
 	if (ws > 0) {
 		/*
 		 * Predecessor was cancelled. Skip over predecessors and
@@ -64,7 +65,7 @@ private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
 		} while (pred.waitStatus > 0);
 		pred.next = node;
 	}
-	//设置前继节点的status为SIGNAL（允许失败）
+	//设置前继节点的status为SIGNAL（允许CAS失败）
 	else {
 		/*
 		 * waitStatus must be 0 or PROPAGATE.  Indicate that we
@@ -77,6 +78,7 @@ private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
 }
 
 //阻塞节点
+//被唤醒后，返回：线程是否被interrupt
 private final boolean parkAndCheckInterrupt() {
 	LockSupport.park(this);
 	return Thread.interrupted();
