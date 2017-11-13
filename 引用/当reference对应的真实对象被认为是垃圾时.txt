@@ -4,46 +4,54 @@ while(true) {
 	Reference.tryHandlePending(true);
 }
 
-Reference#static boolean tryHandlePending(boolean var0) {
-    Reference var1;
-    Cleaner var2;
-    try {
-        Reference.Lock var3 = lock;
-        synchronized(lock) {
-            if(pending == null) {
-                if(var0) {
-                    lock.wait();
-                }
+Reference#static boolean tryHandlePending(boolean waitForNotify) {
+	Reference<Object> r;
+	Cleaner c;
+	try {
+		synchronized (lock) {
+			if (pending != null) {
+				//当前要处理的reference
+				//其所引用的真实对象 已经被认为是 “gcroot不可达”（某种程度的唯一可达，如：只weak reachable），此刻还未调用gc，也未执行真实对象的finalize方法
+				r = pending;
+				// 'instanceof' might throw OutOfMemoryError sometimes
+				// so do this before un-linking 'r' from the 'pending' chain...
+				c = r instanceof Cleaner ? (Cleaner) r : null;
+				// unlink 'r' from 'pending' chain
+				//下一个要处理的reference
+				pending = r.discovered;
+				r.discovered = null;
+			} else {
+				// The waiting on the lock may cause an OutOfMemoryError
+				// because it may try to allocate exception objects.
+				if (waitForNotify) {
+					lock.wait();
+				}
+				// retry if waited
+				return waitForNotify;
+			}
+		}
+	} catch (OutOfMemoryError x) {
+		// Give other threads CPU time so they hopefully drop some live references
+		// and GC reclaims some space.
+		// Also prevent CPU intensive spinning in case 'r instanceof Cleaner' above
+		// persistently throws OOME for some time...
+		Thread.yield();
+		// retry
+		return true;
+	} catch (InterruptedException x) {
+		// retry
+		return true;
+	}
 
-                return var0;
-            }
+	// Fast path for cleaners
+	//如果reference是cleaner，则调用clean
+	if (c != null) {
+		c.clean();
+		return true;
+	}
 
-            //当前要处理的reference（其所引用的真实对象 已经被认为是垃圾（gcroot不可达））
-            var1 = pending;
-            var2 = var1 instanceof Cleaner?(Cleaner)var1:null;
-            //下一个要处理的reference
-            pending = var1.discovered;
-            var1.discovered = null;
-        }
-    } catch (OutOfMemoryError var6) {
-        Thread.yield();
-        return true;
-    } catch (InterruptedException var7) {
-        return true;
-    }
-
-    //如果reference是cleaner，则调用clean
-    if(var2 != null) {
-        var2.clean();
-        return true;
-    }
     //否则，reference是否对应了referencequeue，如果对应，那么其被放入到queue中
-    else {
-        ReferenceQueue var8 = var1.queue;
-        if(var8 != ReferenceQueue.NULL) {
-            var8.enqueue(var1);
-        }
-
-        return true;
-    }
+	ReferenceQueue<? super Object> q = r.queue;
+	if (q != ReferenceQueue.NULL) q.enqueue(r);
+	return true;
 }
