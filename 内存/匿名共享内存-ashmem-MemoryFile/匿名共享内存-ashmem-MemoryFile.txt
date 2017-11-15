@@ -1,17 +1,26 @@
 参见：
 Android匿名共享内存和MemoryFile
 	http://blog.csdn.net/goodlixueyong/article/details/53151959
+Android匿名共享内存（Ashmem）原理 - 简书
+	http://www.jianshu.com/p/d9bc9c668ba6
 
 Anonymous Shared Memory
 简称：ashmem
 
 其不同与heap memory和native momory
 而是一个第三方空间
+在tmpfs中创建了一个文件，其对应于 ashmem驱动创建的一块内存
 
 通过pin和unpin来 申请和 “释放”
 
+使用例子：
+app进程 和 SurfaceFlinger进程 共用了一块匿名共享内存（共享Surface数据）
+
+
+
 对于android
 我们使用MemoryFile来代表该 共享内存，并用于 进程间传递数据（避免什么问题：通过Binder来进行传输，传输量有限（<1M））
+在server进程中：
 	byte[] contentBytes = new byte[100];
 	//往contentBytes中写内容
 	...
@@ -23,7 +32,9 @@ Anonymous Shared Memory
 	FileDescriptor fd = (FileDescriptor) method.invoke(mf);
 	//将fd转化为ParcelFileDescription
 	ParcelFileDescriptor pfd = ParcelFileDescriptor.dup(fd);
-	至此，我们可以将pfd传递给其他进程，通过ParcelFileDescriptor#getFileDescriptor来构建InputStream，最终读取到了 共享内存中的数据
+	至此，我们可以将pfd传递给client进程，
+在client进程中：
+	得到ParcelFileDescription后，通过ParcelFileDescriptor#getFileDescriptor来构建InputStream，最终读取到了 共享内存中的数据
+
 如何释放该共享内存：
 	关闭 该FileDescription代表的File
-
