@@ -1,0 +1,41 @@
+参见：
+使用 FutureTask 的正确姿势 - ImportNew
+	http://www.importnew.com/27305.html?hmsr=toutiao.io&utm_medium=toutiao.io&utm_source=toutiao.io
+
+其实现了RunnableFuture接口，其需要被提供Callable
+其run方法，内部还是调用了callable#call
+执行的过程中，未发生异常，则调用set，如果发生了异常，则调用setException
+
+在set/setException中，均是通过CAS两步来设置state：
+	先设置到COMPLETING状态，
+	后设置到
+		NORMAL，或
+		EXCEPTIONAL状态
+唤醒WaitNode.thread（方式：LockSupport.unpark(Thread)）
+还有一个开放给子类的on类方法：done()
+
+WaitNode
+是什么：
+	当FutureTask在执行的过程中，线程2调用task.get时，线程2将会被阻塞（通过LockSupport.park来进行阻塞），
+	而当task完成时（成功或者执行过程中抛出异常，或者被取消），需要将这些线程唤醒（通过finishCompletion，内部通过：LockSupport.unpark(Thread)）
+其含有next，来构成一个单向链表，而FutureTask拥有head（使用waiters来表示）
+什么时候添加：当线程2要获取task结果，但是task还在执行中时（task.state<=COMPLETING）
+如何添加：UNSAFE.compareAndSwapObject(this, waitersOffset, q.next = waiters, q);
+	具体参见：waitDone()
+	
+get（在线程2上）
+判断task是否执行完毕（state<=COMPLETING）
+如果执行完毕，则获得outcome
+	该outcome有可能是真实的结果，或者，执行过程中抛出的异常
+如果还未执行完毕，则构建WaitNode来阻塞线程，在执行完毕后，线程2会被唤醒
+
+cancel
+该方法拥有 是否中断标识
+判断task是否执行完毕（即是：还未到COMPLETING）
+	当执行完毕了，直接返回
+	如果还未执行完毕，
+		通过CAS设置state为CANCEL或者INTERRUPTING
+		如果需要中断
+			runner.interrupt
+			CAS将state状态设置INTERRUPTED
+唤醒阻塞的其他线程（通过finishCompletion）

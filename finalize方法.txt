@@ -7,6 +7,7 @@ java将弃用finalize()方法？
 
 复写了finalize()的类的 对象，当不可达时，
 会为该对象 生成一个Finalizer对象（继承自FinalReference）（此时，被引用对象 没被认为是垃圾），并放入到ReferenceQueue中（static的 Finalizer#queue）（Reference#tryHandlePending中的逻辑）
+	注意：Finalizer的referent不为空，而对于 诸如WeakReference的，为null
 Finalizer的static中，会启动Finalizer.FinalizerThread（级别为8，也不是很低，但是为daemon thread）
 	JavaLangAccess var1 = SharedSecrets.getJavaLangAccess();
 	...

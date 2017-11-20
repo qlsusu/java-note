@@ -4,11 +4,14 @@ java异常分类
 http://blog.csdn.net/ilibaba/article/details/3965359
 exception.png
 
-error的异常不可捕获
+基类：Throwable
+两个子类：Error 和 Exception
+
+Error的异常不可捕获
 	try,catch对其无效
 	若一个线程抛出了error，则该线程不再继续
-exception的异常可以捕获
-	runtimeexception：有一些操作可能会抛出异常，但是并不要求：编码时，该操作必须加在try/catch中，如：
+Exception的异常可以捕获
+	RuntimeException：有一些操作可能会抛出异常，但是并不要求：编码时，该操作必须加在try/catch中，如：
 		int x=1, y=0;
 		int c=x/y;
 	Checked Exceptions

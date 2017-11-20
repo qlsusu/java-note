@@ -11,7 +11,8 @@ Reference#static boolean tryHandlePending(boolean waitForNotify) {
 		synchronized (lock) {
 			if (pending != null) {
 				//当前要处理的reference
-				//其所引用的真实对象 已经被认为是 “gcroot不可达”（某种程度的唯一可达，如：只weak reachable），此刻还未调用gc，也未执行真实对象的finalize方法
+				//此刻，对于非Finalizer，其#get()返回为null
+				//Finalizer比其他 诸如WeakReference先被处理（随后，finalize()被调用）
 				r = pending;
 				// 'instanceof' might throw OutOfMemoryError sometimes
 				// so do this before un-linking 'r' from the 'pending' chain...

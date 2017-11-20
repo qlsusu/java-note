@@ -1,0 +1,13 @@
+用法：
+assert {expression}
+assert {expression} : {error message}
+
+例子：
+assert 1==2  : "not equal";
+System.out.println("done");
+
+当执行到assert时，由于expression不为true，则会抛出 java.lang.AssertionError: not equal
+
+需要配置运行时参数：
+java -ea SomeClass
+在idea中，在VM options中，添加：-ea
