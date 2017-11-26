@@ -1,0 +1,4 @@
+内存抖动(Memory Churn), 即大量的对象被创建又在短时间内马上被释放.
+瞬间产生大量的对象会严重占用Young Generation的内存区域, 当达到阀值, 剩余空间不够的时候, 会触发GC. 
+而GC会导致stop the world
+而对象又是在源源不断被产生，则会导致不断的gc，不断的stop the world

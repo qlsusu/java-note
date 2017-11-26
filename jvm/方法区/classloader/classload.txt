@@ -7,7 +7,7 @@
 （即是：加载类A时，除了父亲被加载外，其余的引用的类并不是立刻被加载，而是在使用该类时（如：调用该类的静态成员，new出该类的对象）），该类将被加载
 加载
 	将类的.class文件（如：类信息，字面常量，符号引用，field数据，方法数据，静态变量 等）读入内存（一个byte[]，加载到方法区）
-	产生一个java.lang.Class对象（该对象存在于方法区中）
+	产生一个java.lang.Class对象（该对象存在堆中）
 	--
 	类的加载由 classloader 完成，类加载器通常由JVM提供。开发者也可以通过继承ClassLoader基类来创建自己的类加载器。
 		同一个类加载器，对于同一个class，只会加载一次
@@ -20,11 +20,11 @@
 		常量池有一些符号引用（符号引用代表了 该类需要使用 其他类/自身类的 什么变量、什么方法），需要将这些符号引用变成直接引用
 		如果直接引用 能定位到目标（变量 或者 方法），则意味着 目标类被加载到内存中
 			父类会被链接
-			而引用的第三方类，会在执行代码指令时，才进行classload
+			而引用的第三方类，会在执行代码指令时，才进行class load
 		也意味着 自身类和目标类（可以是父类，引用的第三方类） 链接在一起了
+		参见：java.lang.ClassLoader#resolveClass （中的doc：用于：Links the specified class）
 		--
-		当仅仅使用 引用类的静态常量时（该静态常量会存入到该引用的常量池中），该引用类并不会被classload
-		参见：java.lang.ClassLoader#resolveClass
+		注意：当仅仅使用 引用类的静态常量时（该静态常量会存入到该引用的常量池中），该引用类并不会被classload			
 初始化
 	静态变量被赋予正确的值，如：static int age=2，这里的2就是正确的值，而不是int的默认值0
 		说明：这里的静态变量 并不是 static final类型（该类型在加载阶段，就被归入到常量池中）
@@ -48,5 +48,6 @@ AppClassLoader
 	安全
 	避免重复加载
 Bootstrap classloader是根加载器，其没有父亲加载器
+	而ExtClassLoader在代码层次，其parent也不是Bootstrap classloader
 
 可以在运行程序时，配置虚拟机参数 -XX:+TraceClassLoading 来显示类的加载过程

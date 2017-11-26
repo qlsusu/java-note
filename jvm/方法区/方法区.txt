@@ -6,7 +6,7 @@
 classloader对象的引用
 class对象的引用
 --
-运行时常量池（Run Time Constant Pool）
+常量池（Constant Pool）
 	字符串（针对于代码中，出现字符串的任何位置）
 	数值（只针对于 static final 来生成）
 	Methodref Fieldref（在 方法的 源码中，使用了 什么变量 和 什么方法；而这些 变量/方法 可以是 自身类的，也可以是 其他类的）

@@ -7,5 +7,3 @@ Java虚拟机3：常用JVM命令参数
 	堆内存的最大大小为 20M
 -Xmn20M
 	堆中 年轻代的大小为 20M
--XX:+PrintGCDetails
-	打印gc信息

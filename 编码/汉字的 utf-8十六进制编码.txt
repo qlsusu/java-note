@@ -1,3 +1,3 @@
 参见：
- java 汉字与UTF-8十六进制编码 间相互转换方法 
+java 汉字与UTF-8十六进制编码 间相互转换方法 
 	 http://blog.csdn.net/top_code/article/details/8450423

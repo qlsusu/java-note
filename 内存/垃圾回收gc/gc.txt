@@ -1,4 +1,10 @@
 参见：
+3.6.5　空间分配担保_深入理解Java虚拟机：JVM高级特性与最佳实践(第2版)_红黑联盟读书频道
+	https://book.2cto.com/201306/25499.html
+jvm对象分配及GC代码实例 - - ITeye博客
+	http://crukor.iteye.com/blog/2179104
+GC那些事儿--Android内存优化第一弹
+	http://www.jianshu.com/p/5db05db4f5ab
 Java虚拟机5：Java垃圾回收（GC）机制详解
 	http://www.cnblogs.com/xrq730/p/4836700.html
 深入理解JVM（6） : Java对象内存分配策略
@@ -8,25 +14,45 @@ Major GC和Full GC的区别是什么？触发条件呢？
 --
 Minor GC、Major GC和Full GC之间的区别
 	http://www.importnew.com/15820.html
+	触发条件呢？中的回答2
 Java内存与垃圾回收调优
 	http://www.importnew.com/14086.html
 
-gc的触发时机（本质上，要看gc收集器的策略，参见：Major GC和Full GC的区别是什么？触发条件呢？中的回答2）：
-对象A的内存申请发生在年轻代的eden，当eden中 没有足够大的一块连续内存 来满足对象A的要求时，minor gc被触发
-	主要采用 标记-复制算法 来进行gc
-	会在 eden+survivorx 上进行标记-复制到 survivory，如果成功，eden+survivorx区域为空
-	而如果survivory区域上的剩余空间不足以承纳要复制的对象，则要求 一部分对象被复制到 年老代中
-	则，对于新生代，可用于对象分配的大小为：eden区+1个survivor区
-一些对象会被放入到年老代，当其空间不足承纳这些对象时，会触发major gc
-	major gc耗时比较长
-	在打开HandlePromotionFailure开关时，
-		在进行minor gc之前，判断年老代中 最大连续内存大小 是否大于 以往晋升时所需空间的平均值（因为：有可能survivor的区域 会不够放 复制的对象，那么会有对象放入到年老代，如果承纳不下该对象，就需要对年老代执行清理major gc，但是我们事先并不知道 放入到年老代的对象的大小（因为minor gc还没有开始执行），所以我们参考以往的 晋升对象的大小，来考虑 是否预先进行major gc）
-	在未打开HandlePromotionFailure开关时，
-		当有对象晋升到年老代时，一律进行major gc（因为无法确定该对象是否能放入到年老代中）
+minor gc
+	发生在年轻代
+	年轻代（Young Generation）
+		组成：eden+ survivor1和2
+		可用于内存分配的大小为：eden+1个survivor
+		对象何时被放入年轻代：对象的内存分配 一开始是在eden上进行
+	何时触发：当eden中 没有足够大的一块连续内存 来满足对象A的要求时，minor gc被触发
+	采用 标记-复制 算法：会标记出 eden+survivor1(2)中 哪些对象还是存活的，后将其拷贝到 survivor2(1)上
+	gc效率：minor gc耗时较小，因为其空间区域小
+major gc
+	发生在年老代
+	年老代（Old Generation/Tenured Generation）
+		何时被放入：
+			当对象的年龄足够大时（每经过1次minor gc，年龄就增加1岁），该对象晋升到 年老代
+				-XX:MaxTenuringThreshold=15
+			在进行了minor gc后，存活的对象都被放入到了survivor中，当survivor中已经放不下某对象时，该对象要提前晋升到年老代中
+			当要分配一个大对象时（如：-XX:PretenureSizeThreshold=3145728），该对象直接晋升到年老代
+				为了：避免：minor gc时，该对象频繁的在 survivor间 拷贝
+			当年轻代中 对象1的年龄 >= 平均年龄时（有一些对象，它们的年龄都是一样的，且所占据空间 >= 年轻代的一半空间，则它们的年龄称为 平均年龄），该对象 晋升到 年老代
+	何时触发：
+		当年老代中 没有足够大的一块连续内存 来满足对象A的要求时，major gc被触发
+		在进行minor gc之前，先判断：年老代中的剩余空间 是否大于 年轻代所有对象总和 || 是否大于 历史晋升所需空间的平均值（之前，对象1晋升到年老代时，其需要多少空间）
+			如果大于，进行minor gc（后续，有可能（很小）会进行major gc）
+			否则，进行major gc
+			--
+			为什么需要进行判断：
+				在minor gc后，一部分对象会晋升到年老代（正常的晋升（如：年龄），或者，因为survivor中已经容纳不下），则年老代可能会进行major gc，以防止空间不足 以不能存放 即将晋升的对象
+				但是有多少对象要晋升到年老代，只有在minor gc完成后，才能最终确定，
+				则，条件“大于 年轻代所有对象总和”：当年轻代的所有对象都会晋升，我也不怕
+				条件“大于 历史晋升所需空间的平均值”：之前晋升就需要这么多空间，这次我也假设本次晋升不会需要比它还大的空间
+					此情况下，minor gc完毕后，发现晋升对象变多了，而年老代的空间又不够时，会再进行major gc
+			--
+			-XX:-HandlePromotionFailure 在jdk1.6中已经不再使用
+	major gc发生时，大部分情况下，至少会触发1次 minor gc
+	gc效率：所耗时间 >= 10 * minor gc的所耗时间
 
-哪些对象可以进入到老年代（参见：深入理解JVM（6） : Java对象内存分配策略）:
-. Eden区中的对象在一次Minor GC后没有被回收，而没有被回收，其对象年龄+1，当对象年龄达到“-XX:MaxTenuringThreshold”(默认为15)设置的值的时候，该对象进入年老代
-. survivor区中，当一个对象的年龄大于该区的平均年龄（平均年龄：该区中，一些年龄相同的对象 占据了 该区域的一半大小（至少），该年龄为平均年龄），那么该对象将被放入到年老代（而不受限于MaxTenuringThreshold）
-. 当对象要申请的内存的大小 大于 -XX:PretenureSizeThreshold 时，内存将直接在年老代中来申请
-
+stop the world
 无论是minor gc还是marjor gc，都会触发STW（stop the world），只是各个垃圾收集器表现的效果不同

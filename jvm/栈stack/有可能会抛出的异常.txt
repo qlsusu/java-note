@@ -1,0 +1,2 @@
+当调用层次过深时，会抛出StackOverFlowError
+当申请不到内存时（内存不足），会抛出OutOfMemoryError
