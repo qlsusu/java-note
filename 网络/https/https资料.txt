@@ -1,0 +1,7 @@
+OKHttp源码解析(二)："前戏"——HTTP的那些事 - 简书
+	http://www.jianshu.com/p/116ebf3034d9
+	其中也包含了：
+		https代理
+		http2.0
+		SPDY
+		

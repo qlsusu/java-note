@@ -1,3 +1,10 @@
-非对称算法（用于 公钥 私钥）：RSA DSA/DSS
-对称算法：AES, RC4, 3DES
-hash算法：MD5, SHA1, SHA256
+非对称算法（用于 公钥 私钥）：
+RSA
+DSA/DSS
+
+对称算法：
+DES(Data Encryption Standard)
+AES(Advanced Encryption Standard)
+RC4
+3DES
+IDEA

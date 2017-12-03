@@ -22,8 +22,8 @@ server收到client的回复，检查该回复
 
 为什么3次握手：
 假设：2次握手就建立连接，即是：server收到client的请求后，就建立连接点，来等待client的数据到来
-当client发了一次请求，而由于中间节点的原因，该请求一直没有到达server，导致：client又向服务器发送了一次请求，该请求server收到了，然后彼此建立了连接点
-而等该连接关闭后，之前client发的第一次请求到达了Server，server又为此建立了连接点，在等待client的数据到来，后其向client发送了响应
+当client发了请求1，而由于中间节点的原因，请求1一直没有到达server，导致：client又向服务器发送了请求2，而请求2 server收到了，然后彼此建立了连接点
+而等该连接关闭后，之前client发的请求1到达了Server，server又为此建立了连接点，在等待client的数据到来，后其向client发送了响应
 而client并不会理会该响应，并不会向server发送数据，则server白白浪费了 自己建立的连接点资源
 
 4次挥手
