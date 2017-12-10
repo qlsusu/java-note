@@ -6,21 +6,21 @@ okhttp3.internal.cache.CacheStrategy.Factory#get
 
 ------------------cache的存在时间（ageMillis）：
 下述几部分时间的 相加
-. now-收到响应的时间
+. now-收到响应的时间（需要程序保存）
 . 收到响应的时间（需要程序保存）-请求发送的时间（需要程序保存）
 . 精细间隔：收到响应的时刻 - 服务器告诉我该响应的时刻
+long residentDuration = nowMillis - receivedResponseMillis;
+long responseDuration = receivedResponseMillis - sentRequestMillis;
+--
 long apparentReceivedAge = servedDate != null（date头）
 	? Math.max(0, receivedResponseMillis - servedDate.getTime())
 	: 0;
 long receivedAge = ageSeconds != -1（age头）
 	? Math.max(apparentReceivedAge, SECONDS.toMillis(ageSeconds))
 	: apparentReceivedAge;
-	
-long responseDuration = receivedResponseMillis - sentRequestMillis;
-long residentDuration = nowMillis - receivedResponseMillis;
 结果 = receivedAge + responseDuration + residentDuration;
 
-------------------cache的待刷新间隔（freshMillis）：
+------------------cache的待刷新间隔/在多长时间内有效（freshMillis）：
 是否response有max-age头
 	有，为max-age
 	否则，是否有expire头
@@ -32,4 +32,4 @@ long residentDuration = nowMillis - receivedResponseMillis;
 再和 request头的max-age 取小值
 			
 ------------------cache是否有效：
-ageMillis + minFreshMillis（request头的min-fresh） < freshMillis + maxStaleMillis（request头的max-stale）
+ageMillis + minFreshMillis（request的min-fresh头） < freshMillis + maxStaleMillis（request的max-stale头）

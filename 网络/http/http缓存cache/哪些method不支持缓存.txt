@@ -1,0 +1,7 @@
+okhttp3.internal.http.HttpMethod#public static boolean invalidatesCache(String method) {
+	return method.equals("POST")
+		|| method.equals("PATCH")
+		|| method.equals("PUT")
+		|| method.equals("DELETE")
+		|| method.equals("MOVE");     // WebDAV
+}
