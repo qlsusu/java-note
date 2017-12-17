@@ -4,6 +4,8 @@ Sink = Okio#sink
 BufferedSource = Okio#buffer(Source)
 BufferedSink = Okio#buffer(Sink)
 
+------------------------------------
+
 Source#read(Buffer sink, long byteCount)
 	读取数据（从自身）到（写入）sink
 	Buffer#read(byte[] sink, int offset, int byteCount)
