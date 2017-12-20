@@ -15,7 +15,7 @@ Finalizer的static中，会启动Finalizer.FinalizerThread（级别为8，也不
 	Finalizer var2 = (Finalizer)Finalizer.queue.remove();
 	var2.runFinalizer(var1);
 		进而执行被引用对象的finalize()
-之后，Finalizer也不可达（因为queue#remove），则被引用对象不可达，则下次gc时，会被垃圾回收
+之后，Finalizer也不可达（因为queue#remove），则referent也不可达，则下次gc时，会被垃圾回收
 
 Finalizer的缺点：
 . FinalizerThread的执行时机不确定（且不一定执行，因为为daemon thread），则对象的finalize()可能会很晚才执行
