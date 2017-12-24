@@ -2,16 +2,26 @@
 Java并发之AQS详解 - waterystone - 博客园
 	http://www.cnblogs.com/waterystone/p/4920797.html
 
-是什么：
-一个synchronize的流程框架
-参见：核心流程
+解决了什么 基本问题：
+当在线程1请求资源时，如果失败，线程1如何被阻塞；
+当其他线程释放了资源后，被阻塞的线程1 如何被自动唤醒
+
+对上述流程进行了封装，则针对于 上层开发者，其只需要实现如下：
+定义 如何能获得/释放 资源（参考于 AbstractQueuedSynchronizer#state的值）
+	对于独占资源，需要实现：tryAcquire, tryRelease
+	对于共享资源，需要实现：tryAcquireShared, tryReleaseShared
+	--
+	这也是为什么tryAcquire等方法不是abstract的原因：如果一种AQS的子类实现 仅仅是一种情况（独占资源，或者，共享资源），则没有必要实现 两组方法
+
+采用了CAS的方式（并未采用Sychronized）
 		
-------------------------------------------------核心流程：
-acquire时，开发者来定义 什么情况下可获得资源（tryAcquire）
+------------------------------------------------核心流程（可和ReentrantLock一起来查看）：
+>>> acquire资源时
+开发者来定义 什么情况下可获得资源（tryAcquire）
 	提供了额外的state来协助实现
 	state是什么：
 		其是int类型，代表了资源
-		如：ReentrantLock
+		如：对于ReentrantLock，state代表了 在某个线程上 一共成功申请了多少资源
 			在lock时，会acquire，当state为0时，则可申请成功（后state+=1）
 			在同一个线程上，继续acquire时，state+=1，
 			而在release时，会使得state-=1，
@@ -20,34 +30,30 @@ acquire时，开发者来定义 什么情况下可获得资源（tryAcquire）
 如果不能获得，那么会生成数据结构Node，并将Node入队列（链表表示）的尾部
 	Node
 		代表：本次资源申请，拥有thread, waitStatus等属性
-		拥有：next, pre
+		前驱后继：next, pre
 		waitStatus
-			SIGNAL：当该节点释放资源（即是：该节点.thread上 调用了 release）时，需要唤醒后继节点.thread
+			SIGNAL：当该节点释放资源（即是：在该节点.thread上 调用了 release）时，需要唤醒后继节点.thread
 	链表结构：拥有 head tail（一开始创建链表时，head和tail相等）
-		head: 无意义的Node，或，当前拥有资源的Node
+		head: 无意义的Node（一开始创建链表时），或，当前拥有资源的Node
 	--
-	当该Node是head的后继时，会试图获得资源（参见：acquireQueue中的for流程，即是：当Node被唤醒时，还是会重走for流程）
+	当该Node是head的后继时，会试图获得资源（参见：acquireQueue中的for流程，即是：当该Node被唤醒时，还是会重走for流程）
 		如果能获得，那么会设置自身为head，继续客户流程
 			对于共享锁，此刻，会自动doReleaseShare 来再次唤醒 新head的后继节点
 		如果不能获得资源，那么Node会被阻塞（先要找到（并调整前继节点）前继节点（其waitStatus为SIGNAL）），等待被唤醒，
 			唤醒方式为：
-			被head节点 unparkSuccessor
-				被唤醒后，会重新走 试图获取锁的流程（当Node是head的后继时）
-			或者，自身线程.interrupt
-			--
-			唤醒后，还是继续走 for循环流程
+				被head节点 unparkSuccessor
+				或者，自身线程.interrupt
+			唤醒后，还是继续走 试图获取资源的流程（acquireQueue中的for循环）
 			
-而release时，开发者来定义 什么情况下可释放资源（tryRelease）
+>>> release资源时
+开发者来定义 什么情况下可释放资源（tryRelease）
 如果能释放掉资源 且 释放掉后允许唤醒后继节点，那么会唤醒后继节点.thread（离head最近的 未cancel的节点），使得其走 试图获得资源的流程
+注意：此刻并没有调整Node队列（如：设置head）
 
-----------------面对于开发者
-aqs提供了一种流程（阻塞 唤醒，以及 队列操作（Node的链表形式）），
-
-开发者只需要实现什么方法：
-定义 如何能获得/释放 资源
-	对于独占资源（只有一个线程可占用该资源）（如：ReentrantLock），需要实现：tryAcquire, tryRelease
-	对于共享资源（有多个线程可占用该资源）（如：CountDownLatch），需要实现：tryAcquireShared, tryReleaseShared
-这也是为什么tryAcquire等方法不是abstract的原因：如果一种aqs的子类实现 仅仅是一种情况（独占资源，或者，共享资源），则没有必要实现 两组方法
+----------------独占模式 共享模式:
+是否只有一个线程能获得该资源
+如果是：独占模式，如：ReentrantLock
+否则：共享模式，如：CountDownLatch
 
 ----------------关于interrupt
 对于 非interrupt方式：
@@ -59,4 +65,4 @@ aqs提供了一种流程（阻塞 唤醒，以及 队列操作（Node的链表�
 acquireInterruptibly
 	
 ------------------------------------------------问题：
-aqs已经有一个队列了，reentrantlock如何实现 非公平锁
+AQS已经有一个队列了，reentrantlock如何实现 非公平锁
