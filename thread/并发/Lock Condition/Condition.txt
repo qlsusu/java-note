@@ -9,8 +9,7 @@ Condition的强大之处在于它可以为多个线程间建立不同的Conditio
 即是：同一个Lock对象，多个Condition对象
 
 ------------------------------例子（生产者消费者）
-
-本质上是：java.util.concurrent.ArrayBlockingQueue
+该例 本质上是：java.util.concurrent.ArrayBlockingQueue
 
 class BoundedBuffer {
    final Lock lock = new ReentrantLock();//锁对象

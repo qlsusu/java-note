@@ -16,7 +16,19 @@ lock的释放 可以在其他线程中进行
 相较于synchronized，可认为 synchronized的锁只能在 本线程的 本方法(本方法的同步块)中来释放
 
 ----------------ReentrantLock：
->>>公平性（线程1和线程2，都在等待该lock，但是线程1先等的，那么lock被释放后，线程1将获得锁）：
+内部核心：aqs
+参见：aqs-AbstractQueuedSynchronizer/
+
+>>>公平性
+体现在：设thread1拥有lock，而thread2和thread3 已在排队 来等候获取该lock
+在某个时刻 thread1释放了该lock，而同时，thread4却冒出想要获取该lock，
+thread4是否能立刻获得，还是，要排队在 thread2和thread3的后面
+--
+非公平下：thread4能获得
+公平下：thread4不能获得，需要排队
+
+默认为 非公平
+
 public ReentrantLock(boolean fair) {
     sync = fair ? new FairSync() : new NonfairSync();
 }

@@ -33,10 +33,10 @@ public class ReadWriteLockTest {
     }  
 }  
 
-class Data {      
+class Data {
     private int data;// 共享数据  
     //接口ReadWriteLock
-    private ReadWriteLock rwl = new ReentrantReadWriteLock();     
+    private ReadWriteLock rwl = new ReentrantReadWriteLock();
     public void set(int data) {  
         rwl.writeLock().lock();// 申请 写锁  
         try {  

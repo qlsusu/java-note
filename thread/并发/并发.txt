@@ -12,3 +12,17 @@ Java 并发 学习笔记
 	http://www.jianshu.com/p/cb1a23bc82d0
 高并发Java（3）：Java内存模型和线程安全 
 	http://mp.weixin.qq.com/s/BOBh9BjTcyzHIlYNkvCEnw
+
+流程的设计：
+什么时候做（触发 做的流程）
+怎么做（运行在新线程上（可以来自线程池））
+
+并发问题：
+. 该资源会被多个线程访问（读 写）
+. 资源1和资源2 的一致性
+	如：state和result，当state=success时，result必定有值
+	应该：state和result的访问逻辑 位于 同一个临界区中
+	不能：在访问state时考虑了并发，而result并没有考虑
+. A拥有b（B类），B拥有c（C类）
+	A内部保证 b的访问的并发（读 写（如：为b设置新值，非 改变b.c））
+	B内部保证 c的访问的并发

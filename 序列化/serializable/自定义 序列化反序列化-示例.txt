@@ -22,10 +22,12 @@ public class SerializableObject implements Serializable
         return str1;
     }
     
-    private void writeObject(java.io.ObjectOutputStream s) throws Exception
+	//如果想自定义 序列化过程，需要定义该方法
+	//参见：ObjectOutputStream的类注释
+    private void writeObject(java.io.ObjectOutputStream s) throws IOException
     {
         System.out.println("我想自己控制序列化的过程");
-        //调用os默认的序列化方法，来序列化str0
+        //序列化时，首先调用oos默认的序列化方法，来序列化 可序列化的字段（如：str0）
         s.defaultWriteObject();
         //自定义序列化方式，如：针对于transient变量（默认其不参与到序列化处理）
         s.writeInt(str1.length());
@@ -33,10 +35,12 @@ public class SerializableObject implements Serializable
             s.writeChar(str1.charAt(i));
     }
     
-    private void readObject(java.io.ObjectInputStream s) throws Exception
+	//如果想自定义 反序列化过程，需要定义该方法
+	//参见：ObjectOutputStream的类注释
+    private void readObject(java.io.ObjectInputStream s) throws IOException, ClassNotFoundException
     {
         System.out.println("我想自己控制反序列化的过程");
-        //调用is默认的反序列化方法，来读取str0
+        //反序列化时，首先调用ois默认的反序列化方法，来反序列化 可以反序列化的字段（如：str0）
         s.defaultReadObject();
         //读取时的顺序 需要和 写入时的顺序 保持一致
         int length = s.readInt();

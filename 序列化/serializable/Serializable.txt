@@ -1,6 +1,17 @@
+参见：
+java.io.Serializable浅析 - zero516cn - 博客园
+	http://www.cnblogs.com/gw811/archive/2012/10/10/2718331.html
+
 步骤：
 让Java类实现Serializable接口。
 通过ObjectInputStream、ObjectOutputStream来读取、保存Java对象
 
-serialversionuid
-当要根据 字节流 来构建实体时（反序列化），首先判断字节流中的serialversionuid是否和实体类的serialversionuid是否相同，如果相同，就进行反序列化，如果不相同，则抛出异常
+哪些类型的字段会参与到 序列化/反序列化过程中：
+. 非静态
+. 非transient
+
+serialVersionUID（类型：static final int）
+当要根据 字节流 来构建实体时（反序列化），首先判断 字节流中的serialVersionUID 是否和 实体类的 相同
+如果相同，就进行反序列化
+如果不相同，则抛出异常
+说明：serialVersionUID如果不是static final int类型，等于没设置（如，仅仅被设置为static int）

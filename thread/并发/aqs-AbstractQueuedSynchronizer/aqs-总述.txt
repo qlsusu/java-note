@@ -56,13 +56,12 @@ Java并发之AQS详解 - waterystone - 博客园
 否则：共享模式，如：CountDownLatch
 
 ----------------关于interrupt
-对于 非interrupt方式：
+非interrupt方式来获取：AbstractQueuedSynchronizer#acquire
 当Node.thread被中断，LockSupport.park之后的流程会继续，则会走 试图获得资源的for流程，如果获取不到，还是会再一次被阻塞
-	也即是：即使在其他线程上，调用了本Node.thread.interrupt()，InterruptedException并不会被本线程捕捉
-而在其获取到资源后，其会主动 Node.thread.interrupt()（本线程此刻可以捕捉到InterruptedException了）
+	也即是：即使在其他线程上，调用了本Node.thread.interrupt()，其并不会抛出InterruptedException异常
+而在其获取到资源后，其会主动 Node.thread.interrupt()（此刻，在Node.thread上再执行诸如Thread.sleep时，会抛出InterruptedException异常）
 
-也提供了interrupt的版本，如：
-acquireInterruptibly
-	
-------------------------------------------------问题：
-AQS已经有一个队列了，reentrantlock如何实现 非公平锁
+interrupt方式来获取：AbstractQueuedSynchronizer#acquireInterruptibly
+最终执行到AbstractQueuedSynchronizer#doAcquireInterruptibly
+	当Node.thread被中断，AbstractQueuedSynchronizer#parkAndCheckInterrupt继续，并返回了true
+	会抛出InterruptedException异常

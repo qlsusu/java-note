@@ -1,7 +1,0 @@
-参见：
-并发队列ConcurrentLinkedQueue和阻塞队列LinkedBlockingQueue用法
-	http://www.cnblogs.com/linjiqin/archive/2013/05/30/3108188.html
-
-LinkedBlockingQueue 实现是线程安全的，实现了先进先出等特性，
-是作为生产者消费者的首选
-是一个无限大的任务队列

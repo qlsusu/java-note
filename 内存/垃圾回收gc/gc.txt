@@ -22,13 +22,13 @@ minor gc
 	发生在年轻代
 	年轻代（Young Generation）
 		组成：eden+ survivor1和2
-		可用于内存分配的大小为：eden+1个survivor
+		可用于内存分配的大小为：eden + 1个survivor
 		对象何时被放入年轻代：对象的内存分配 一开始是在eden上进行
 	何时触发：当eden中 没有足够大的一块连续内存 来满足对象A的要求时，minor gc被触发
 	采用 标记-复制 算法：会标记出 eden+survivor1(2)中 哪些对象还是存活的，后将其拷贝到 survivor2(1)上
 	gc效率：minor gc耗时较小，因为其空间区域小
 major gc
-	发生在年老代
+	发生在年老代	
 	年老代（Old Generation/Tenured Generation）
 		何时被放入：
 			当对象的年龄足够大时（每经过1次minor gc，年龄就增加1岁），该对象晋升到 年老代

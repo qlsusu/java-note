@@ -1,0 +1,15 @@
+参见：
+聊聊并发（七）——Java中的阻塞队列
+	http://www.infoq.com/cn/articles/java-blocking-queue、
+	其中介绍了几类 blockingqueue，如：linkedblockingqueue, PriorityBlockingQueue等
+java Queue中 remove/poll, add/offer, element/peek区别
+	http://blog.csdn.net/ustcjackylau/article/details/42454779
+并发队列ConcurrentLinkedQueue和阻塞队列LinkedBlockingQueue用法
+	http://www.cnblogs.com/linjiqin/archive/2013/05/30/3108188.html
+
+BlockingQueue 
+是线程安全的，实现了先进先出等特性，是生产者消费者的模型
+
+LinkedBlockingQueue是一个无限大的任务队列
+ArrayBlockingQueue
+	参见：Condition.txt

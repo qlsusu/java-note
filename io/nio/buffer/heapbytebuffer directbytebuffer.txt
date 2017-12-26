@@ -49,7 +49,7 @@ ByteBuffer.allocate(int capacity);
 
 >>> DirectByteBuffer
 ByteBuffer.allocateDirect(int capacity);
-	DirectByteBuffer(int cap)
+	构建DirectByteBuffer(capacity)对象
 		unsafe.allocateMemory(size);
 		生成Cleaner对象（其继承于虚引用，其clean方法对应的Runnable为 Deallocator）
 并不是在heap上分配，而是在 用户态的直接内存上分配（则 该部分内存 并不受jvm控制）（通过unsafe进行）
