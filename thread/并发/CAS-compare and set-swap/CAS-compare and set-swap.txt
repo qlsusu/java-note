@@ -25,17 +25,17 @@ cas需要和volatile配合使用
 >>>1.8版本（fetch-and-add指令）
 public final int incrementAndGet() {
     //atomicinteger.value是当前值
-    //在执行该fetch-and-add指令时，先判断当前offset位置的field的值是否为value
+    //在执行该fetch-and-add指令时，先判断当前 offset位置的field的值 是否为value
     //如果不是的话，将再次执行（当条件不满足时，将一直循环下去），并使用新的value值来进行判断
     //如果是的话，那么执行add操作
-    //U.getAndAddInt将返回执行add操作之前的 值
-    //则，因为是incrementandget，那么需要返回add后的值，则需要 结果+1
-    return U.getAndAddInt(this, VALUE, 1) + 1;
+    //unsafe.getAndAddInt将返回执行add操作之前的 值
+    //则，因为是incrementAndGet，那么需要返回add后的值，则需要 结果+1
+    return unsafe.getAndAddInt(this, valueOffset, 1) + 1;
 }
-其中VALUE为：U.objectFieldOffset(AtomicInteger.class.getDeclaredField("value"));
+其中valueOffset为：unsafe.objectFieldOffset(AtomicInteger.class.getDeclaredField("value"));
 而unsafe的getAndAddInt 将判断 运行平台是否支持 fetch-and-add，
     如果支持，那么调用的将是native方法，执行效率将 提升很多
-    如果不支持，那么调用cas指令，如：
+    如果不支持，那么调用CAS指令，如：
         public final int getAndAddInt(Object o, long offset, int delta) {
             int v;
             do {
@@ -54,7 +54,7 @@ public final int incrementAndGet() {
     for (;;) {
         int current = get();
         int next = current + 1;
-        //compareandset只会执行一次，如果成功，就将field的值设置为next，如果失败（该field的值并不是get()返回的值），就返回false
+        //compareAndSet只会执行一次，如果成功，就将field的值设置为next，如果失败（该field的值并不是get()返回的值），就返回false
         //当成功时，退出循环，否则，一直循环下去
         if (compareAndSet(current, next))
             return next;

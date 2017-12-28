@@ -20,6 +20,7 @@ Java 并发 学习笔记
 并发问题：
 . 该资源会被多个线程访问（读 写）
 . 资源1和资源2 的一致性
+	（参考：ArrayBlockingQueue）
 	如：state和result，当state=success时，result必定有值
 	应该：state和result的访问逻辑 位于 同一个临界区中
 	不能：在访问state时考虑了并发，而result并没有考虑

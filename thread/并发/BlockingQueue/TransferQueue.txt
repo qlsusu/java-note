@@ -6,8 +6,8 @@ JDK7中TransferQueue的使用以及TransferQueue与SynchronousQueue的差别
 阻塞队列之LinkedTransferQueue
 	http://www.cnblogs.com/duanxz/p/3398446.html
 
-TransferQueue和BlockingQueue的比较：
-除了 其本身也提供了put/take等 放入/取出的阻塞方法 之外
+TransferQueue 和 一般BlockingQueue的比较：
+TransferQueue除了 其本身也提供了put/take等 放入/取出的阻塞方法 之外
 也提供了transfer系列方法
 	transfer(e)
 		e被放入到队列尾部

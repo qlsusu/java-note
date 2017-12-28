@@ -6,11 +6,12 @@ public final void acquireShared(int arg) {
 
 tryAcquireShared的 返回值 含义：
 >0
-	自身能获取，仍然有资源
+	本次能获取到资源，后续可能还能获取成功
 =0
-	自身能获取，但没有资源
+	本次能获取到资源，后续不能再获取到资源
 <0
-	自身不能获取，因为没有资源
+	本次不能获取到资源
+参见：CountDownLatch.Sync#tryAcquireShared
 	
 private void doAcquireShared(int arg) {
     final Node node = addWaiter(Node.SHARED);//加入队列尾部

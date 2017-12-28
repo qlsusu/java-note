@@ -1,0 +1,3 @@
+参见：
+Java并发编程的总结与思考 - 简书
+	https://www.jianshu.com/p/053943a425c3#

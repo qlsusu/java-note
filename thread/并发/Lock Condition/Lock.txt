@@ -15,9 +15,14 @@ lock申请的锁需要手动释放
 lock的释放 可以在其他线程中进行
 相较于synchronized，可认为 synchronized的锁只能在 本线程的 本方法(本方法的同步块)中来释放
 
-----------------ReentrantLock：
+----------------------------ReentrantLock
 内部核心：aqs
 参见：aqs-AbstractQueuedSynchronizer/
+
+和synchronized的区别：
+. 对于同一个Reentrant对象，可以在thread1中lock，而在thread2中unlock
+. 可以tryLock/tryLock(long timeout, TimeUnit unit)来 试图获取锁（对于签名中timeout的函数，将等待指定的时间）
+. ReentrantLock并不会被自动释放，需要手动调用unlock
 
 >>>公平性
 体现在：设thread1拥有lock，而thread2和thread3 已在排队 来等候获取该lock
@@ -41,7 +46,7 @@ Lock.lock() vs Lock.lockInterruptibly()
 lockInterruptibly()会抛出InterruptedException。则当在线程threadA上执行lockInterruptibly()，但是还没有获得该lock，而在外部调用 threadA.interrupt()，那么将抛出异常
 而lock()并不会发生异常
 
-----------------------------例子：
+----------------------------例子
 public class LockTest {
 	public static void main(String[] args) {
 		final Outputter1 output = new Outputter1();

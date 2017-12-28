@@ -22,7 +22,7 @@ class BoundedBuffer {
    public void put(Object x) throws InterruptedException {
      lock.lock();
      try {
-       while (count == items.length)//如果队列满了 
+       while (count == items.length)//如果队列满了
          notFull.await();//非满条件 不满足，await
 
        items[putptr] = x;//赋值 

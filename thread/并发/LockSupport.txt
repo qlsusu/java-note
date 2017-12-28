@@ -4,3 +4,9 @@
 唤醒一个thread1（即是：继续执行 LockSupport.park() 的后续指令）:
 LockSupport.unpark(thread1)
 或者thread1.interrupt()
+
+---------------------------park的其他方法
+LockSupport.park(Object blocker)
+	和park()相比，仅仅设置了 Thread.currentThread().parkBlocker属性
+LockSupport.parkNanos(long nanos);
+	park一段时间

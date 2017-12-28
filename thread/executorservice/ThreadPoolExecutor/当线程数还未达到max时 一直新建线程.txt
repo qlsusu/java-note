@@ -1,0 +1,34 @@
+参见：
+扩展ThreadPoolExecutor的一种办法 - CSDN博客
+	http://blog.csdn.net/linsongbin1/article/details/78275283
+
+ThreadPoolExecutor(
+	int corePoolSize,
+	int maximumPoolSize,
+	long keepAliveTime,
+	TimeUnit unit,
+	BlockingQueue<Runnable> workQueue,
+	ThreadFactory threadFactory,
+	RejectedExecutionHandler handler)
+
+对于ThreadPoolExecutor来说，当任务数超过了corePoolSize，再提交任务，会首先放入到队列中
+如果队列中放不下该任务，才试图新建线程（此刻，线程数还未达到maximumPoolSize）
+
+而，我们想：当任务数超过了corePoolSize，再提交任务，先优先新建线程，线程创建不了（个数已经达到maximumPoolSize），再将任务放入到队列中
+该如何实现呢
+
+方法1.
+我们可以采用SynchronousQueue，则，任务不可能放入到队列中，则会走新建线程的流程
+--
+方法2.
+如何判定能否往一个队列中放入任务呢？：
+BlockingQueue#offer()的返回值 如果为true，代表放入了，如果为false，代表没有放入
+则，我们可以实现一个 自定义的BlockingQueue（其事先继承于 某个BlockingQueue的实现子类）
+在offer方法的实现上：
+	判断ThreadPoolExecutor的任务提交数 是否小于 maximumPoolSize
+		如果<，则返回false（意味着 任务放不下，则新建线程）
+		如果>=，则返回super.offer（意味着 任务请放入到队列中）
+	在上述过程中，我们要获取 ThreadPoolExecutor的任务提交数，可以
+		建立变量 submitedTaskCount
+		在ThreadPoolExecutor#execute 中，+1
+		在ThreadPoolExecutor#afterExecute，-1
