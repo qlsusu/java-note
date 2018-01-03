@@ -11,7 +11,7 @@ java.io.Serializable浅析 - zero516cn - 博客园
 . 非transient
 
 serialVersionUID（类型：static final int）
+	说明：serialVersionUID如果不是static final int类型，等于没设置（如，仅仅被设置为static int）
 当要根据 字节流 来构建实体时（反序列化），首先判断 字节流中的serialVersionUID 是否和 实体类的 相同
 如果相同，就进行反序列化
 如果不相同，则抛出异常
-说明：serialVersionUID如果不是static final int类型，等于没设置（如，仅仅被设置为static int）

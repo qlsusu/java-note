@@ -1,0 +1,16 @@
+用于 类成员变量的延迟加载
+
+--------------------------------例子（参见：ActivityManager.java）
+private static final Singleton<IActivityManager> IActivityManagerSingleton =
+	new Singleton<IActivityManager>() {
+		@Override
+		protected IActivityManager create() {
+			final IBinder b = ServiceManager.getService(Context.ACTIVITY_SERVICE);
+			final IActivityManager am = IActivityManager.Stub.asInterface(b);
+			return am;
+		}
+	};
+	
+public static IActivityManager getService() {
+	return IActivityManagerSingleton.get();
+}

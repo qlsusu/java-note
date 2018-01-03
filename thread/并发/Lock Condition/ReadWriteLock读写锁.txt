@@ -9,13 +9,14 @@ Java线程(八)：锁对象Lock-同步问题更完美的处理方式
 	但是读和读是不需要互斥的
 
 ------------------------------------例子
+（另外一个例子，参见：db\最佳实践\并发实践.txt）
 public class ReadWriteLockTest {  
     public static void main(String[] args) {  
         final Data data = new Data();  
         for (int i = 0; i < 3; i++) {  
             new Thread(new Runnable() {  
                 public void run() {  
-                    for (int j = 0; j < 5; j++) {  
+                    for (int j = 0; j < 5; j++) {
                         data.set(new Random().nextInt(30));  
                     }  
                 }  
@@ -39,7 +40,7 @@ class Data {
     private ReadWriteLock rwl = new ReentrantReadWriteLock();
     public void set(int data) {  
         rwl.writeLock().lock();// 申请 写锁  
-        try {  
+        try {
             System.out.println(Thread.currentThread().getName() + "准备写入数据");  
             try {  
                 Thread.sleep(20);  
