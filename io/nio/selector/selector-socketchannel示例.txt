@@ -64,9 +64,10 @@ public class SelectorServer
     {
         SocketChannel sc = (SocketChannel)sk.channel();
         bb.clear();
+		//形式同于okio中的 Source.read(Sink)：将数据写入到ByteBuffer
         while (sc.read(bb) > 0)
         {
-            //将写模式切换为读模式
+            //读取ByteBuffer中的内容，则需要flip
             bb.flip();
             while (bb.hasRemaining())
             {
@@ -105,7 +106,9 @@ public class SelectorClient
                 String writeStr = STR + this.getName();
                 ByteBuffer bb = ByteBuffer.allocate(writeStr.length());
                 bb.put(writeStr.getBytes());
-                bb.flip(); // 写缓冲区的数据之前一定要先反转(flip)
+				//形式同于okio中的 Sink.write(Source)：将ByteBuffer写入到SocketChannel中
+				//这本质上涉及到 针对于ByteBuffer的读，则需要flip
+                bb.flip();
                 sc.write(bb);
                 bb.clear();
                 sc.close();

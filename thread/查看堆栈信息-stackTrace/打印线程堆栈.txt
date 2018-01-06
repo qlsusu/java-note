@@ -2,10 +2,13 @@
 如thread1在进行耗时操作，在规定时间内未处理完任务，则打印该线程的堆栈来查看 其卡在哪个操作上
 
 ------------------------如何查看
-StackTraceElement[] stackTrace = thread1.getStackTrace();
+System.out.println("xxx trace tag");
+StringBuilder sb = new StringBuilder();
+StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 for (StackTraceElement s : stackTrace) {
-    sb.append(s.toString() + "\n");
+	sb.append("\t" + s.toString() + "\n");
 }
+System.out.print(sb);
 
 或者：
 jps 来获取到进程号

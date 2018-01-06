@@ -2,10 +2,10 @@
 深入理解ThreadLocal（一）
 	http://mp.weixin.qq.com/s?__biz=MzI0MjE3OTYwMg==&mid=401548278&idx=1&sn=573d1cdf31a57db293b2b108e8d5c88b&scene=21#wechat_redirect
 
-如：有一个threadlocal对象，它在多个线程间共享，但
-	在线程1上，threadlocal.set(value1)
-	在线程2上，threadlocal.set(value2)
-则，虽然多个线程在访问同一个threadlocal对象，但是，每个线程都对应了一个value对象
+如：有一个ThreadLocal对象，它在多个线程间共享，但
+	在线程1上，ThreadLocal.set(value1)
+	在线程2上，ThreadLocal.set(value2)
+则，虽然多个线程在访问同一个ThreadLocal对象，但是，每个线程都对应了一个value对象
 
 应用场景：
 Looper#private static void prepare(boolean quitAllowed) {
@@ -17,22 +17,22 @@ Looper#private static void prepare(boolean quitAllowed) {
 即是：每个线程都对应了 各自的looper对象
 
 实现原理：
-每个thread有一个threadlocalmap，其可以认为是一个map，其内部定义了entry，使用entry[]来存储entry
-	entry（本质上是threadlocal的weakreference）:
+每个thread有一个ThreadLocalMap，其可以认为是一个map，其内部定义了entry，使用entry[]来存储entry
+	entry（本质上是ThreadLocal的weakreference）:
 		entry.key为 entry.get()
-		entry.value为 threadlocal的set时的值）
-也是通过entry.key的rehash值（本质上是entry.get()（即是threadlocal）的threadLocalHashCode），
-	threadlocal的hash值 并不是通过自身计算得来，而是threadlocal对象被实例化时 被分配（通过ThreadLocal.static AtomicInteger nextHashCode.getAndAdd(HASH_INCREMENT)）
+		entry.value为 ThreadLocal的set时的值）
+也是通过entry.key的rehash值（本质上是entry.get()（即是ThreadLocal）的ThreadLocalHashCode），
+	ThreadLocal的hash值 并不是通过自身计算得来，而是ThreadLocal对象被实例化时 被分配（通过ThreadLocal.static AtomicInteger nextHashCode.getAndAdd(HASH_INCREMENT)）
 		最终调用UnSafe#getAndAddInt(Object object, long fieldOffset, int delta)
 将entry映射到桶中
 	针对于桶，未采用链表形式，而是，桶中只有一个entry
 
 >>>hash冲突（开放地址法，非hashmap采用的链表法）：
-threadlocal.set 会调用 threadlocalmap.set(threadlocal, value):
+ThreadLocal.set 会调用 ThreadLocalMap.set(ThreadLocal, value):
 	使用entry.key.hashcode & (entry[].len-1)来定位在数组中的位置i
 		如果该位置上已经存放了entry，那么
-			判断该位置上的 entry的key 是否为 该threadlocal，如果是，那么更新 原有entry.value，结束
-			判断该位置上的 entry的key 是否为 null（因为entry是threadlocal的weakreference），如果为null，那么更新该entry的 key和value，结束
+			判断该位置上的 entry的key 是否为 该ThreadLocal，如果是，那么更新 原有entry.value，结束
+			判断该位置上的 entry的key 是否为 null（因为entry是ThreadLocal的weakreference），如果为null，那么更新该entry的 key和value，结束
 			移动到 数组的下一个位置（有可能循环到第0个位置）
 		如果该位置上没有存放entry，那么生成entry（这是key和value）并放入到该位置
 
