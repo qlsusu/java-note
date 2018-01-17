@@ -1,0 +1,24 @@
+和ThreadLocal有什么不同
+当我们要获取ThreadLocal对应的值，我们会先得到ThreadLocalMap：ThreadLocal#ThreadLocalMap getMap(Thread t)
+对于ThreadLocal，getMap返回Thread.threadLocals
+而对于InheritableThreadLocal，getMap返回Thread.inheritableThreadLocals
+而两个Thread的inheritableThreadLocals可能存放着相同的Entry，如：
+	thread1是thread2的parent，那么thread2.inheritableThreadLocals是这样构造的：
+	在Thread#init中，
+	this.inheritableThreadLocals = ThreadLocal.createInheritedMap(parent.inheritableThreadLocals)
+则，在thread1中构建了InheritableThreadLocal对象，且为其设置了值
+	那么此刻，thread1.inheritableThreadLocals被构建了，且其中包含了对应于 该InheritableThreadLocal对象 的Entry
+在thread1的执行过程中，创建了thread2，在thread2中 是可以读取到 InheritableThreadLocal对象对应的值的
+
+---------------------------------------------------例子
+final InheritableThreadLocal threadLocal = new InheritableThreadLocal();
+threadLocal.set("hello");
+
+new Thread(new FutureTask<Void>(new Callable<Void>() {
+	@Override
+	public Void call() throws Exception {
+		//能得到InheritableThreadLocal的值
+		System.out.println("threadlocal.value:" + threadLocal.get());
+		return null;
+	}
+})).start();

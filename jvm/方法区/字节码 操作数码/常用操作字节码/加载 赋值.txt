@@ -1,0 +1,8 @@
+加载 赋值：
+对于局部变量：xload xstore，如：
+	iload istore 针对于int
+	aload astore 针对于对象
+对于成员变量：
+	先aload 加载出对象1
+	getfield 得到对象1的成员变量的值
+	putfield 为对象1的成员变量赋值

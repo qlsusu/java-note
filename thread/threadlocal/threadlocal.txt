@@ -3,9 +3,12 @@
 	http://mp.weixin.qq.com/s?__biz=MzI0MjE3OTYwMg==&mid=401548278&idx=1&sn=573d1cdf31a57db293b2b108e8d5c88b&scene=21#wechat_redirect
 
 如：有一个ThreadLocal对象，它在多个线程间共享，但
-	在线程1上，ThreadLocal.set(value1)
-	在线程2上，ThreadLocal.set(value2)
+	在线程1上，ThreadLocal对象.set(value1)
+	在线程2上，ThreadLocal对象.set(value2)
 则，虽然多个线程在访问同一个ThreadLocal对象，但是，每个线程都对应了一个value对象
+	因为：value存放在 ThreadLocal.ThreadLocalMap.Entry#value 中
+	而Entry会存放在 java.lang.ThreadLocal.ThreadLocalMap#table 中
+	而不同的线程会提供不同的 ThreadLocalMap，则是 不同的ThreadLocalMap#table（存放着不同的Entry）
 
 应用场景：
 Looper#private static void prepare(boolean quitAllowed) {
@@ -14,16 +17,25 @@ Looper#private static void prepare(boolean quitAllowed) {
     }
     sThreadLocal.set(new Looper(quitAllowed));
 }
-即是：每个线程都对应了 各自的looper对象
+即是：每个线程都对应了 一个Looper对象
+--
+SQLiteDatabase#private final ThreadLocal<SQLiteSession> mThreadSession = new ThreadLocal<SQLiteSession>() {
+	@Override
+	protected SQLiteSession initialValue() {
+		return createSession();
+	}
+};
+即是：每个线程都对应了 一个SQLiteSession对象
 
 实现原理：
 每个thread有一个ThreadLocalMap，其可以认为是一个map，其内部定义了entry，使用entry[]来存储entry
 	entry（本质上是ThreadLocal的weakreference）:
 		entry.key为 entry.get()
 		entry.value为 ThreadLocal的set时的值）
-也是通过entry.key的rehash值（本质上是entry.get()（即是ThreadLocal）的ThreadLocalHashCode），
+也是通过entry.key的rehash值（本质上是entry.get()（即是ThreadLocal）.threadLocalHashCode），
 	ThreadLocal的hash值 并不是通过自身计算得来，而是ThreadLocal对象被实例化时 被分配（通过ThreadLocal.static AtomicInteger nextHashCode.getAndAdd(HASH_INCREMENT)）
 		最终调用UnSafe#getAndAddInt(Object object, long fieldOffset, int delta)
+			参见：CAS.txt
 将entry映射到桶中
 	针对于桶，未采用链表形式，而是，桶中只有一个entry
 
@@ -36,6 +48,16 @@ ThreadLocal.set 会调用 ThreadLocalMap.set(ThreadLocal, value):
 			移动到 数组的下一个位置（有可能循环到第0个位置）
 		如果该位置上没有存放entry，那么生成entry（这是key和value）并放入到该位置
 
->>>扩容
-当entry的个数 大于 threshold（数组length * 2/3）时，需要扩容（数组原length*2）：
-将entry数据 映射（通过 rehash值 & (新数组.length-1)）到新数组上
+>>>扩容（ThreadLocal.ThreadLocalMap#resize）
+时机：在放置一个Entry时
+条件：当entry的个数 > 0.75 * threshold（threshold = 数组length * 2/3）时，需要扩容（数组原length*2）：
+如何扩容：将entry数据 映射（通过 rehash值 & (新数组.length-1)）到新数组上
+
+>>>是否会引发内存泄漏
+设：ThreadLocal是 内部类（非静态）
+引用链为：
+	运行中的Thread-Thread#threadLocals-ThreadLocal.ThreadLocalMap.Entry
+		(-弱引用于-)ThreadLocal-			//链1
+		-ThreadLocal对应的值-				//链2
+链1不会引发内存泄漏
+链2可能会引发内存泄漏

@@ -1,0 +1,2 @@
+为什么 我们不能使用Unsafe在android中：
+我们找不到Unsafe这个类

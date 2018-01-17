@@ -1,2 +1,5 @@
 int		I
 long	IJ
+类		L完全限定类名（用/代替.）;
+	如：String	Ljava/lang/String;
+void	V

@@ -1,0 +1,7 @@
+Thread并没有成员变量parent，但是在init(ThreadGroup g, Runnable target, String name, long stackSize, AccessControlContext acc, boolean inheritThreadLocals)中
+Thread parent = currentThread();
+也即是 在线程1上创建了 线程2对象，那么线程2的parent是线程1
+
+而Thread.group来自
+. security.getThreadGroup()
+. 或者，parent.getThreadGroup()

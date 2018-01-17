@@ -1,0 +1,9 @@
+//取得Unsafe对象（需要通过反射的方式）
+//本质上通过Unsafe#getUnsafe，但是其内部会检查 是否为isSystemDomainLoader（对于一般的应用，其返回false）
+Field field = Unsafe.class.getDeclaredField("theUnsafe");
+field.setAccessible(true);
+unsafe = (Unsafe) field.get(null);
+
+Bean1 bean = new Bean1();
+bean.setAge(10);
+unsafe.compareAndSwapInt(bean, unsafe.objectFieldOffset(Bean1.class.getDeclaredField("age")), 10, 11);

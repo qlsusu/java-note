@@ -1,0 +1,68 @@
+参见：
+Java8中CAS的增强
+    http://ifeve.com/enhanced-cas-in-jdk8/
+Java CAS 和ABA问题
+	http://www.cnblogs.com/549294286/p/3766717.html
+JAVA并发编程学习笔记之CAS操作
+	http://blog.csdn.net/aesop_wubo/article/details/7537960
+原子操作(CAS)
+	http://286.iteye.com/blog/2295165
+
+CAS: compare and swap/set	
+	
+有什么用：
+代替锁，提高性能
+
+方法原型：
+Unsafe.compareAndSwapInt(object, fieldOffset, expect, update);
+    fieldOffset = unsafe.objectFieldOffset(object所属的class.getDeclaredField(field名字));
+CAS操作包含4个操作数——对象、内存位置（V（field在对象中的offset））、预期原值（A）、新值(B)。
+如果内存位置的值与预期原值相匹配，那么处理器会自动将该位置值更新为新值。否则，处理器不做任何操作
+    CAS是cpu的一个指令（汇编指令：CMPXCHG），其能在更新共享数据时，检测到其他线程的干扰
+最后，无论哪种情况，它都会在CAS指令之前返回该位置的值
+
+CAS需要和volatile配合使用
+
+----------------------------AtomicInteger的++i的cas实现方式：
+>>>1.8版本（fetch-and-add指令）
+public final int incrementAndGet() {
+    //atomicinteger.value是当前值
+    //在执行该fetch-and-add指令时，先判断当前 offset位置的field的值 是否为value
+    //如果不是的话，将再次执行（当条件不满足时，将一直循环下去），并使用新的value值来进行判断
+    //如果是的话，那么执行add操作
+    //unsafe.getAndAddInt将返回执行add操作之前的 值
+    //则，因为是incrementAndGet，那么需要返回add后的值，则需要 结果+1
+    return unsafe.getAndAddInt(this, valueOffset, 1) + 1;
+}
+其中valueOffset为：unsafe.objectFieldOffset(AtomicInteger.class.getDeclaredField("value"));
+而unsafe的getAndAddInt 将判断 运行平台是否支持 fetch-and-add指令
+    如果支持，那么调用的将是native方法，执行效率将 提升很多
+    如果不支持，那么调用CAS指令，如：
+        public final int getAndAddInt(Object o, long offset, int delta) {
+            int v;
+            do {
+            	//得到当前值
+                v = getIntVolatile(o, offset);
+            }
+            //如果不满足条件（field的值并不是v），将会一直循环下去（在下次循环时，更新value的值）
+            while (!compareAndSwapInt(o, offset, v, v + delta));
+            return v;
+        }
+        public native int getIntVolatile(Object o, long offset);
+        public final native boolean compareAndSwapInt(Object o, long offset,int expected, int x);
+
+>>>1.7版本（compare-and-swap指令）
+public final int incrementAndGet() {
+    for (;;) {
+        int current = get();
+        int next = current + 1;
+        //compareAndSet只会执行一次，如果成功，就将field的值设置为next，如果失败（该field的值并不是get()返回的值），就返回false
+        //当成功时，退出循环，否则，一直循环下去
+        if (compareAndSet(current, next))
+            return next;
+    }
+}
+
+public final boolean compareAndSet(int expect, int update) {
+    return unsafe.compareAndSwapInt(this, valueOffset, expect, update);
+}

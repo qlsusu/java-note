@@ -2,4 +2,8 @@
 图解集合6：LinkedHashMap
 	http://www.cnblogs.com/xrq730/p/5052323.html
 
-linkedhashmap可定义 遍历时采用什么顺序
+LinkedHashMap = HashMap + 双向链表
+双向链表（参见LinkedList）（单head，参见：双向链表.png）：最新被访问的元素 被放入到 tail
+其作为LruCache的内部 数据结构依赖
+
+可定义 遍历时采用什么顺序

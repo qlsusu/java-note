@@ -1,1 +1,15 @@
 一个方法要返回值，在try中进行了返回，后，还是会执行finally
+
+例子：
+private int getCount() {
+	try {
+		return 0; //语句1
+	} catch (Exception e) {
+		e.printStackTrace();
+		return -1;
+	} finally {
+		System.out.println("finally here"); //语句2
+	}
+}
+调用getCount方法时，语句的执行顺序为：
+即将要执行语句1时，发现其为return，转而执行语句2，后语句1 来真实返回
