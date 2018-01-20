@@ -2,7 +2,7 @@
 当我们要获取ThreadLocal对应的值，我们会先得到ThreadLocalMap：ThreadLocal#ThreadLocalMap getMap(Thread t)
 对于ThreadLocal，getMap返回Thread.threadLocals
 而对于InheritableThreadLocal，getMap返回Thread.inheritableThreadLocals
-而两个Thread的inheritableThreadLocals可能存放着相同的Entry，如：
+而两个Thread的inheritableThreadLocals可能存放着相同的 Entry的referent和value，如：
 	thread1是thread2的parent，那么thread2.inheritableThreadLocals是这样构造的：
 	在Thread#init中，
 	this.inheritableThreadLocals = ThreadLocal.createInheritedMap(parent.inheritableThreadLocals)

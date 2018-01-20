@@ -1,13 +1,15 @@
 参见：
 深入理解ThreadLocal（一）
 	http://mp.weixin.qq.com/s?__biz=MzI0MjE3OTYwMg==&mid=401548278&idx=1&sn=573d1cdf31a57db293b2b108e8d5c88b&scene=21#wechat_redirect
+理解Java中的ThreadLocal - 技术小黑屋
+	http://droidyue.com/blog/2016/03/13/learning-threadlocal-in-java/
 
 如：有一个ThreadLocal对象，它在多个线程间共享，但
 	在线程1上，ThreadLocal对象.set(value1)
 	在线程2上，ThreadLocal对象.set(value2)
 则，虽然多个线程在访问同一个ThreadLocal对象，但是，每个线程都对应了一个value对象
 	因为：value存放在 ThreadLocal.ThreadLocalMap.Entry#value 中
-	而Entry会存放在 java.lang.ThreadLocal.ThreadLocalMap#table 中
+	而Entry会存放在 ThreadLocal.ThreadLocalMap#table 中
 	而不同的线程会提供不同的 ThreadLocalMap，则是 不同的ThreadLocalMap#table（存放着不同的Entry）
 
 应用场景：
@@ -26,6 +28,7 @@ SQLiteDatabase#private final ThreadLocal<SQLiteSession> mThreadSession = new Thr
 	}
 };
 即是：每个线程都对应了 一个SQLiteSession对象
+使用这个方式时，当在线程1上，调用ThreadLocal.get()时，会判断ThreadLocal#getMap(Thread t)中是否存在对应的Entry，如果没有，会调用ThreadLocal#initialValue
 
 实现原理：
 每个thread有一个ThreadLocalMap，其可以认为是一个map，其内部定义了entry，使用entry[]来存储entry
@@ -50,14 +53,19 @@ ThreadLocal.set 会调用 ThreadLocalMap.set(ThreadLocal, value):
 
 >>>扩容（ThreadLocal.ThreadLocalMap#resize）
 时机：在放置一个Entry时
-条件：当entry的个数 > 0.75 * threshold（threshold = 数组length * 2/3）时，需要扩容（数组原length*2）：
+条件：当entry的个数 > 0.75 * threshold（当数组的长度发生改变时，会重设threshold（=数组length * 2/3））时，需要扩容（数组原length*2）：
 如何扩容：将entry数据 映射（通过 rehash值 & (新数组.length-1)）到新数组上
 
 >>>是否会引发内存泄漏
 设：ThreadLocal是 内部类（非静态）
 引用链为：
 	运行中的Thread-Thread#threadLocals-ThreadLocal.ThreadLocalMap.Entry
-		(-弱引用于-)ThreadLocal-			//链1
-		-ThreadLocal对应的值-				//链2
+		-弱引用于-ThreadLocal				//链1
+		-ThreadLocal对应的值				//链2
 链1不会引发内存泄漏
 链2可能会引发内存泄漏
+	虽然ThreadLocalMap会清理无效的Entry（其referent==null）
+	但是只在ThreadLocal.ThreadLocalMap#set时：
+	ThreadLocal.ThreadLocalMap#set(ThreadLocal<?> key, Object value)
+		ThreadLocal.ThreadLocalMap#rehash
+			ThreadLocal.ThreadLocalMap#expungeStaleEntries

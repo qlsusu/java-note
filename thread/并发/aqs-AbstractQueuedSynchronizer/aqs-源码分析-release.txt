@@ -1,5 +1,7 @@
 public final boolean release(int arg) {
 	//子类来实现tryRelease
+	//返回的 boolean代表：是否可以唤醒head的后继
+	//如：可参见ReentrantLock.Sync#tryRelease：因为ReentrantLock是 资源可重入的，则设 当前线程申请了3次资源，则只有释放了3次资源后，才允许唤醒其他Node
 	if (tryRelease(arg)) {
 		Node h = head;
 		//唤醒head的 后继节点.thread
@@ -22,8 +24,9 @@ private void unparkSuccessor(Node node) {
 	if (ws < 0)
 		compareAndSetWaitStatus(node, ws, 0);
 
-	//唤醒 有效的后继节点（未被cancel）.thread
-	//后继.thread被唤醒后，回到parkAndCheckInterrupt继续执行，并最终回到acquireQueued来执行for循环
+	//唤醒 有效的后继节点（未被cancel的）.thread
+	//（注意：此处并没有改变Node链）
+	//后继.thread被唤醒后，回到parkAndCheckInterrupt继续执行，并最终回到acquireQueued来执行for循环（试图获得锁：tryAcquire）
 	/*
 	 * Thread to unpark is held in successor, which is normally
 	 * just the next node.  But if cancelled or apparently null,

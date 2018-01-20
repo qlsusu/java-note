@@ -8,10 +8,18 @@ Java并发之AQS详解 - waterystone - 博客园
 
 对上述流程进行了封装，则针对于 上层开发者，其只需要实现如下：
 定义 如何能获得/释放 资源（参考于 AbstractQueuedSynchronizer#state的值）
-	对于独占资源，需要实现：tryAcquire, tryRelease
-	对于共享资源，需要实现：tryAcquireShared, tryReleaseShared
+	对于独占资源，需要实现：boolean tryAcquire, boolean tryRelease
+	对于共享资源，需要实现：int tryAcquireShared, boolean tryReleaseShared
 	--
 	这也是为什么tryAcquire等方法不是abstract的原因：如果一种AQS的子类实现 仅仅是一种情况（独占资源，或者，共享资源），则没有必要实现 两组方法
+	--
+	提供辅助AbstractQueuedSynchronizer#state（int类型）来协助 上述定义：state什么意思：
+		对于独占资源（如：ReentrantLock）：当前，所有线程（包含自身线程）总共申请到了多少个资源。在tryAcquire时
+			如果发现state为0，则意味着 当前还没有线程 申请到该资源，那么我可以来申请
+			如果发现state不为0，则需要去查看 当前资源的占用线程是否为自身线程，如果是，就可以申请得到，否则，申请失败
+		对于共享资源（如：CountDownLatch）：当前，“nobody”总共申请到了多少个资源（state的值是在构造函数中指定）。在tryAcquire时
+			如果发现state为0，则意味着 可以申请得到
+			如果发现state不为0，则意味着 不能申请得到
 
 采用了CAS的方式（并未采用Sychronized）
 		
@@ -19,13 +27,6 @@ Java并发之AQS详解 - waterystone - 博客园
 >>> acquire资源时
 开发者来定义 什么情况下可获得资源（tryAcquire）
 	提供了额外的state来协助实现
-	state是什么：
-		其是int类型，代表了资源
-		如：对于ReentrantLock，state代表了 在某个线程上 一共成功申请了多少资源
-			在lock时，会acquire，当state为0时，则可申请成功（后state+=1）
-			在同一个线程上，继续acquire时，state+=1，
-			而在release时，会使得state-=1，
-			当其他线程申请资源时，只有state为0时，才可申请得到
 如果能获得，那么继续客户流程
 如果不能获得，那么会生成数据结构Node，并将Node入队列（链表表示）的尾部
 	Node
@@ -47,15 +48,16 @@ Java并发之AQS详解 - waterystone - 博客园
 			
 >>> release资源时
 开发者来定义 释放资源（tryRelease）并告诉是否可以唤醒后续节点
+	提供了额外的state来协助实现
 如果最终允许唤醒后继节点，那么会唤醒后继节点.thread（离head最近的 未cancel的节点），使得其走 试图获得资源的流程
 注意：此刻并没有调整Node队列（如：设置head）
 
-release后，哪个线程能获取资源，一种情况：
+release后，哪个线程能获取资源，一种情况（ReentrantLock的非公平情况）：
 对于非公平ReentrantLock，线程1持有资源，线程2在等待获取
 当release时，线程1在tryRelease中修改state为0，并返回true来允许唤醒线程2
 而线程x此刻来tryAcquire，其是有将state从0变成1的可能，当成功后，其获得了资源
 回到线程2，其被唤醒后，在tryAcquire时 失败，最终又被park
-此时，拥有资源的线程 并不是head.thread，而是Node队列之外的 线程x
+此时，拥有资源的线程 并不是head.next.thread，而是Node队列之外的 线程x
 
 ----------------并发性保证:
 aqs没有使用synchronized关键字

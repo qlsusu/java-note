@@ -1,3 +1,4 @@
+用于获取独占资源
 public final void acquire(int arg) {
 	if (!tryAcquire(arg) &&
 		acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
@@ -8,8 +9,9 @@ public final void acquire(int arg) {
 . 请求资源
 . 该资源是否可以被请求（由子类的tryAcquire来实现）
 	如果可以请求得到，则线程未被阻塞，则继续执行
-	否则，生成一个节点（代表了本次请求），插入到链表尾部
-	阻塞线程（前继节点的status需要为SIGNAL，为了：该前继节点释放资源后，需要唤醒其后继节点（即是：自身节点）的thread）
+	否则，
+		生成一个节点（代表了本次请求），插入到链表尾部
+		阻塞线程（前继节点的status需要为SIGNAL，为了：该前继节点释放资源后，需要唤醒其后继节点（即是：自身节点）的thread 来试图获取资源）
 
 //试图获得锁（基于队列（链表实现））
 //返回：node是否被interrupt
@@ -42,7 +44,13 @@ final boolean acquireQueued(final Node node, int arg) {
 }
 
 //设置前继节点的waitStatus为SIGNAL
-//返回：是否当前前继的ws为SIGNAL
+//返回：是否需要park 当前Node.thread
+//注意：该方法可能会调整node链，也可能会被并发调用
+//为什么并发调用时，还是正常的：
+//设node1.thread 和 node2.thread上 均在执行该方法，则意味着node1和node2均未获取到资源，且node1一定在node2的前面
+//这里的调整node链，仅仅是在重设Node.prev（=一个没被cancel的Node）
+//则一般情况下，node2.prev最差的情况下为node1（既是：node2并不会调整 node1之前的Node链）
+//则，并发调用是安全的
 private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
 	int ws = pred.waitStatus;
 	if (ws == Node.SIGNAL)
@@ -52,9 +60,10 @@ private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
 		 */
 		return true;
 	//CANCELED值为1（也只有该status是>0的）
-	//如果前继的状态为cancel，那么向前寻找一个status不为cancel的节点，并使其成为node的前继
+	//如果前继的状态为cancel，那么向前寻找一个status不为cancel的节点，并使其成为node的前继（对节点链进行调整）
 	//注意：此刻，函数返回值为false，则之后会再次进入acquireQueued的for循环中
 	//则有可能经过该前继的调整，node的前继就为head了，可以试图获得资源了
+	//也有可能node.thread被真的unpark
 	if (ws > 0) {
 		/*
 		 * Predecessor was cancelled. Skip over predecessors and
