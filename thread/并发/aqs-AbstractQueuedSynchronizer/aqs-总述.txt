@@ -23,7 +23,7 @@ Java并发之AQS详解 - waterystone - 博客园
 
 采用了CAS的方式（并未采用Sychronized）
 		
-------------------------------------------------核心流程（可和ReentrantLock一起来查看）：
+------------------------------------------------核心流程（可和ReentrantLock 和 CountDownLatch一起来查看）：
 >>> acquire资源时
 开发者来定义 什么情况下可获得资源（tryAcquire）
 	提供了额外的state来协助实现
@@ -39,7 +39,7 @@ Java并发之AQS详解 - waterystone - 博客园
 	--
 	当该Node是head的后继时，会试图获得资源（参见：acquireQueue中的for流程，即是：当该Node被唤醒时，还是会重走for流程）
 		如果能获得，那么会设置自身为head，继续客户流程
-			对于共享锁，此刻，会自动doReleaseShare 来再次唤醒 新head的后继节点
+			对于共享锁，此刻，会唤醒 新head的后继节点（参见：AbstractQueuedSynchronizer#setHeadAndPropagate）
 		如果不能获得资源，那么Node会被阻塞（先要找到（并调整前继节点）前继节点（其waitStatus为SIGNAL）），等待被唤醒，
 			唤醒方式为：
 				被head节点 unparkSuccessor
@@ -49,8 +49,10 @@ Java并发之AQS详解 - waterystone - 博客园
 >>> release资源时
 开发者来定义 释放资源（tryRelease）并告诉是否可以唤醒后续节点
 	提供了额外的state来协助实现
-如果最终允许唤醒后继节点，那么会唤醒后继节点.thread（离head最近的 未cancel的节点），使得其走 试图获得资源的流程
-注意：此刻并没有调整Node队列（如：设置head）
+如果最终允许唤醒后继节点，那么会唤醒 head的后继节点.thread（离head最近的 未cancel的节点），使得其走 试图获得资源的流程
+注意：
+head.waitStatus会被设为0（在unparkSuccessor中，或，在doReleaseShared中）
+此刻并没有调整Node链表（如：设置head）
 
 release后，哪个线程能获取资源，一种情况（ReentrantLock的非公平情况）：
 对于非公平ReentrantLock，线程1持有资源，线程2在等待获取
@@ -58,6 +60,11 @@ release后，哪个线程能获取资源，一种情况（ReentrantLock的非公
 而线程x此刻来tryAcquire，其是有将state从0变成1的可能，当成功后，其获得了资源
 回到线程2，其被唤醒后，在tryAcquire时 失败，最终又被park
 此时，拥有资源的线程 并不是head.next.thread，而是Node队列之外的 线程x
+
+----------------什么时候调整了Node链表！！！！！！！！
+. 当一个线程不能获取到资源，会生成节点，放入到Node链表的尾部
+. 在一个节点被唤醒后，当其pre是head 且能获取到资源时，会设置head为其自身（移除之前的head）
+. shouldParkAfterFailedAcquire时，会设置pre.waitStatus为SIGNAL，则会先找到未被cancel的前节点（移除已被cancel的 中间前节点）
 
 ----------------并发性保证:
 aqs没有使用synchronized关键字

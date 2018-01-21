@@ -9,6 +9,7 @@ JAVA并发编程学习笔记之CAS操作
 	http://286.iteye.com/blog/2295165
 
 CAS: compare and swap/set	
+CAS实际上利用了 处理器提供的CMPXCHG指令（一个原子性操作）
 	
 有什么用：
 代替锁，提高性能
