@@ -71,6 +71,14 @@ public class ByteInfo extends FatherBean {
         volatileAge += 1;
         volatileAge = volatileAge + 2;
         System.out.println("volatileAge:" + volatileAge);
+
+        method2();
+        method3();
+
+        method4().method3();
+
+        staticMethod();
+        FatherBean.fatherStaticMethod();
     }
 
     private void sub(int a, int b, long c, String str) {
@@ -93,5 +101,24 @@ public class ByteInfo extends FatherBean {
             c = a + b;
         }
         System.out.println(c);
+    }
+
+    @Override
+    protected void method2() {
+        super.method2();
+        System.out.println("byteinfo.method2");
+    }
+
+    private void method3() {
+        System.out.println("byteinfo.method3");
+    }
+
+    private ByteInfo method4() {
+        System.out.println("byteinfo.method4");
+        return this;
+    }
+
+    private static void staticMethod() {
+        System.out.println("ByteInfo.staticMethod");
     }
 }

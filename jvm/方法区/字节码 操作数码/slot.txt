@@ -1,0 +1,3 @@
+1个slot可能为 32/64位
+1个slot必须能够存储下 一个int,float,reference/return address
+而对于long/double，有可能需要2个slot来存储

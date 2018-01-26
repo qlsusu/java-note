@@ -1,2 +1,4 @@
 为什么 我们不能使用Unsafe在android中：
 我们找不到Unsafe这个类
+
+但是，我们可以使用AtomicInteger等，其内部可使用Unsafe

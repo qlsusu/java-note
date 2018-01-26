@@ -10,3 +10,8 @@ LockSupport.park(Object blocker)
 	和park()相比，仅仅设置了 Thread.currentThread().parkBlocker属性
 LockSupport.parkNanos(long nanos);
 	park一段时间
+	
+---------------------------先执行unpark，再park时
+先执行：在thread1中，LockSupport.unpark(thread2)	
+后执行：在thread2中，LockSupport.park
+结果：thread2并没有被挂起，而是继续执行后续流程

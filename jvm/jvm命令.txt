@@ -1,6 +1,7 @@
 参见：
 Java虚拟机3：常用JVM命令参数
 	http://www.cnblogs.com/xrq730/p/4830692.html
+年轻代 年老代 永久代-图示.png
 	
 如：
 -Xmx20M

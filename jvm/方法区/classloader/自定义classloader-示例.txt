@@ -18,11 +18,13 @@ public class NetworkClassLoader extends ClassLoader {
 	@Override
 	protected Class<?> findClass(String name) throws ClassNotFoundException {
 		Class clazz = null;
-		byte[] classData = getClassData(name);	//根据类的二进制名称,获得该class文件的字节码数组
+		//自定义实现：根据类的完全限定名称，来获得该class文件的字节码byte[]
+		byte[] classData = getClassData(name);
 		if (classData == null) {
 			throw new ClassNotFoundException();
 		}
-		clazz = defineClass(name, classData, 0, classData.length);	//将class的字节码数组转换成Class类的实例
+		//核心：确定关系：完全限定类名 和 类的字节码的byte[]
+		clazz = defineClass(name, classData, 0, classData.length);
 
 		return clazz;
 	}

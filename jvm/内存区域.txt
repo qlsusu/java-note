@@ -1,3 +1,5 @@
 栈
 堆
 非堆
+	intern String
+	方法区

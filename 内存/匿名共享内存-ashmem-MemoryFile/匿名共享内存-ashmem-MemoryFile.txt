@@ -3,6 +3,7 @@ Android匿名共享内存和MemoryFile
 	http://blog.csdn.net/goodlixueyong/article/details/53151959
 Android匿名共享内存（Ashmem）原理 - 简书
 	http://www.jianshu.com/p/d9bc9c668ba6
+https://code.facebook.com/posts/366199913563917
 
 Anonymous Shared Memory
 简称：ashmem
@@ -15,8 +16,7 @@ Anonymous Shared Memory
 
 使用例子：
 app进程 和 SurfaceFlinger进程 共用了一块匿名共享内存（共享Surface数据）
-
-
+参见：SurfaceFlinger/
 
 对于android
 我们使用MemoryFile来代表该 共享内存，并用于 进程间传递数据（避免什么问题：通过Binder来进行传输，传输量有限（<1M））
@@ -28,13 +28,17 @@ app进程 和 SurfaceFlinger进程 共用了一块匿名共享内存（共享Sur
 	//往MemoryFile中写入contentBytes
 	mf.writeBytes(contentBytes, 0, 0, contentBytes.length);
 	//得到MemoryFile的FileDescription
+	//通过反射的方式，因为MemoryFile#getFileDescriptor无法被直接调用
 	Method method = MemoryFile.class.getDeclaredMethod("getFileDescriptor");
 	FileDescriptor fd = (FileDescriptor) method.invoke(mf);
 	//将fd转化为ParcelFileDescription
 	ParcelFileDescriptor pfd = ParcelFileDescriptor.dup(fd);
-	至此，我们可以将pfd传递给client进程，
+	至此，我们可以将pfd传递给client进程
 在client进程中：
-	得到ParcelFileDescription后，通过ParcelFileDescriptor#getFileDescriptor来构建InputStream，最终读取到了 共享内存中的数据
+	得到ParcelFileDescription后，通过ParcelFileDescriptor#getFileDescriptor来构建InputStream，最终读取到了 共享内存中的数据	
 
 如何释放该共享内存：
 	关闭 该FileDescription代表的File
+
+------------------------------问题
+在上述例子中，在client得到了FileDescription后，我们不能据此来构建FileOutputStream来写入内容（server再从中来读取）
