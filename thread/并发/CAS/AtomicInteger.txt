@@ -1,7 +1,7 @@
-在java 1.5的java.util.concurrent.atomic包下提供的 针对于Integer的 原子操作类，提供：
-	自增（加1操作），
-	自减（减1操作）、
-	加法操作（加一个数），
+在java 1.5的java.util.concurrent.atomic包下提供的 针对于Integer的 原子操作类，提供：	
+	自增（加1操作）
+	自减（减1操作）
+	加法操作（加一个数）
 	减法操作（减一个数）
 
 内部使用Unsafe.compareAndSwap 和 while 来保证原子性

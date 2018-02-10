@@ -1,15 +1,18 @@
 一个方法要返回值，在try中进行了返回，后，还是会执行finally
 
 例子：
-private int getCount() {
+private int getCount() throws Exception{
 	try {
+		// some logic
 		return 0; //语句1
 	} catch (Exception e) {
 		e.printStackTrace();
-		return -1;
+		throw e; //语句2
 	} finally {
-		System.out.println("finally here"); //语句2
+		System.out.println("finally here"); //语句3
+		// return -1; //当放开此句时，如果在执行过程中，未throw，则最终返回-1，而不是 try中 正常逻辑的返回值；如果执行的过程中，throw了，则最终throw，而非return
 	}
 }
 调用getCount方法时，语句的执行顺序为：
-即将要执行语句1时，发现其为return，转而执行语句2，后语句1 来真实返回
+若即将要执行语句1时，发现其为return，转而执行语句3，后语句1 来真实返回
+若即将要执行语句2时，发现其为throw，转而执行语句3，后语句2 来真实throw
