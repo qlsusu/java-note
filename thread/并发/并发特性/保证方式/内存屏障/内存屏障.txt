@@ -1,0 +1,35 @@
+参见：
+一文解决内存屏障 | 程序猿说你好
+	https://monkeysayhi.github.io/2017/12/28/%E4%B8%80%E6%96%87%E8%A7%A3%E5%86%B3%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C/
+内存屏障 | 并发编程网 – ifeve.com
+	http://ifeve.com/memory-barriers-or-fences/
+【死磕Java并发】—–深入分析volatile的实现原理-cmsblogs-chenssy
+	http://cmsblogs.com/?p=2092
+【死磕Java并发】—–Java内存模型之分析volatile-cmsblogs-chenssy
+	http://cmsblogs.com/?p=2148
+
+保障的是什么：
+. 可见性
+. 禁止重排序
+
+-------------------------------x86架构下的内存屏障
+sfence（StoreStore屏障）
+sfence使得 在其之前的store指令 在其之前执行
+sfence使得 对共享变量的修改 写入到主存
+sfence前后的store指令 不能跨过该fence 进行重排序
+
+lfence（LoadLoad屏障）
+lfence使得 在其之后的load指令 在其之后执行
+lfence使得 当前cpu的缓存中的共享变量的值 为最新（可见了：其他cpu对共享变量的修改）
+lfence前后的load指令 不能跨过该fence 进行重排序
+
+mfence（StoreLoad屏障）
+mfence效果 = sfence + lfence
+
+>>> 针对于volatile变量
+在写volatile变量时，在store指令之后 加入sfence
+在读volatile变量时，在load指令之前 加入lfence
+
+>>> 针对于final变量
+final变量的赋值，本质上在构造函数<init>中进行
+在写final变量时，在store指令之后 加入sfence

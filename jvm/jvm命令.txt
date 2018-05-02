@@ -1,4 +1,6 @@
 参见：
+JVM系列三:JVM参数设置、分析 - redcreen - 博客园
+	http://www.cnblogs.com/redcreen/archive/2011/05/04/2037057.html
 Java虚拟机3：常用JVM命令参数
 	http://www.cnblogs.com/xrq730/p/4830692.html
 年轻代 年老代 永久代-图示.png

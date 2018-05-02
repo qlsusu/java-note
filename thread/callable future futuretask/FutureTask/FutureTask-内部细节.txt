@@ -74,7 +74,7 @@ public boolean cancel(boolean mayInterruptIfRunning) {
 		//这里的compareAndSwapInt到INTERRUPTING/CANCELLED 的手法 同于 set/setException中的compareAndSwapInt到COMPLETING
 		//因为二者执行完毕后，都会执行finishCompletion（则该completion的调用处 只能 二选一：set/setException 或者 cancel）
 		//也要注意：
-		//cancel操作，可能并不会使得 run()中 c.call()抛出异常，即是：c.call()可能会继续执行下去（只是之后的set/setException均因state而没有正常执行）
+		//cancel操作，可能并不会使得 run()中 c.call()抛出异常（如果参数mayInterruptIfRunning为true，将会执行Thread.interrupt，则有可能导致执行线程抛出InterruptedException），即是：c.call()可能会继续执行下去（只是之后的set/setException均因state而没有正常执行）
 		state == NEW &&
 		UNSAFE.compareAndSwapInt(this, stateOffset, NEW, mayInterruptIfRunning ? INTERRUPTING : CANCELLED)))
 		return false;

@@ -1,0 +1,27 @@
+参见：
+为什么在Java中不使用finalize()方法 - CSDN博客
+	http://blog.csdn.net/maoyeqiu/article/details/49562093
+java避免使用finalize方法
+java将弃用finalize()方法？
+	http://www.linuxidc.com/Linux/2017-03/142352.htm
+
+在生成了 复写了finalize()的类的 对象1时，会产生Finalizer对象（继承自FinalReference，也是Reference的一种）
+当对象1不可达时，该Finalizer会放入到Finalizer#queue中（static ReferenceQueue<Object>）（Reference#tryHandlePending中的逻辑）
+	注意：此时，对象1并不会被认为是垃圾，因为存在路径：Finalizer#queue（static类型）-Finalizer-对象1
+Finalizer的static中，会启动Finalizer.FinalizerThread（级别为 Thread.MAX_PRIORITY-2 ，也不是很低，但是为daemon thread）
+	其run核心为：
+	JavaLangAccess var1 = SharedSecrets.getJavaLangAccess();
+	...
+	//注意：此句执行完后，对象1不可达了，将被回收
+	//之后，对象1的 其他reference（如：弱引用等）才会相继被处理：Reference#tryHandlePending	
+	Finalizer var2 = (Finalizer)Finalizer.queue.remove();
+	var2.runFinalizer(var1);
+		进而执行被引用对象的finalize()
+
+为什么不用Finalizer（一个例子）：
+在while循环中，不停的生成临时对象（而临时对象 的类中 复写了finalize()），则对于每个临时对象 均会生成对应的Finalizer对象，
+最终这些Finalizer对象会入队到 Finalizer#queue
+由于每个Finalizer.referent都要执行finalize方法，且是顺序执行，则
+. finalize方法中的 清理操作不一定及时
+. finalize方法在FinalizerThread上执行，但该线程为daemon thread，则有可能 清理操作不一定完成 进程就退出了
+. 而又因为finalize方法的执行需要时间，则其他Finalizer在Finalizer#queue的存活时间越来越长（未被remove来执行finalize方法），随着Finalizer#queue的容量的增大，有可能会产生OOM

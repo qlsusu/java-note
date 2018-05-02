@@ -1,7 +1,0 @@
-Field field = Unsafe.class.getDeclaredField("theUnsafe");
-field.setAccessible(true);
-unsafe = (Unsafe) field.get(null);
-
-Bean1 bean = new Bean1();
-bean.setAge(10);
-unsafe.compareAndSwapInt(bean, unsafe.objectFieldOffset(Bean1.class.getDeclaredField("age")), 10, 11);

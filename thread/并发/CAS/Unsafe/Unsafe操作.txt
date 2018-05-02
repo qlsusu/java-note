@@ -1,0 +1,30 @@
+参见：
+聊聊高并发（十八）理解AtomicXXX.lazySet方法 - CSDN博客
+	http://blog.csdn.net/iter_zc/article/details/40744485###;
+Java中Unsafe类详解 - mickole - 博客园
+	http://www.cnblogs.com/mickole/articles/3757278.html
+
+>>> 数据访问
+compareAndSetXXX(Object src, long fieldOffset, expect, update)
+putOrderedXXX(Object src, long fieldOffset, update)
+	对共享变量的修改，其可见（对其他线程）并没有那么及时
+	为什么需要：
+		fieldOffset对应的属性 可能是volatile
+		那么读写volatile变量时，采用了内存屏障（而其会产生消耗），而在某些情形下，是没有必要使用内存屏障的
+		考虑如下情形：
+			volatile int a;
+			volatile int b;			
+			a=1;//语句1
+			b=2;//语句2
+		此情形下，会在 语句1和语句2 之后都加入sfence，而sfence会将 对共享变量的修改写入到内存，则语句1对应的内存屏障是没有必要的
+		应该使用putOrderedXXX来提升性能
+		
+>>> 内存操作
+allocateMemory
+reallocateMemory
+	扩充内存
+freeMemory
+
+>>> 线程操作（使用于LockSupport）
+park
+unpark

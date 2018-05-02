@@ -22,7 +22,7 @@ get(index)时，决定从 链头 还是 链尾 的位置进行查找
 	
 设链表结构为：
 	head a b c head
-在b位置插入d，结构变为：head a d b c head
+在b位置（b之前）插入d，结构变为：head a d b c head
 需要做的事情：
 	d.next=b;
 	d.previous=b.previous

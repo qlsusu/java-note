@@ -1,0 +1,11 @@
+byte[] data = new byte[10];
+System.out.println(Arrays.toString(data));
+byteArrayBaseOffset = UNSAFE.arrayBaseOffset(byte[].class);
+
+UNSAFE.putByte(data, byteArrayBaseOffset, (byte) 1);
+UNSAFE.putByte(data, byteArrayBaseOffset + 5, (byte) 5);
+System.out.println(Arrays.toString(data));
+
+结果：
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+[1, 0, 0, 0, 0, 5, 0, 0, 0, 0]

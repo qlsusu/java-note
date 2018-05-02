@@ -1,2 +1,5 @@
-java中的局部final变量 到底是什么：
-参见：http://developer.51cto.com/art/200906/128214.htm
+参见：
+Java的局部内部类以及final类型的参数和变量
+	http://developer.51cto.com/art/200906/128214.htm
+
+对于非static的final变量，其可在构造函数中进行赋值

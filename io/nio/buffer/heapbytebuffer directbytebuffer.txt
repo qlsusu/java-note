@@ -3,10 +3,12 @@
 	http://www.importnew.com/26334.html
 java之HeapByteBuffer&DirectByteBuffer以及回收DirectByteBuffer
 	http://blog.csdn.net/xieyuooo/article/details/7547435
+MaxDirectMemorySize – hellojavacases微信公众号网站
+	http://hellojava.info/?tag=maxdirectmemorysize
 
---------------------io访问过程：
-用户态的heap上的缓冲区 <-> 用户态的直接缓冲区（heap外） <-> 核心态的缓冲区 <-> io资源
-为什么需要 数据拷贝 在 heap上的缓冲区 <-> 用户态的直接缓冲区：
+--------------------传统的io访问过程：
+用户态的heap上的缓冲区 <-> 用户态的native缓冲区（heap外） <-> 核心态的缓冲区 <-> io资源
+为什么需要 数据拷贝 在 heap上的缓冲区 <-> 用户态的native缓冲区：
 	只有内核才能访问io，而内核需要 用户态上的一块连续的byte序列 来存放数据
 	如果heap上的缓冲区 直接和 内核交互，则产生问题：
 		heap上的内存 是受jvm管理的，则gc操作将使得 heap上的 垃圾对象被清除 有效对象被移动，则原先的那块用于存放io数据的 byte序列，此刻可能存放着别的对象
@@ -52,14 +54,17 @@ ByteBuffer.allocateDirect(int capacity);
 	构建DirectByteBuffer(capacity)对象
 		unsafe.allocateMemory(size);
 		生成Cleaner对象（其继承于虚引用，其clean方法对应的Runnable为 Deallocator）
-并不是在heap上分配，而是在 用户态的直接内存上分配（则 该部分内存 并不受jvm控制）（通过unsafe进行）
-使用其进行io访问时，并不需要 heap上的缓冲区<->用户态的直接缓冲区 的数据拷贝，则性能有所提升
-最大可申请多少：-XX:MaxDirectMemorySize x[m|g]
+并不是在heap上分配，而是在 用户态的native内存上分配（则 该部分内存 并不受jvm控制）（通过Unsafe.allocateMemory）
+使用其进行io访问时，并不需要 heap上的缓冲区<->用户态的native缓冲区 的数据拷贝，而是直接访问 用户态的native内存（如：DirectByteBuffer#get()），则性能有所提升
 
---------------------如何释放DirectByteBuffer：
+最大可申请多少：
+-XX:MaxDirectMemorySize x[m|g]
+注意：-Xmx + MaxDirectMemorySize 的值不能超过 物理内存的大小
+
+--------------------如何释放DirectByteBuffer
 释放时机：
 . System.gc
-. 申请直接内存失败时，会释放垃圾DirectByteBuffer对应的直接内存，有可能还会调用gc
+. 申请native内存失败时，会释放垃圾DirectByteBuffer对应的native内存，有可能还会调用gc
 
 为什么gc可以释放DirectByteBuffer：
 DirectByteBuffer包含了一个Cleaner来引用DirectByteBuffer
@@ -67,8 +72,11 @@ DirectByteBuffer包含了一个Cleaner来引用DirectByteBuffer
 参照于该处理：当reference对应的真实对象被认为是垃圾时.txt，执行：
 	Cleaner#clean
 		DirectByteBuffer.Deallocator#run
-			Unsafe#freeMemory 来释放直接内存
+			Unsafe#freeMemory 来释放native内存
 
 手动释放：
 为什么需要：gc可能没有那么及时
 ((DirectBuffer)buffer).cleaner().clean()
+
+设置-XX:MaxDirectMemorySize
+当使用的DirectByteBuffer超过了该值时，就会触发gc
