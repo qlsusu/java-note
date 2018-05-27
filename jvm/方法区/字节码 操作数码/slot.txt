@@ -1,3 +1,3 @@
-1¸öslot¿ÉÄÜÎª 32/64Î»
-1¸öslot±ØĞëÄÜ¹»´æ´¢ÏÂ Ò»¸öint,float,reference/return address
-¶ø¶ÔÓÚlong/double£¬ÓĞ¿ÉÄÜĞèÒª2¸öslotÀ´´æ´¢
+32/64ä¸ºè™šæ‹Ÿæœºä¸‹ï¼Œ1ä¸ªslotä¸º 32/64ä½
+1ä¸ªslotå¿…é¡»èƒ½å¤Ÿå­˜å‚¨ä¸‹ ä¸€ä¸ªint,float,reference/return address
+è€Œå¯¹äºlong/doubleï¼Œæœ‰å¯èƒ½éœ€è¦2ä¸ªslotæ¥å­˜å‚¨

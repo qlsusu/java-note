@@ -60,6 +60,7 @@ ByteBuffer.allocateDirect(int capacity);
 最大可申请多少：
 -XX:MaxDirectMemorySize x[m|g]
 注意：-Xmx + MaxDirectMemorySize 的值不能超过 物理内存的大小
+对于android：只有RAM足够，就能一直申请下去
 
 --------------------如何释放DirectByteBuffer
 释放时机：
