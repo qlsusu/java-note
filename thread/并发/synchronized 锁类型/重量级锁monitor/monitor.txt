@@ -4,6 +4,7 @@ Java中synchronized的实现原理与应用 - CSDN博客
 
 monitor存放在另外一个空间（非线程中，非对象中）
 每个线程有一个monitor列表，代表 该线程拥有了哪些对象的锁
+和一个全局可用的monitor列表
 
-当对象 的锁类型为 重量级锁，那么其mark word会指向 monitor
+当对象 的锁类型为 重量级锁，那么对象头中 mark word中 lock word 会指向 monitor
 	但是，该monitor却可能没有指名 所拥有的线程

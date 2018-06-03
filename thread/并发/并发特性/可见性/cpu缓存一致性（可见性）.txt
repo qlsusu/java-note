@@ -1,0 +1,54 @@
+参见：
+全面理解Java内存模型 - CSDN博客
+	https://blog.csdn.net/suifeng3051/article/details/52611310
+store buffer and invalidate queues - CSDN博客
+	https://blog.csdn.net/demianmeng/article/details/22898079
+聊聊原子变量、锁、内存屏障那点事 | 浅墨的部落格
+	http://0xffffff.org/2017/02/21/40-atomic-variable-mutex-and-memory-barrier/
+Intel 64 and IA32 Store Buffer - CSDN博客
+	https://blog.csdn.net/kickxxx/article/details/42711079
+
+说明：下文中的cpu指的是 cpu core
+
+可见性：
+cpu1 看到了 cpu2对共享变量a的修改
+在哪里看到：寄存器（内存->cache3->cache2->cache1->寄存器）
+针对于线程：线程是在cpu上运行，对线程可见 本质上为 对cpu可见
+
+什么是缓存不一致：
+cpu1看到的共享变量的值（从寄存器中）和 cpu2看到的不一致
+则，当cpu1依据该值进行运算时，结果可能是错误的
+
+store buffer, load buffer（invalidate queue）：
+存储的是什么：store操作，load操作
+位于：寄存器和一级缓存之间
+store buffer负责：将修改写入到 缓存和内存
+load buffer负责：从内存重新加载数据 到 缓存
+为什么存在：
+	当cpu1决定要写数据到缓存时，向总线来发送invalid消息（一次只能由一个cpu占用总线），而cpu2必须对该消息进行回应，使该缓存行无效（后续再从内存中加载新数据），后cpu1才能执行真实的写入操作
+	该过程需要各cpu参与交互（请求-响应），效率低
+	那么，将更新缓存（写入到/从内存加载）的操作 交由 store buffer/load buffer来做，而各cpu不涉及其中，从而从此可以执行其他指令，效率上会更高
+
+对共享变量进行读写 都发生了什么：
+1. cpu1要写时，让store buffer来负责（自己来处理其他）：
+	将 store操作 放入到store buffer中
+	后异步 刷新store buffer到缓存
+		过程：
+			向总线发送invalid信号，会收到其他cpu的响应（来自其他cpu的load buffer，且是 立刻回复对方（因为现在 load还不会进行，啥都不做））
+			执行store buffer中的store操作，来刷新 修改的值 到缓存->最终刷新到内存
+				一种说法：此刻还不会刷新到内存，而是等待 其他cpu要求该数据时（执行load操作），本cpu将数据发送给 其他cpu和内存（此时才刷新内存）
+				参见：聊聊高并发（五）理解缓存一致性协议以及对并发编程的影响 - CSDN博客
+					https://blog.csdn.net/iter_zc/article/details/40342695
+		时机：store buffer满时，淘汰最老的写入（可能）；执行到 sfence 来清空store buffer中的所有内容
+		
+2. 当cpu2收到该invalid信号后，让load buffer来负责（自己来处理其他）：
+	将 load操作 放入到load buffer中
+	后异步 刷新load buffer到缓存时机
+		过程：执行load buffer中的load操作，来将内存中的数据 刷新到 缓存
+		时机：执行到lfence
+	注意‘异步’：这是一致性问题的来源：
+		cpu1刷新了缓存，而cpu2的load buffer却还没有执行load操作（未刷新cpu2缓存），
+		此时cpu2如果要读，是不会考虑load buffer的，而是直接从缓存中来读，则可能会读到脏数据（cpu2的缓存中的 和 cpu1的缓存/内存 中的 不一致）
+		
+如何解决：
+内存屏障，参见：内存屏障.txt

@@ -1,0 +1,18 @@
+参见：
+聊聊高并发（三十五）Java内存模型那些事（三）理解内存屏障 - CSDN博客
+	https://blog.csdn.net/iter_zc/article/details/42006811
+一文解决内存屏障 | 程序猿说你好
+	https://monkeysayhi.github.io/2017/12/28/%E4%B8%80%E6%96%87%E8%A7%A3%E5%86%B3%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C/
+
+如：lock cmpxchg（=CAS）
+
+执行过程：
+. lock之前的指令 必须在lock之前执行（禁止重排序）
+. 对 总线和缓存上锁（其他cpu要访问自身缓存时，会被阻塞）
+. 清空load buffer（刷新缓存，从而和内存中的内容一致）
+. 执行lock之后的指令，如cmpxchg
+. 清空store buffer（刷新到缓存（最终刷新到内存））
+. 对 总线和缓存解锁
+. lock之后的指令 必须在lock之后执行（禁止重排序）
+
+效果上，和内存屏障的mfence 类似

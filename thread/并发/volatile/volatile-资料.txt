@@ -1,0 +1,18 @@
+参见：
+转 只能在有限的一些情形下使用 volatile 变量替代锁。要使 volatile 变量提供理想的线程安全，必须同时满足下面两个条件：1对变量的写操作不依赖于当前值。 2该变量没有包含在具有其他
+	https://blog.csdn.net/hzw05103020/article/details/47053095
+Java 理论与实践: 正确使用 Volatile 变量
+	https://www.ibm.com/developerworks/cn/java/j-jtp06197.html
+聊聊并发（一）深入分析Volatile的实现原理
+	http://ifeve.com/volatile/
+Java 并发编程 : volatile 关键字解析
+	http://mp.weixin.qq.com/s/WPHqv2RpT8ZM9gbQgXWx3Q
+Android并发编程之图文解析volatile关键字
+	http://blog.csdn.net/nugongahou110/article/details/49927667
+深入理解Java内存模型（四）——volatile
+	http://www.infoq.com/cn/articles/java-memory-model-4
+Java 理论与实践: 正确使用 Volatile 变量
+	http://www.ibm.com/developerworks/cn/java/j-jtp06197.html
+	http://www.uml.org.cn/j2ee/201505252.asp
+面试必问的volatile，你了解多少？ - 简书
+	https://www.jianshu.com/p/506c1e38a922

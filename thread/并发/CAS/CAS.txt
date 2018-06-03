@@ -7,6 +7,8 @@ JAVA并发编程学习笔记之CAS操作
 	http://blog.csdn.net/aesop_wubo/article/details/7537960
 原子操作(CAS)
 	http://286.iteye.com/blog/2295165
+浅论Lock 与X86 Cache 一致性
+	https://zhuanlan.zhihu.com/p/24146167
 
 CAS: compare and swap/set	
 CAS实际上利用了 处理器提供的CMPXCHG指令（一个原子性操作）
