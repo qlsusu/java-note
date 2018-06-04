@@ -1,0 +1,5 @@
+参见：
+面试必问的CAS，要多了解 - 简书
+	https://www.jianshu.com/p/24ffe531e9ee
+
+ABA问题可以由AtomicStampedReference解决

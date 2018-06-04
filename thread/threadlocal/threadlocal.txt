@@ -31,10 +31,15 @@ SQLiteDatabase#private final ThreadLocal<SQLiteSession> mThreadSession = new Thr
 使用这个方式时，当在线程1上，调用ThreadLocal.get()时，会判断ThreadLocal#getMap(Thread t)中是否存在对应的Entry，如果没有，会调用ThreadLocal#initialValue
 
 实现原理：
-每个thread有一个ThreadLocalMap，其可以认为是一个map，其内部定义了entry，使用entry[]来存储entry
+每个thread有几个ThreadLocalMap，其可以认为是一个map，其内部定义了entry，使用entry[]来存储entry
 	entry（本质上是ThreadLocal的weakreference）:
-		entry.key为 entry.get()
+		entry.key为 entry.get()（即是：ThreadLocal变量本身）
 		entry.value为 ThreadLocal的set时的值）
+当要ThreadLocal#get/set时，首先要获得Entry对应的ThreadLocalMap，则通过：ThreadLocal#getMap(当前线程)
+	一般情况下：该ThreadLocalMap为 Thread.threadLocals
+	对于InheritableThreadLocal（作用：子线程可以看到父线程中的Entry），其为t.inheritableThreadLocals
+		参见：InheritableThreadLocal.txt
+在找到了ThreadLocalMap后，如何定位Entry呢（对于 get/set）:
 也是通过entry.key的rehash值（本质上是entry.get()（即是ThreadLocal）.threadLocalHashCode），
 	ThreadLocal的hash值 并不是通过自身计算得来，而是ThreadLocal对象被实例化时 被分配（通过ThreadLocal.static AtomicInteger nextHashCode.getAndAdd(HASH_INCREMENT)）
 		最终调用UnSafe#getAndAddInt(Object object, long fieldOffset, int delta)
@@ -53,7 +58,9 @@ ThreadLocal.set 会调用 ThreadLocalMap.set(ThreadLocal, value):
 
 >>>扩容（ThreadLocal.ThreadLocalMap#resize）
 时机：在放置一个Entry时
-条件：当entry的个数 > 0.75 * threshold（当数组的长度发生改变时，会重设threshold（=数组length * 2/3））时，需要扩容（数组原length*2）：
+条件：当entry的个数 >= 0.75 * threshold 时，需要扩容（数组原length*2）：
+	后，新threshold = 新数组length * 2/3
+	参见：ThreadLocal.ThreadLocalMap#rehash
 如何扩容：将entry数据 映射（通过 rehash值 & (新数组.length-1)）到新数组上
 
 >>>是否会引发内存泄漏
