@@ -58,9 +58,12 @@ ThreadLocal.set 会调用 ThreadLocalMap.set(ThreadLocal, value):
 
 >>>扩容（ThreadLocal.ThreadLocalMap#resize）
 时机：在放置一个Entry时
-条件：当entry的个数 >= 0.75 * threshold 时，需要扩容（数组原length*2）：
-	后，新threshold = 新数组length * 2/3
-	参见：ThreadLocal.ThreadLocalMap#rehash
+条件：当entry的个数 >= 0.75 * threshold 时，需要扩容（扩容到：原数组的2倍）：
+	threshold = 数组length 的 2/3
+	参见：
+	ThreadLocal.ThreadLocalMap#set
+		ThreadLocal.ThreadLocalMap#rehash
+			当已经存储的元素个数>threshold时：ThreadLocal.ThreadLocalMap#resize
 如何扩容：将entry数据 映射（通过 rehash值 & (新数组.length-1)）到新数组上
 
 >>>是否会引发内存泄漏
@@ -72,7 +75,6 @@ ThreadLocal.set 会调用 ThreadLocalMap.set(ThreadLocal, value):
 链1不会引发内存泄漏
 链2可能会引发内存泄漏
 	虽然ThreadLocalMap会清理无效的Entry（其referent==null）
-	但是只在ThreadLocal.ThreadLocalMap#set时：
-	ThreadLocal.ThreadLocalMap#set(ThreadLocal<?> key, Object value)
-		ThreadLocal.ThreadLocalMap#rehash
-			ThreadLocal.ThreadLocalMap#expungeStaleEntries
+	但是只在ThreadLocal.ThreadLocalMap#set/get时：
+		其最终会调用：ThreadLocal.ThreadLocalMap#expungeStaleEntries
+	则，在必要时，执行ThreadLocal.ThreadLocalMap#cleanSomeSlots
