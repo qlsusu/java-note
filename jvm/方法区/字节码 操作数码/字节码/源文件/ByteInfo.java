@@ -7,6 +7,10 @@ public class ByteInfo extends FatherBean {
     private final static int staticFinalAge = 2;
     private static int staticAge = 1;
 
+    private static final String TAG1 = "tag1";
+    private static final String TAG2 = TAG1 + "_tag2";
+    private static final String TAG3 = TAG2 + "_tag3";
+
     static {
         staticAge = 1000;
         System.out.println("byte info static");
@@ -26,6 +30,8 @@ public class ByteInfo extends FatherBean {
     public ByteInfo(int age) {
         this.age = age;
     }
+
+    private int age2 = 2;
 
     public void method1() {
         int i = 2;
@@ -79,6 +85,15 @@ public class ByteInfo extends FatherBean {
 
         staticMethod();
         FatherBean.fatherStaticMethod();
+
+        String str = TAG3;
+        System.out.println(str);
+
+        boolean isSame = 1 == 1;
+        isSame = volatileAge == age;
+        ByteInfo byteInfo1 = new ByteInfo();
+        ByteInfo byteInfo2 = new ByteInfo();
+        isSame = byteInfo1 == byteInfo2;
     }
 
     private void sub(int a, int b, long c, String str) {

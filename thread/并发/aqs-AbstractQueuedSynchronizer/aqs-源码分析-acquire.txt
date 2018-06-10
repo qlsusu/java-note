@@ -11,7 +11,9 @@ public final void acquire(int arg) {
 	如果可以请求得到，则线程未被阻塞，则继续执行
 	否则，
 		生成一个节点（代表了本次请求），插入到链表尾部
-		阻塞线程（前继节点的status需要为SIGNAL，为了：该前继节点释放资源后，需要唤醒其后继节点（即是：自身节点）的thread 来试图获取资源）
+		当该节点是head的后继时，再次尝试是否可获得资源
+		当还是获取不到时，阻塞线程
+			需要：前继节点的status需要为SIGNAL，为了：该前继节点释放资源后，需要唤醒其后继节点（即是：自身节点）的thread 来试图获取资源（重走acquireQueued中的for）
 
 //试图获得锁（基于队列（链表实现））
 //返回：node是否被interrupt
@@ -24,7 +26,7 @@ final boolean acquireQueued(final Node node, int arg) {
 		//该thread被唤醒后，继续执行for循环：试图获得锁（当获取到锁后，自身成为head节点）
 		//--
 		//为什么head的后继节点可以试图获得锁：
-		//当一个节点释放资源时，head节点仍然存在于链表中，而后继节点被唤醒后，可以获得资源
+		//当一个节点释放资源时，head节点仍然存在于链表中（并没有被删除），而后继节点被唤醒后，可以获得资源
 		for (;;) {
 			final Node p = node.predecessor();
 			if (p == head && tryAcquire(arg)) {
@@ -59,11 +61,24 @@ private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
 		 * to signal it, so it can safely park.
 		 */
 		return true;
+		
 	//CANCELED值为1（也只有该status是>0的）
 	//如果前继的状态为cancel，那么向前寻找一个status不为cancel的节点，并使其成为node的前继（对节点链进行调整）
+	//注意：这里的调整，仅仅是修改node.prev 和 最终prev.next，其间无效节点的next和prev是不修改的
+	//是否产生并发问题：
+		//如果线程1和线程2 都来shouldParkAfterFailedAcquire，则，两线程对应的Node（设为node1, node2），肯定存在 链表上的 先后关系
+		//则，在不考虑cancel操作（AbstractQueuedSynchronizer#cancelAcquire）的情况下，node2的prev 最差情况下 为node1（而非node1之前的节点）
+		//该情况下，会改变node1.next
+		//设 线程2从此后，就一直未执行（注意：未被park）直到 线程1获得了资源 执行了逻辑 释放了资源后
+		//当node1.next=node2被执行了，node1开始唤醒其next，线程2空被unpark
+			//随后，线程2执行，会返回到acquireQueued继续执行for，因为其前继为head，则其最终很可能获得了资源
+		//当node1.next=node2并未被执行，node1开始唤醒其next，线程2空被unpark
+			//但其当前的next是被cancel的，那么会从tail来找到一个有效的node（即是node2），最后唤醒node2，线程2空被unpark
+			//随后，线程2执行，node1.next=node2，会返回到acquireQueued继续执行for，会因为其前继是head，则其最终很可能获得了资源
+		//则，不管如何，执行结果都是正确的，即使：共享变量在 并发读写
 	//注意：此刻，函数返回值为false，则之后会再次进入acquireQueued的for循环中
 	//则有可能经过该前继的调整，node的前继就为head了，可以试图获得资源了
-	//也有可能node.thread被真的unpark
+	//也有可能node.thread被真的park
 	if (ws > 0) {
 		/*
 		 * Predecessor was cancelled. Skip over predecessors and

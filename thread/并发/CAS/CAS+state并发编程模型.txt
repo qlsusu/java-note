@@ -1,0 +1,10 @@
+核心步骤：
+工作方：
+1. CAS进入state1
+2. 执行并填充结果
+3. 进入到下一state2
+参见：FutureTask内部细节.txt 中的 set/setException 部分
+
+消费方：
+根据state来取结果
+参见：FutureTask内部细节.txt 中的 get 部分

@@ -7,7 +7,7 @@ BufferedSink = Okio#buffer(Sink)
 ------------------------------------
 
 Source#read(Buffer sink, long byteCount)
-	读取数据（从自身）到（写入）sink
+	读取数据（从自身）到（写入到）sink
 	Buffer#read(byte[] sink, int offset, int byteCount)
 Sink#write(Buffer source, long byteCount)
 	写入数据（从source中读取）到自身

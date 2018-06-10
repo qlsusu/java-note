@@ -6,14 +6,18 @@ Java中Unsafe类详解 - mickole - 博客园
 
 >>> 数据访问
 compareAndSetXXX(Object src, long fieldOffset, expect, update)
+	如果内存位置的值与预期原值相匹配，那么处理器会自动将该位置值更新为新值。否则，处理器不做任何操作
+	参数：对象、内存位置（V（field在对象中的offset））、预期原值（A）、新值(B)。
+		fieldOffset = unsafe.objectFieldOffset(object所属的class.getDeclaredField(field名字));	
 putOrderedXXX(Object src, long fieldOffset, update)
-	对共享变量的修改，其可见（对其他线程）并没有那么及时
+	对共享变量的修改，使其可见（对其他线程）不那么及时
 	为什么需要：
 		fieldOffset对应的属性 可能是volatile
-		那么读写volatile变量时，采用了内存屏障（而其会产生消耗），而在某些情形下，是没有必要使用内存屏障的
-		考虑如下情形：
+		则对其写，默认情况下，结果总是立刻可见于其他cpu缓存（因为使用了内存屏障）
+		而在某些情形下，该 立刻可见 是 没有必要/也不想要
+		如：
 			volatile int a;
-			volatile int b;			
+			volatile int b;
 			a=1;//语句1
 			b=2;//语句2
 		此情形下，会在 语句1和语句2 之后都加入sfence，而sfence会将 对共享变量的修改写入到内存，则语句1对应的内存屏障是没有必要的
@@ -24,6 +28,8 @@ allocateMemory
 reallocateMemory
 	扩充内存
 freeMemory
+getByte
+	在DirectByteBuffer中所用
 
 >>> 线程操作（使用于LockSupport）
 park

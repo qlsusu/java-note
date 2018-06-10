@@ -1,6 +1,8 @@
 参见：
 堆外内存之 DirectByteBuffer 详解
 	http://www.importnew.com/26334.html
+堆外内存的回收机制分析 - 简书
+	https://www.jianshu.com/p/35cf0f348275
 java之HeapByteBuffer&DirectByteBuffer以及回收DirectByteBuffer
 	http://blog.csdn.net/xieyuooo/article/details/7547435
 MaxDirectMemorySize – hellojavacases微信公众号网站
@@ -53,7 +55,11 @@ ByteBuffer.allocate(int capacity);
 ByteBuffer.allocateDirect(int capacity);
 	构建DirectByteBuffer(capacity)对象
 		unsafe.allocateMemory(size);
-		生成Cleaner对象（其继承于虚引用，其clean方法对应的Runnable为 Deallocator）
+		生成Cleaner对象
+			Cleaner继承于虚引用，其clean方法对应的Runnable为 Deallocator（当Cleaner#clean调用时，Deallocator#run会调用）
+			通过static Cleaner#add来构建Cleaner对象
+				其内部是一个双向链表，表头为：static Cleaner.first
+				新add的元素为成为表头
 并不是在heap上分配，而是在 用户态的native内存上分配（则 该部分内存 并不受jvm控制）（通过Unsafe.allocateMemory）
 使用其进行io访问时，并不需要 heap上的缓冲区<->用户态的native缓冲区 的数据拷贝，而是直接访问 用户态的native内存（如：DirectByteBuffer#get()），则性能有所提升
 

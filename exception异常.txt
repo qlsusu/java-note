@@ -7,10 +7,10 @@ exception.png
 基类：Throwable
 两个子类：Error 和 Exception
 
-Error的异常不可捕获
-	try,catch对其无效
-	若一个线程抛出了error，则该线程不再继续
-Exception的异常可以捕获
+Error 建议 不可捕获
+	本质上，其可被try catch到（但是 不建议catch该Error，而是去检查业务逻辑的执行是否出错）
+	注意：catch(Throwable t)中，参数并不是Exception
+Exception可以捕获
 	RuntimeException：有一些操作可能会抛出异常，但是并不要求：编码时，该操作必须加在try/catch中，如：
 		int x=1, y=0;
 		int c=x/y;
@@ -19,6 +19,6 @@ Exception的异常可以捕获
 		
 不能跨线程捕获异常，如：thread1中不能捕获thread2的异常
 
-UncaughtExceptionHandler
+UncaughtExceptionHandler：
 每一个Thread对象都可以设置一个UncaughtExceptionHandler对象来处理本线程中抛出的异常。
 线程池中可以通过参数ThreadFactory来为每一个线程设置一个UncaughtExceptionHandler对象。

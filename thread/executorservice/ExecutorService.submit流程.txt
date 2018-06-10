@@ -1,7 +1,8 @@
 AbstractExecutorService.public Future<?> submit(Runnable task, T result) {
 	if (task == null) throw new NullPointerException();
-	//构建FurtureTask，以便返回Future
-	RunnableFuture<Void> ftask = newTaskFor(task, result);
+	//构建FutureTask
+	RunnableFuture<T> ftask = newTaskFor(task, result);
+	//分配线程 来执行Runnable
 	execute(ftask);
 	return ftask;
 }

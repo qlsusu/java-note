@@ -2,12 +2,14 @@
 使用 FutureTask 的正确姿势 - ImportNew
 	http://www.importnew.com/27305.html?hmsr=toutiao.io&utm_medium=toutiao.io&utm_source=toutiao.io
 
-其实现了RunnableFuture接口，其需要被提供Callable
+其实现了RunnableFuture接口（继承自Runnable, Future接口），其需要被提供Callable
 
-run：
+run（实现Runnable中的run方法）：
 //设置thread
+//也表明：该FutureTask只能运行在一个线程上（不能被多次提交）
 UNSAFE.compareAndSwapObject(this, runnerOffset, null, Thread.currentThread())
 ...
+boolean ran;
 try {
 	result = c.call();
 	ran = true;
@@ -26,52 +28,61 @@ set/setException：
 		设置outcome（为真实结果，或，在执行过程中抛出的异常）
 		设置state（putOrderedInt的形式）
 			NORMAL，或
-			EXCEPTIONAL状态
+			EXCEPTIONAL
 	--
-	为什么需要两次CAS：
-		set/setException要求的初始状态为NEW，而cancel的 也是NEW
-		set/setException 和 cancel 只能二选一
+	为什么需要两次CAS（即是：为什么需要中间状态COMPLETING）：
+		虽然：
+			set/setException要求的初始状态为NEW，而cancel的 也是NEW
+			set/setException 和 cancel 只能二选一
+		但这并不是存在COMPLETING的原因：不需要COMPLETING，而只用NORMAL/EXCEPTIONAL/CANCELLED/INTERRUNPTED一样可以确定出要执行哪个方法
+		本质上，是为了表示逻辑上的过程点：
+			COMPLETING时，还没有填充结果
+			确定出结果的过程：1. 进入state1，2. 执行并填充结果 3. 进入到下一state2
+				！！！！！！！！！！！这也是 state+CAS 的并发编程模型
+		而用户在get时，会根据state来走相应的分支
 FutureTask#finishCompletion
 	唤醒FutureTask.waiters表示的WaitNode链表：
 		for (WaitNode q; (q = waiters) != null;) {
             if (UNSAFE.compareAndSwapObject(this, waitersOffset, q, null)) {
-				//唤醒以q为头的 链表：LockSupport.unpark(WaitNode.thread)
-				
+				//唤醒以q为头的 链表：
+				LockSupport.unpark(WaitNode.thread)		
 				break;			
 			}
 		}
 	通知FutureTask子类（一个钩子）：通过done()
 
-get（在线程2上）：
-执行完毕 的描述：成功 或者 执行过程中抛出异常 或者 被取消
+get：
+执行完毕 的描述：成功NORMAL，执行过程中抛出异常EXCEPTIONAL，取消CANCELLED或INTERRUPTED
 	state > COMPLETING
-		可能的状态：成功NORMAL，异常EXCEPTIONAL，取消CANCELLED或INTERRUPTED
 在执行完毕时，通知结果：FutureTask#report
 在执行完毕前，线程2调用FutureTask.get时，线程2将有可能被阻塞（生成WaitNode（数据成员：Thread, next），LockSupport.park）
 	awaitDone：
 	内部含有for循环：根据state，执行有限步骤，随后继续for （有可能state已经变了，需要更新执行流程）
 		for流程：
+			取出state，保存为临时变量（代表：当前时刻的state，并非每次都取state的最新值（state可能被更新））
 			是否执行完毕，是，返回。否则 继续
 				后，通知结果：FutureTask#report
-			是否COMPLETING，是，Thread.yield。否则 继续
-			是否生成了node，否，生成node。否则 继续
+			是否COMPLETING，是，Thread.yield来重走cpu调度，后for。否则 继续
+			是否生成了node，否，生成node，后for。否则 继续
 				q = new WaitNode();
-			是否入队了，否，入队。否则 继续
-				UNSAFE.compareAndSwapObject(this, waitersOffset, q.next = waiters, q);
-			LockSupport.park
+			是否入队了，否，入队，后for。否则 继续
+				入队：UNSAFE.compareAndSwapObject(this, waitersOffset, q.next = waiters, q);
+			LockSupport.park，被唤醒后，for
 		为什么是如此设计：设想下这个场景：
 			执行线程上将要执行set，而线程2上调用get，而此刻state为NEW
 			为线程2构建node，那么线程2一定要被挂起吗：
 			当线程2对应的node 即将要加入到node链表时，执行线程占用CPU来执行：进入set体，构建了outcome，改变了state，并finishCompletion（因为线程2对应的node此刻还没在链表中，所以不会LockSupport.unpark）
 			回到线程2，线程2对应的node被加入到node链表中
-			再次执行for，因为state此刻已经为 NORMAL，所以 线程2将不会被挂起，awaitDone会直接返回
+			再次执行for，因为state此刻已经为 NORMAL，所以 线程2将不会被挂起，awaitDone会直接返回（将WaitNode.thread设置为null）
 			综上所述，采用for的设计，是为了每执行一步，就需要再次检查state，来调整后续流程
+	当awaitDone返回时（一开始就返回，或者被唤醒（通过FutureTask#finishCompletion）），FutureTask肯定执行完毕，走FutureTask#report
 
 cancel：
+设置状态最终为 CANCELLED 或 INTERRUPTED
 public boolean cancel(boolean mayInterruptIfRunning) {
 	if (!(
 		//针对state：必须为NEW：还没有 执行到/成功进入到 set/setException
-		//这里的compareAndSwapInt到INTERRUPTING/CANCELLED 的手法 同于 set/setException中的compareAndSwapInt到COMPLETING
+		//这里的compareAndSwapInt到INTERRUPTING的手法 同于 set/setException中的compareAndSwapInt到COMPLETING
 		//因为二者执行完毕后，都会执行finishCompletion（则该completion的调用处 只能 二选一：set/setException 或者 cancel）
 		//也要注意：
 		//cancel操作，可能并不会使得 run()中 c.call()抛出异常（如果参数mayInterruptIfRunning为true，将会执行Thread.interrupt，则有可能导致执行线程抛出InterruptedException），即是：c.call()可能会继续执行下去（只是之后的set/setException均因state而没有正常执行）
@@ -85,6 +96,7 @@ public boolean cancel(boolean mayInterruptIfRunning) {
 				//runner.intercept可能使得 run()中的执行体快速结束
 				//注意：setException中 因为state已经变成了INTERRUPTING，而其允许进入的state为NEW，则其不会执行任何
 				//run的执行体：
+				//  boolean ran;
 				//	try {
 				//		result = c.call();
 				//		ran = true;
@@ -106,3 +118,29 @@ public boolean cancel(boolean mayInterruptIfRunning) {
 	}
 	return true;
 }
+
+-----------------------------------------------------------阻塞链表
+加入和移除WaitNode 的并发保证：
+在客户get时，有可能因为state 不>COMPLETING 而产生了WaitNode 并加入到阻塞链表中
+而当自身执行完毕，会通过finishCompletion来唤醒 阻塞链表中元素.thread，并清空阻塞链表
+但是如何保证 加入和移除WaitNode 的并发
+
+加入：
+FutureTask#get
+	FutureTask#awaitDone中
+		queued = UNSAFE.compareAndSwapObject(this, waitersOffset, q.next = waiters, q);
+移除：
+FutureTask#finishCompletion中
+	for (WaitNode q; (q = waiters) != null;) {
+		if (UNSAFE.compareAndSwapObject(this, waitersOffset, q, null)) {
+			后针对于q以及其next，来执行唤醒WaitNode.thread
+可以看出，除了CAS外，并没有其他保护措施
+但是，这不会产生问题，为什么：
+1. 在一次循环后，还会进行外层的for 来检查链表是否发生了变化：
+	移除逻辑中，当线程1（工作线程）执行通过 UNSAFE.compareAndSwapObject(this, waitersOffset, q, null)
+	而此刻线程2（客户线程）又改变了waiters（添加了WaitNode）
+	此时，线程1是无法察觉到新的waiters，而之后的唤醒WaitNode.thread并不生效于新waiters
+	但是，当线程1完成了 本次的 基于当前时刻waiters（相对于新加入的waiters而言，属于 之前的时刻）的WaitNode.thread唤醒后，
+	还会再次遍历链表（以防其发生变化）：
+		for (WaitNode q; (q = waiters) != null;) {
+2. 链表的插入和删除，都是基于 同一个方向（头部）的节点，则只要保证该节点被修改的 并发性，之后再循环来检查 该头节点即可
