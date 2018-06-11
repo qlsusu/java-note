@@ -2,7 +2,7 @@
 Java线程(八)：锁对象Lock-同步问题更完美的处理方式
 	http://blog.csdn.net/ghsau/article/details/7461369
 
-java.util.concurrent.locks.Lock
+Lock
 实现提供了比使用synchronized 方法和语句可获得的更广泛的锁定操作
 
 Lock相当于 需要互斥访问的资源
@@ -29,8 +29,11 @@ lock的释放 可以在其他线程中进行
 在某个时刻 thread1释放了该lock，而同时，thread4却冒出想要获取该lock，
 thread4是否能立刻获得，还是，要排队在 thread2和thread3的后面
 --
-非公平下：thread4能获得
-公平下：thread4不能获得，需要排队
+非公平下：thread4可能获得
+	ReentrantLock.NonfairSync#tryAcquire
+		ReentrantLock.Sync#nonfairTryAcquire
+公平下：thread4不能获得（因为链表中还存在thread2,thread3），需要排队
+	ReentrantLock.FairSync#tryAcquire
 
 默认为 非公平
 
@@ -42,9 +45,11 @@ public ReentrantLock(boolean fair) {
 如果一个线程已经持有了该lock，那么该线程还是可以继续lock.lock()
 那么，在该线程中，必须调用 和lock()次数相同的unlock()，才能够释放该锁
 
-Lock.lock() vs Lock.lockInterruptibly()
-lockInterruptibly()会抛出InterruptedException。则当在线程threadA上执行lockInterruptibly()，但是还没有获得该lock，而在外部调用 threadA.interrupt()，那么将抛出异常
-而lock()并不会发生异常
+>>>Lock.lock() vs Lock.lockInterruptibly()
+lockInterruptibly()会抛出InterruptedException。则当在线程threadA上执行lockInterruptibly()，但是还没有获得该lock（设threadA被park），而在外部调用 threadA.interrupt()，
+当threadA被unpark时，将抛出InterruptedException
+
+而lock() 对于上述情形，并不会发生异常，而是当threadA获得了资源 即将返回时，执行Thread.interrupt
 
 ----------------------------例子
 public class LockTest {

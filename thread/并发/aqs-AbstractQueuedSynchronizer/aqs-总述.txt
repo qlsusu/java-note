@@ -13,10 +13,18 @@ Java并发之AQS详解 - waterystone - 博客园
 	--
 	这也是为什么tryAcquire等方法不是abstract的原因：一种AQS的子类实现 仅仅是一种情况（独占资源，或者，共享资源），则没有必要实现 两组方法
 	--
-	提供辅助AbstractQueuedSynchronizer#state（int类型）来协助 上述定义：state什么意思：
+	提供辅助AbstractQueuedSynchronizer#state（int类型）来协助 上述流程：
+	state什么意思：
 		对于独占资源（如：ReentrantLock）：当前，所有线程（包含自身线程）总共申请到了多少个资源。在tryAcquire时（如：ReentrantLock#lock）
 			如果发现state为0，则意味着 当前还没有线程 申请到该资源，那么我可以来申请
 			如果发现state不为0，则需要去查看 当前资源的占用线程是否为自身线程，如果是，就可以申请得到，否则，申请失败
+			--
+			exclusiveOwnerThread：
+			对于独占资源，exclusiveOwnerThread代表了当前哪个线程占有资源
+			请注意：state是标志，而exclusiveOwnerThread是中间的结果
+				对比于：FutureTask中的state 和 outcome
+			当tryAcquire时，总是先试图去改变state，成功后再设置exclusiveOwnerThread
+			而对于tryRelease，当判断state即将为0时，将先设置exclusiveOwnerThread，后再设置state
 		对于共享资源（如：CountDownLatch）：当前，“nobody”总共申请到了多少个资源（state的值是在构造函数中指定）。在tryAcquire时（如：CountDownLatch#await()）
 			如果发现state为0，则意味着 可以申请得到
 			如果发现state不为0，则意味着 不能申请得到
@@ -35,7 +43,10 @@ Java并发之AQS详解 - waterystone - 博客园
 		waitStatus
 			SIGNAL：当该节点释放资源（即是：在该节点.thread上 调用了 release）时，需要唤醒后继节点.thread
 	链表结构：拥有 head tail（一开始创建链表时，head和tail相等）
-		head: 无意义的Node（一开始创建链表时），或，当前拥有资源的Node
+		head: 
+			无意义的Node（资源并未被该Node所占有）
+				一开始创建链表时
+			或，当前拥有资源的Node
 	--
 	当该Node是head的后继时，会试图获得资源（参见：acquireQueue中的for流程，即是：当该Node被唤醒时，还是会重走for流程）
 		如果能获得，那么会设置自身为head，继续客户流程

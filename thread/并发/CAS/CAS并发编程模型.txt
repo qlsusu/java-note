@@ -1,0 +1,26 @@
+CAS+state：
+核心步骤：
+工作方：
+1. CAS进入state1
+2. 执行并填充结果
+3. 进入到下一state2
+参见：FutureTask内部细节.txt 中的 set/setException 部分
+
+消费方：
+根据state的取值 来执行流程
+参见：FutureTask内部细节.txt 中的 get 部分（当state>COMPLETING 和 awaitDone）
+
+------------------------
+
+对于volatile类型的变量（如：state），先生成临时变量来保存该值，作为当前流程中的 参考state，而非在流程中 时刻读取state的最新值（有可能被其他线程所修改）
+
+while+CAS：
+例子：
+并发修改资源：
+	Unsafe#getAndAddInt
+	AbstractQueuedSynchronizer#enq来加入一个Node到队尾，而有可能多个线程都要加入到队尾
+自身的流程：
+	FutureTask#awaitDone 中，根据state的取值来执行流程，并有可能加入到链表（成为head）
+	
+	
+	
