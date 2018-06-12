@@ -1,2 +1,8 @@
 CountDownLatch一般用于某个线程A等待若干个其他线程执行完任务之后，它才执行；
 CountDownLatch是不能够重用的
+
+其基于AQS，参见：aqs-AbstractQueuedSynchronizer/
+await，相当于请求资源
+countDown，相当于释放资源
+tryAcquireShared什么时候能够返回 >=0：当state为0时
+tryReleaseShared什么时候能返回true：当state为0时

@@ -7,11 +7,19 @@ public final void acquireShared(int arg) {
 tryAcquireShared的 返回值 含义：
 >=0
 	能获取到资源
+	此时，state为0
 <0
 	不能获取到资源
+请注意：该返回值不要和state混淆：
+	无论是独占资源还是共享资源，state==0，才代表可以获取资源
+	则，该情况下，当state==0时，tryAcquireShared的返回值才>=0
 参见：CountDownLatch.Sync#tryAcquireShared
 为什么返回值是int而不是boolean：
-	当返回值>0时（非=0），会强制唤醒后续Node（而不参考head.waitStatus）
+	当返回值>0时（非=0），唤醒head的后继
+	注意：唤醒的节点个数为1个，如果需要唤醒链上的其他节点，那么让新head来唤醒其后继，就这么‘递归’下去
+	为什么需要在获得资源时，唤醒后继：
+		在共享资源场景中，god设置了x个障碍，当最后一个障碍被release后，我才能获得资源
+		如果此刻，我再不唤醒其他人，那么他们将永远不会被唤醒：因为障碍已经没了，release不会再被执行，进而不会再执行唤醒
 
 //当不能获取到资源时
 private void doAcquireShared(int arg) {
@@ -26,7 +34,7 @@ private void doAcquireShared(int arg) {
             if (p == head) {
                 int r = tryAcquireShared(arg);//尝试获取资源
                 if (r >= 0) {//成功
-					//自身将成为head，当还有剩余资源可以再唤醒之后的节点2
+					//自身将成为head，当还有剩余资源时，则可以再唤醒之后的节点2
 					//当节点2的线程被唤醒，会重新执行for循环
 					//注意：此刻，节点2已经是 新head（自身节点）的后继，会尝试获取资源
 					//当获取到资源后，节点2成为了head，并唤醒他的后继

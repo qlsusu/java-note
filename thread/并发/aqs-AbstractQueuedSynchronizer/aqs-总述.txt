@@ -2,7 +2,7 @@
 Java并发之AQS详解 - waterystone - 博客园
 	http://www.cnblogs.com/waterystone/p/4920797.html
 
-解决了什么 基本问题：
+解决了什么 基本问题（封装了什么模型）：
 当在线程1请求资源时，如果失败，线程1如何被阻塞；
 当其他线程释放了资源后，被阻塞的线程1 如何被自动唤醒
 
@@ -16,16 +16,17 @@ Java并发之AQS详解 - waterystone - 博客园
 	提供辅助AbstractQueuedSynchronizer#state（int类型）来协助 上述流程：
 	state什么意思：
 		对于独占资源（如：ReentrantLock）：当前，所有线程（包含自身线程）总共申请到了多少个资源。在tryAcquire时（如：ReentrantLock#lock）
-			如果发现state为0，则意味着 当前还没有线程 申请到该资源，那么我可以来申请
+			如果发现state为0，则意味着 当前还没有线程 申请到该资源，那么我可以来申请（对应于ReentrantLock.lock）
 			如果发现state不为0，则需要去查看 当前资源的占用线程是否为自身线程，如果是，就可以申请得到，否则，申请失败
 			--
 			exclusiveOwnerThread：
-			对于独占资源，exclusiveOwnerThread代表了当前哪个线程占有资源
+			它代表了当前哪个线程占有资源
 			请注意：state是标志，而exclusiveOwnerThread是中间的结果
 				对比于：FutureTask中的state 和 outcome
 			当tryAcquire时，总是先试图去改变state，成功后再设置exclusiveOwnerThread
 			而对于tryRelease，当判断state即将为0时，将先设置exclusiveOwnerThread，后再设置state
-		对于共享资源（如：CountDownLatch）：当前，“nobody”总共申请到了多少个资源（state的值是在构造函数中指定）。在tryAcquire时（如：CountDownLatch#await()）
+		对于共享资源（如：CountDownLatch）：当前，“god”设置了几道屏障（而只有所有的屏障被release后，我才能能申请到资源）（state的值是在构造函数中指定）
+		在tryAcquire时（如：CountDownLatch#await()）
 			如果发现state为0，则意味着 可以申请得到
 			如果发现state不为0，则意味着 不能申请得到
 
@@ -41,7 +42,12 @@ Java并发之AQS详解 - waterystone - 博客园
 		代表：本次的资源申请，拥有thread, waitStatus等属性
 		前驱后继：next, pre
 		waitStatus
-			SIGNAL：当该节点释放资源（即是：在该节点.thread上 调用了 release）时，需要唤醒后继节点.thread
+			SIGNAL：当释放资源时，当head.waitStatus为SIGNAL时，需要唤醒head的后继
+			0：
+				是一个开始的初始值，当要释放资源时，如果发现head.waitStatus还为0，则代表不需要唤醒后继（因为，在AbstractQueuedSynchronizer#shouldParkAfterFailedAcquire时，会设置前继的waitStatus为SIGNAL）
+				也代表着一个结束值
+					当head节点唤醒了后继后，会从SIGNAL变成0
+					当head的一开始就是0，那么会变成PROPAGATE
 	链表结构：拥有 head tail（一开始创建链表时，head和tail相等）
 		head: 
 			无意义的Node（资源并未被该Node所占有）
