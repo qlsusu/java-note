@@ -42,7 +42,12 @@ Java并发之AQS详解 - waterystone - 博客园
 		代表：本次的资源申请，拥有thread, waitStatus等属性
 		前驱后继：next, pre
 		waitStatus
-			SIGNAL：当释放资源时，当head.waitStatus为SIGNAL时，需要唤醒head的后继
+			SIGNAL：当释放资源时，要唤醒后继节点时，head.waitStatus需要为SIGNAL
+				对于独占资源，要求waitStatus!=0
+				对于共享资源，要求waitStatus==SIGNAL
+				--
+				当节点1发现其 前继节点1的waitStatus为SIGNAL时，则放心：节点1在释放资源后 一定会唤醒后继（节点2）
+				（无论在unpark之前，节点2是否执行了park（就算之后才执行park，也无所谓，参见：LockSupport.txt））
 			0：
 				是一个开始的初始值，当要释放资源时，如果发现head.waitStatus还为0，则代表不需要唤醒后继（因为，在AbstractQueuedSynchronizer#shouldParkAfterFailedAcquire时，会设置前继的waitStatus为SIGNAL）
 				也代表着一个结束值
@@ -51,7 +56,8 @@ Java并发之AQS详解 - waterystone - 博客园
 	链表结构：拥有 head tail（一开始创建链表时，head和tail相等）
 		head: 
 			无意义的Node（资源并未被该Node所占有）
-				一开始创建链表时
+				如：一开始创建链表时
+				或，该节点之前拥有资源，而后其释放了资源（此刻，其还是head，直到其唤醒后继并取得了资源，head才被设置）
 			或，当前拥有资源的Node
 	--
 	当该Node是head的后继时，会试图获得资源（参见：acquireQueue中的for流程，即是：当该Node被唤醒时，还是会重走for流程）

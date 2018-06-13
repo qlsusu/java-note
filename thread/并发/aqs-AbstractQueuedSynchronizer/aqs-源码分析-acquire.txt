@@ -25,6 +25,7 @@ final boolean acquireQueued(final Node node, int arg) {
 	try {
 		boolean interrupted = false;
 		//这里开启了一个for循环，为什么：
+		//当一个节点因为未获得资源，而被park
 		//当release资源时，会唤醒 head的后继Node的thread
 		//该thread被唤醒后，继续执行for循环：试图获得锁（当获取到锁后，自身成为head节点）
 		//--
@@ -51,11 +52,30 @@ final boolean acquireQueued(final Node node, int arg) {
 //设置前继节点的waitStatus为SIGNAL
 //返回：是否需要park 当前Node.thread
 //注意：该方法可能会调整node链，也可能会被并发调用
+//--
 //为什么并发调用时，还是正常的：
 //设node1.thread 和 node2.thread上 均在执行该方法，则意味着node1和node2均未获取到资源，且node1一定在node2的前面
 //这里的调整node链，仅仅是在重设Node.prev（=一个没被cancel的Node）
 //则一般情况下，node2.prev最差的情况下为node1（既是：node2并不会调整 node1之前的Node链）
 //则，并发调用是安全的
+//--
+//为什么要返回 可能的false：
+//当返回false时，则意味着暂时不park节点，而是继续for循环：tryAcquire（有可能会获得资源）
+//一种情况，当前只有一个head，其正在执行release
+//在执行release的过程中（还未设置state为0），有thread2请求资源
+//则thread2请求资源失败，生成节点2并加入到队列中，且在acquireQueue时，因为其前继是head，会再次请求资源，但还是失败，则进行shouldPark
+//分支1
+	//而head线程继续执行，因为其waitStatus不为SIGNAL（还是为0），则未唤醒后继节点
+	//转到节点2线程，其必须返回到acquireQueue中的for循环（因为head之前已经release了，且，并未唤醒后继节点）
+	//则节点2线程中，因为前继的waitStatus并不为SIGNAL，则设置了前继的waitStatus后（为SIGNAL），最终返回了false
+	//则可以再次执行acquireQueue的for循环，并最终获得了资源
+//分支2
+	thread2继续往下执行，设置了head.waitStatus为SIGNAL，并因为返回了false而继续执行acquireQueue来请求资源，但还是失败
+	而此刻再进入到shouldPark，因为前继的waitStatus已经为SIGNAL，则返回了true
+	接下来，会执行park，
+	此刻，转到head线程执行，因为其waitStatus为SIGNAL（不为0），则会唤醒head的后继（即是节点2）（注意：此刻节点2还未执行LockSupport.park）
+	回到thread2来执行park，因为之前已经有线程执行了LockSupport.unpark(thread2)，则此刻的LockSupport.park会立刻返回
+	再次回到acquireQueue的for循环来请求资源，最终请求到
 private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
 	int ws = pred.waitStatus;
 	if (ws == Node.SIGNAL)

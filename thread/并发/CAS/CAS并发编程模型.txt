@@ -22,5 +22,5 @@ while+CAS：
 自身的流程：
 	FutureTask#awaitDone 中，根据state的取值来执行流程，并有可能加入到链表（成为head）
 	
-	
-	
+当同时有多个线程在并发访问一个volatile变量，在写时，也不一定非要使用CAS，只要保证 多种情形下 流程的正确。
+如：release中唤醒head后继 和 acquireQueue时改变了head
