@@ -42,7 +42,7 @@ Java并发之AQS详解 - waterystone - 博客园
 		代表：本次的资源申请，拥有thread, waitStatus等属性
 		前驱后继：next, pre
 		waitStatus
-			SIGNAL：当释放资源时，要唤醒后继节点时，head.waitStatus需要为SIGNAL
+			SIGNAL：当释放资源后，要唤醒后继节点时，head.waitStatus需要为SIGNAL
 				对于独占资源，要求waitStatus!=0
 				对于共享资源，要求waitStatus==SIGNAL
 				--

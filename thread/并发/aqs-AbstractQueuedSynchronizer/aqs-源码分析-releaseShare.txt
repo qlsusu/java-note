@@ -16,26 +16,21 @@ private void doReleaseShared() {
             if (ws == Node.SIGNAL) {
             	//为什么会有CAS失败的情况：
             	//在thread1上，当unpark了后继，后继.thread（设为thread2）返回到doAcquireShare.for，很有可能获得了资源，那么其会执行setHeadAndPropagate
-            	//其成为了新的head，并准备唤醒其后继，设其准备执行 之下的这句
-            	//而此刻，thread1继续执行，由于head发生了改变，又执行了一遍for循环，其使得新head.waitStatus为0
-            	//而回到thread2，则CAS失败，因为原始值（参数2）已经发生了改变
+            	//node2成为了新的head，并准备唤醒其后继，设其准备执行 之下的这句
+            	//而此刻，thread1继续执行，由于head发生了改变（为node2），又执行了一遍for循环，其使得node2.waitStatus为0
+            	//而回到thread2，则CAS失败，因为expected已经发生了改变（不为SIGNAL，代表：不需要唤醒后继）
                 if (!compareAndSetWaitStatus(h, Node.SIGNAL, 0))
                     continue;
                 //唤醒后继，继续走doAcquireShared中的for循环
                 unparkSuccessor(h);
             }
             //当ws为0，那么意味着没有后继需要唤醒，则最后设置ws为PROPAGATE
-            else if (ws == 0 &&
-                     !compareAndSetWaitStatus(h, 0, Node.PROPAGATE))
+            else if (ws == 0 && !compareAndSetWaitStatus(h, 0, Node.PROPAGATE))
                 continue;
         }
         
-        //当head没有发生变化，意味着后续节点没有获取资源成功（如果获取成功了，会修改head）
-        //则，不能再继续唤醒后续节点，则break
-        //而当head发生了变化（什么时候会发生改变：当unpark了 老head.next，而head.next.thread继续执行doAcquireShared中的for，当其申请到资源时，会setHeadAndPropagate来成为新head）时，
-        //会继续唤醒 新head.next
-        //而新head.thread在setHeadAndPropagate中，也会唤醒其next
-        //则该next会被唤醒两次（但是，这样也没关系）
+        //当head发生了改变，继续for，否则，可以退出了
+        //什么时候head发生了改变：参见：执行unparkSuccessor的条件 的注释
         if (h == head)
             break;
     }

@@ -65,7 +65,7 @@ get：
 			是否COMPLETING，是，Thread.yield来重走cpu调度，后for。否则 继续
 			是否生成了node，否，生成node，后for。否则 继续
 				q = new WaitNode();
-			是否入队了，否，入队，后for。否则 继续
+			是否入队了，否，入队（到队头），后for。否则 继续
 				入队：UNSAFE.compareAndSwapObject(this, waitersOffset, q.next = waiters, q);
 			LockSupport.park，被唤醒后，for
 		为什么是如此设计：设想下这个场景：

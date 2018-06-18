@@ -4,7 +4,7 @@ public final boolean release(int arg) {
 	//如：可参见ReentrantLock.Sync#tryRelease：因为ReentrantLock是 资源可重入的，则设 当前线程申请了3次资源，则只有释放了3次资源后，才允许唤醒其他Node
 	if (tryRelease(arg)) {
 		Node h = head;
-		//如果head.waitStatus为SIGNAL（不为0），则唤醒head的 后继节点.thread
+		//如果head.waitStatus为SIGNAL（此处，以 不为0 来表示），则唤醒head的 后继节点.thread
 		if (h != null && h.waitStatus != 0)
 			unparkSuccessor(h);
 		return true;

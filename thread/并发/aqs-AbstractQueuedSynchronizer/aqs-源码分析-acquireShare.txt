@@ -35,8 +35,8 @@ private void doAcquireShared(int arg) {
                 int r = tryAcquireShared(arg);//尝试获取资源
                 if (r >= 0) {//成功
 					//自身将成为head，当还有剩余资源时，则可以再唤醒之后的节点2
-					//当节点2的线程被唤醒，会重新执行for循环
-					//注意：此刻，节点2已经是 新head（自身节点）的后继，会尝试获取资源
+					//当节点2的线程被唤醒，会重新执行for循环，会尝试获取资源
+					//注意：此刻，节点2已经是 新head（自身节点）的后继
 					//当获取到资源后，节点2成为了head，并唤醒他的后继
 					//此刻，会多次修改head（并非并发修改head，而是依次）
                     setHeadAndPropagate(node, r);
@@ -71,4 +71,36 @@ private void setHeadAndPropagate(Node node, int propagate) {
         if (s == null || s.isShared())
             doReleaseShared();
     }
+}
+
+private void doReleaseShared() {
+	/**
+		采用了for循环，为什么：
+		当head发生了变动时，在当前线程上，而非其后继线程（该后继已经成为了新head）上，来唤醒新head的后继
+	*/
+	for (;;) {
+		Node h = head;
+		if (h != null && h != tail) {
+			int ws = h.waitStatus;
+			if (ws == Node.SIGNAL) {
+				/**
+					执行cas，来将ws从 SIGNAL变成0（初始状态）
+					为什么要进行本次cas，在unparkSuccessor中，不是也会将head.ws cas来变成0吗
+					设一种场景：head1 unpark了后继线程2，随后该线程继续执行doAcquireShare，获得了资源，并设置了head
+					随后thread1继续执行，因为head变了（成为node2），继续执行for
+					其改变了新head（node2）.ws为0，唤醒了新head的后继（node3），而node3也能更快的执行doAcquireShared的for流程
+					现在thread2继续执行，当其执行到doReleaseShared时，发现head.ws已经不能cas到0（因为cas的expected并不是SIGNAL，而是已经为0了）
+					则意味着：之前老head已经帮我 唤醒了 我的后继，那么我什么也用不做
+				*/
+				if (!compareAndSetWaitStatus(h, Node.SIGNAL, 0))
+					continue;            // loop to recheck cases
+				unparkSuccessor(h);
+			}
+			else if (ws == 0 &&
+					 !compareAndSetWaitStatus(h, 0, Node.PROPAGATE))
+				continue;                // loop on failed CAS
+		}
+		if (h == head)                   // loop if head changed
+			break;
+	}
 }

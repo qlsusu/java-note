@@ -1,3 +1,4 @@
+------------------------模型1：CAS+state
 CAS+state：
 核心步骤：
 工作方：
@@ -10,9 +11,18 @@ CAS+state：
 根据state的取值 来执行流程
 参见：FutureTask内部细节.txt 中的 get 部分（当state>COMPLETING 和 awaitDone）
 
+在aqs中，均是根据state来判断是否可获得资源
+对于独占资源，使用state和exclusiveOwnerThread 来辅助进行tryAcquire 和 tryRelease
+在tryAcquire时，如有可能，先CAS设置state，后设置exclusiveOwnerThread
+而在tryRelease中，是先设置exclusiveOwnerThread，再设置state
+
 ------------------------
 
-对于volatile类型的变量（如：state），先生成临时变量来保存该值，作为当前流程中的 参考state，而非在流程中 时刻读取state的最新值（有可能被其他线程所修改）
+对于volatile类型的变量（如：state），先生成临时变量来保存该值，作为当前流程中的 参考state，而非在流程中 时刻读取state的最新值（此刻，该volatile变量有可能已经被其他线程修改）
+如：aqs中，线程1在执行unparkSuccessor，当需要唤醒后继节点时，会s=head.next，后执行
+	if (s == null || s.waitStatus > 0) {
+而当我们替换使用 if (head.next == null || head.next.waitStatus > 0)时，就有可能head.next为null，而在执行head.next.waitStatus时 抛出空指针异常
+	当线程2有可能acquireQueued中，tryAcquire成功，而改变了老head.next为null
 
 while+CAS：
 例子：

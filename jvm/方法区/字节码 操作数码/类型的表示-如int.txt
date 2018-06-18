@@ -3,3 +3,15 @@ long	IJ
 类		L完全限定类名（用/代替.）;
 	如：String	Ljava/lang/String;
 void	V
+
+而对于字节码指令而言（如：iload, istore）：
+int		i
+long	l
+float	f
+double	d
+对象引用	a
+--
+byte	b
+boolean	b
+char	c
+short	s

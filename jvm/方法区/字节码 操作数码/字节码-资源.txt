@@ -1,3 +1,0 @@
-参见：
-Java bytecode instruction listings
-	https://en.wikipedia.org/wiki/Java_bytecode_instruction_listings

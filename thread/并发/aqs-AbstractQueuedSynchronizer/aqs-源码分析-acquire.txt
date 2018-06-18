@@ -72,7 +72,7 @@ final boolean acquireQueued(final Node node, int arg) {
 //分支2
 	thread2继续往下执行，设置了head.waitStatus为SIGNAL，并因为返回了false而继续执行acquireQueue来请求资源，但还是失败
 	而此刻再进入到shouldPark，因为前继的waitStatus已经为SIGNAL，则返回了true
-	接下来，会执行park，
+	接下来，会执行park（但还未真实执行），
 	此刻，转到head线程执行，因为其waitStatus为SIGNAL（不为0），则会唤醒head的后继（即是节点2）（注意：此刻节点2还未执行LockSupport.park）
 	回到thread2来执行park，因为之前已经有线程执行了LockSupport.unpark(thread2)，则此刻的LockSupport.park会立刻返回
 	再次回到acquireQueue的for循环来请求资源，最终请求到
