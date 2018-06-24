@@ -13,8 +13,13 @@ public final void acquire(int arg) {
 		生成一个节点（代表了本次请求），插入到链表尾部
 		当该节点是head的后继时，再次尝试是否可获得资源
 		当还是获取不到时，阻塞线程
-			需要：前继节点的status需要为SIGNAL，为了：该前继节点释放资源后，需要唤醒其后继节点（即是：自身节点）的thread 来试图获取资源（重走acquireQueued中的for）
+			需要：前继节点的status需要为SIGNAL，为了：该前继节点释放资源后，需要唤醒其后继节点（即是：自身节点）的thread 来试图获取资源（重走acquireQueued中的for）			
 
+tryAcquire
+参见：
+. ReentrantLock中的实现
+. aqs-总述.txt 中的 state部分
+			
 //试图获得锁（此时已经生成了节点，位于链表中）
 //注意：即使生成了节点 位于链表中，还是可以一次获得资源的
 	//如：轮到自己请求时，之前占用资源的线程释放了资源（而之前，自己通过tryAcquire没有获得到资源（CAS把state从0设置为1时 失败，或，之前占用资源的线程 并非 自己线程））

@@ -86,7 +86,7 @@ private void doReleaseShared() {
 				/**
 					执行cas，来将ws从 SIGNAL变成0（初始状态）
 					为什么要进行本次cas，在unparkSuccessor中，不是也会将head.ws cas来变成0吗
-					设一种场景：head1 unpark了后继线程2，随后该线程继续执行doAcquireShare，获得了资源，并设置了head
+					设一种场景：thread1上，head1 unpark了后继线程2，随后线程2继续执行doAcquireShare，获得了资源，并设置了head
 					随后thread1继续执行，因为head变了（成为node2），继续执行for
 					其改变了新head（node2）.ws为0，唤醒了新head的后继（node3），而node3也能更快的执行doAcquireShared的for流程
 					现在thread2继续执行，当其执行到doReleaseShared时，发现head.ws已经不能cas到0（因为cas的expected并不是SIGNAL，而是已经为0了）

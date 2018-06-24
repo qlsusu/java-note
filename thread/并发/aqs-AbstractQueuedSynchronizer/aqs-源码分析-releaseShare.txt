@@ -6,6 +6,11 @@ public final boolean releaseShared(int arg) {
     return false;
 }
 
+tryReleaseShared
+参见：
+. CountdownLatch中的实现
+. aqs-总述.txt 中的 state部分
+
 private void doReleaseShared() {
 	for (;;) {
         Node h = head;

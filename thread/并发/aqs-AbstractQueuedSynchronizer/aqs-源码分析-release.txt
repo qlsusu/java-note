@@ -12,6 +12,11 @@ public final boolean release(int arg) {
 	return false;
 }
 
+tryRelease
+参见：
+. ReentrantLock中的实现
+. aqs-总述.txt 中的 state部分
+
 //唤醒后继
 private void unparkSuccessor(Node node) {
 	//设置自身的status为0

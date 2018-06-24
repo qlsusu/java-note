@@ -89,6 +89,7 @@ public class ByteInfo extends FatherBean {
         String str = TAG3;
         System.out.println(str);
 
+        System.out.println("==");
         boolean isSame = 1 == 1;
         isSame = volatileAge == age;
         ByteInfo byteInfo1 = new ByteInfo();

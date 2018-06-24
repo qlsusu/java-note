@@ -44,8 +44,9 @@ FutureTask#finishCompletion
 	唤醒FutureTask.waiters表示的WaitNode链表：
 		for (WaitNode q; (q = waiters) != null;) {
             if (UNSAFE.compareAndSwapObject(this, waitersOffset, q, null)) {
-				//唤醒以q为头的 链表：
-				LockSupport.unpark(WaitNode.thread)		
+				//唤醒以q为头的 链表，方式：LockSupport.unpark(WaitNode.thread)
+				...
+				//直接break来退出最外层for循环，即是：当成功设置了head为null后，就只用唤醒head为头的所有节点，而不用：担心：head发生了改变
 				break;			
 			}
 		}
@@ -119,8 +120,7 @@ public boolean cancel(boolean mayInterruptIfRunning) {
 	return true;
 }
 
------------------------------------------------------------阻塞链表
-加入和移除WaitNode 的并发保证：
+-----------------------------------------------------------加入和移除WaitNode 的并发保证
 在客户get时，有可能因为state 不>COMPLETING 而产生了WaitNode 并加入到阻塞链表中
 而当自身执行完毕，会通过finishCompletion来唤醒 阻塞链表中元素.thread，并清空阻塞链表
 但是如何保证 加入和移除WaitNode 的并发
@@ -134,13 +134,10 @@ FutureTask#finishCompletion中
 	for (WaitNode q; (q = waiters) != null;) {
 		if (UNSAFE.compareAndSwapObject(this, waitersOffset, q, null)) {
 			后针对于q以及其next，来执行唤醒WaitNode.thread
+			break; //退出了外层for循环
 可以看出，除了CAS外，并没有其他保护措施
 但是，这不会产生问题，为什么：
-1. 在一次循环后，还会进行外层的for 来检查链表是否发生了变化：
-	移除逻辑中，当线程1（工作线程）执行通过 UNSAFE.compareAndSwapObject(this, waitersOffset, q, null)
-	而此刻线程2（客户线程）又改变了waiters（添加了WaitNode）
-	此时，线程1是无法察觉到新的waiters，而之后的唤醒WaitNode.thread并不生效于新waiters
-	但是，当线程1完成了 本次的 基于当前时刻waiters（相对于新加入的waiters而言，属于 之前的时刻）的WaitNode.thread唤醒后，
-	还会再次遍历链表（以防其发生变化）：
-		for (WaitNode q; (q = waiters) != null;) {
-2. 链表的插入和删除，都是基于 同一个方向（头部）的节点，则只要保证该节点被修改的 并发性，之后再循环来检查 该头节点即可
+移除逻辑中，当线程1（工作线程）执行通过了 UNSAFE.compareAndSwapObject(this, waitersOffset, q, null)，并不会再有节点再成为head
+为什么：当执行到finishCompletion时，肯定得到了结果（state>COMPLETING）
+即便是在之前，有线程2（客户线程）执行到awaitDone，并生成了节点，并准备加入到链表中
+当该节点加入到链表失败（CAS失败），而再次走for循环，便会因为state>COMPLETING，而直接return而得到结果

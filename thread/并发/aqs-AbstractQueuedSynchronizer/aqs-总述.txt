@@ -15,20 +15,28 @@ Java并发之AQS详解 - waterystone - 博客园
 	--
 	提供辅助AbstractQueuedSynchronizer#state（int类型）来协助 上述流程：
 	state什么意思：
-		对于独占资源（如：ReentrantLock）：当前，所有线程（包含自身线程）总共申请到了多少个资源。在tryAcquire时（如：ReentrantLock#lock）
-			如果发现state为0，则意味着 当前还没有线程 申请到该资源，那么我可以来申请（对应于ReentrantLock.lock）
-			如果发现state不为0，则需要去查看 当前资源的占用线程是否为自身线程，如果是，就可以申请得到，否则，申请失败
-			--
-			exclusiveOwnerThread：
-			它代表了当前哪个线程占有资源
-			请注意：state是标志，而exclusiveOwnerThread是中间的结果
-				对比于：FutureTask中的state 和 outcome
-			当tryAcquire时，总是先试图去改变state，成功后再设置exclusiveOwnerThread
-			而对于tryRelease，当判断state即将为0时，将先设置exclusiveOwnerThread，后再设置state
+		对于独占资源（如：ReentrantLock）：当前，所有线程（包含自身线程）总共申请到了多少个资源。
+			在tryAcquire时（如：locks.ReentrantLock.NonfairSync#tryAcquire）
+				如果发现state为0，则意味着 当前还没有线程 申请到该资源，那么我可以来申请（对应于 非公平锁：ReentrantLock.Sync#nonfairTryAcquire）
+				如果发现state不为0，则需要去查看 当前资源的占用线程是否为自身线程，如果是，就可以申请得到，否则，申请失败
+				--
+				exclusiveOwnerThread：
+				它代表了当前哪个线程占有资源
+				请注意：state是标志，而exclusiveOwnerThread是中间的结果
+					类似于：FutureTask中的state 和 outcome
+				当tryAcquire时，总是先试图去改变state，成功后再设置exclusiveOwnerThread
+				而对于tryRelease，当判断state即将为0时，将先设置exclusiveOwnerThread，后再设置state
+			在tryRelease中（如：locks.ReentrantLock.Sync#tryRelease）
+				state-=releaseCount，如果最后数据为0
+					设置exclusiveOwnerThread为null
+					并意味着 其他线程可以获得该资源，则唤醒head.后继
+		--
 		对于共享资源（如：CountDownLatch）：当前，“god”设置了几道屏障（而只有所有的屏障被release后，我才能能申请到资源）（state的值是在构造函数中指定）
-		在tryAcquire时（如：CountDownLatch#await()）
-			如果发现state为0，则意味着 可以申请得到
-			如果发现state不为0，则意味着 不能申请得到
+			在tryAcquire时（如：CountDownLatch.Sync#tryAcquireShared）
+				如果发现state为0，则意味着 可以申请得到
+				如果发现state不为0，则意味着 不能申请得到
+			在tryRelease时，需要CAS来使得 state-=releaseCount
+				当state为0时，意味着其他线程可以获得资源，则唤醒head.后继
 
 采用了CAS的方式（并未采用Sychronized）
 		
