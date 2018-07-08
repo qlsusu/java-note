@@ -12,6 +12,8 @@ tryReleaseShared
 . aqs-总述.txt 中的 state部分
 
 private void doReleaseShared() {
+	//虽然执行的是for循环，但只是唤醒了head的后继 这一个节点（除非head发生了改变）
+	//而链表上其他节点的唤醒，则依赖于老head的后继成为 新head后，根据propagate来唤醒（一次一个）（AbstractQueuedSynchronizer#setHeadAndPropagate）
 	for (;;) {
         Node h = head;
         if (h != null && h != tail) {

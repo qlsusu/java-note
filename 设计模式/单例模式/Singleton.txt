@@ -1,6 +1,6 @@
-ÓÃÓÚ Àà³ÉÔ±±äÁ¿µÄÑÓ³Ù¼ÓÔØ
+ç”¨äº ç±»æˆå‘˜å˜é‡çš„å»¶è¿ŸåŠ è½½
 
---------------------------------Àı×Ó£¨²Î¼û£ºActivityManager.java£©
+--------------------------------ä¾‹å­ï¼ˆå‚è§ï¼šActivityManager.javaï¼‰
 private static final Singleton<IActivityManager> IActivityManagerSingleton =
 	new Singleton<IActivityManager>() {
 		@Override

@@ -9,7 +9,9 @@ Java并发之AQS详解 - waterystone - 博客园
 对上述流程进行了封装，则针对于 上层开发者，其只需要实现如下：
 定义 如何能获得/释放 资源（参考于 AbstractQueuedSynchronizer#state的值）
 	对于独占资源，需要实现：boolean tryAcquire, boolean tryRelease
+		独占资源：同一时刻，只有一个线程才能获得资源
 	对于共享资源，需要实现：int tryAcquireShared, boolean tryReleaseShared
+		共享资源：同一时刻，可由多个线程共同获得资源
 	--
 	这也是为什么tryAcquire等方法不是abstract的原因：一种AQS的子类实现 仅仅是一种情况（独占资源，或者，共享资源），则没有必要实现 两组方法
 	--
@@ -18,6 +20,18 @@ Java并发之AQS详解 - waterystone - 博客园
 		对于独占资源（如：ReentrantLock）：当前，所有线程（包含自身线程）总共申请到了多少个资源。
 			在tryAcquire时（如：locks.ReentrantLock.NonfairSync#tryAcquire）
 				如果发现state为0，则意味着 当前还没有线程 申请到该资源，那么我可以来申请（对应于 非公平锁：ReentrantLock.Sync#nonfairTryAcquire）
+					而对于公平锁的情况，在判断state为0时，需要先判断 之前是否已经有Node来申请资源（AbstractQueuedSynchronizer#hasQueuedPredecessors）
+						public final boolean hasQueuedPredecessors() {
+							Node t = tail; // Read fields in reverse initialization order
+							Node h = head;
+							Node s;
+							return h != t &&
+								//为什么s为null时，就不能申请：
+								//当h.next为null时，一种情况，原head.next占用了资源，并设置h.next为null（参见：AbstractQueuedSynchronizer#acquireQueued）
+								//则此刻，代表，已经有一个node获得了资源，则对于独占资源，此刻的资源申请肯定是不成功的，则没必要再进行资源申请
+								((s = h.next) == null || 
+								s.thread != Thread.currentThread());
+						}
 				如果发现state不为0，则需要去查看 当前资源的占用线程是否为自身线程，如果是，就可以申请得到，否则，申请失败
 				--
 				exclusiveOwnerThread：

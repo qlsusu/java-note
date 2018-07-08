@@ -33,8 +33,8 @@ private void doAcquireShared(int arg) {
 			//如果前继是head，那么试图获得资源
             if (p == head) {
                 int r = tryAcquireShared(arg);//尝试获取资源
-                if (r >= 0) {//成功
-					//自身将成为head，当还有剩余资源时，则可以再唤醒之后的节点2
+                if (r >= 0) {
+					//自身将成为head，则可以再唤醒之后的节点2
 					//当节点2的线程被唤醒，会重新执行for循环，会尝试获取资源
 					//注意：此刻，节点2已经是 新head（自身节点）的后继
 					//当获取到资源后，节点2成为了head，并唤醒他的后继
