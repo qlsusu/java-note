@@ -10,7 +10,9 @@ private int getCount() throws Exception{
 		throw e; //语句2
 	} finally {
 		System.out.println("finally here"); //语句3
-		// return -1; //当放开此句时，如果在执行过程中，未throw，则最终返回-1，而不是 try中 正常逻辑的返回值；如果执行的过程中，throw了，则最终throw，而非return
+		//当放开此句时，如果在执行过程中，未throw，则最终返回-1，而不是 try中 正常逻辑的返回值；
+		//如果执行的过程中，throw了，则最终throw，而非return
+		// return -1; 
 	}
 }
 调用getCount方法时，语句的执行顺序为：
