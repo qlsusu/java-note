@@ -152,7 +152,7 @@ private void cancelAcquire(Node node) {
 	//只要node.ws>0，会从tail开始，往前找到一个合适的节点来 唤醒它
 	//这里的设置prev.next纯粹为了性能
 	
-	//找到未被canel的prev
+	//找到未被canel的prev（会调整链表结构）
 	Node pred = node.prev;
 	while (pred.waitStatus > 0)
 		node.prev = pred = pred.prev;
@@ -163,13 +163,13 @@ private void cancelAcquire(Node node) {
 	//设置node.ws为CANCELLED
 	node.waitStatus = Node.CANCELLED;
 
-	//如果node是tail，则prev.next为null
+	//如果node是tail，则prev.next为null（因为node.next为null）
 	if (node == tail && compareAndSetTail(node, pred)) {
 		compareAndSetNext(pred, predNext, null);
 	} else {
 		//否则，设置prev.next=node.next
 		int ws;
-		//如果prev不是head，设置prev.ws为SIGNAL，且prev.thread不为null（为null时，代表该prev被cancel，或，prev占用了资源）
+		//如果prev不是head，设置prev.ws为SIGNAL，且prev.thread不为null（为null时，代表该prev被cancel，或，prev占用了资源而成为了head）
 		if (pred != head &&
 			((ws = pred.waitStatus) == Node.SIGNAL ||
 			 (ws <= 0 && compareAndSetWaitStatus(pred, ws, Node.SIGNAL))) &&
@@ -187,13 +187,14 @@ private void cancelAcquire(Node node) {
 		}
 		//否则，唤醒node的后继
 		//为什么：
-			当prev是head，且执行了release，并唤醒其next
-			而node此刻因为interrupted，已经被唤醒
-			如果其不唤醒node.next，那么整个队列上的节点永远不会被唤醒（除非那些节点.thread被interrupt），因为再也不会执行release了（node线程上执行了interrupt方法，则release可能并不会再执行）
+			当prev是head，且执行了release，则要求唤醒其next
+			设：node线程上 在执行cancelAcquire，但node.ws 可能还不是 CANCELLED，则head会选择node 来唤醒
+			由于node已经因为interrupted而被唤醒了，所以head的release中的唤醒 本质上 无实质效果
+			但如果node不继续唤醒node.next，那么整个队列上的节点永远不会被唤醒（除非那些节点.thread被interrupt），因为再也不会执行release了（node线程上执行了interrupt方法，则release可能并不会再执行（release可是 客户人工调用的哦））
 		//一种情况：
 			即使这里不执行unpark后继，后继节点也有可能被唤醒：
 			当prev是head，但其此刻并没有执行release
-			即便不执行这里的unparkSuccessor(node)，只要执行了release，还是会唤醒head的有效后继（node因为ws已经为CANCELLED，其不为有效后继）
+			即便不执行这里的unparkSuccessor(node)，只要执行了head的release，还是会唤醒head的有效后继（node因为ws已经为CANCELLED，其不为有效后继）
 			则，这里的node.next也总会被唤醒
 			但是，为何还是要执行else中的unparkSuccessor：
 				以防万一，且，一个线程被unpark多次也没关系：
@@ -205,26 +206,3 @@ private void cancelAcquire(Node node) {
 		node.next = node; // help GC
 	}
 }
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
