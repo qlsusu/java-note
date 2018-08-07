@@ -18,7 +18,7 @@ CAS+state：
 
 ------------------------
 
-对于volatile类型的变量（如：state），先生成临时变量来保存该值，作为当前流程中的 参考state，而非在流程中 时刻读取state的最新值（此刻，该volatile变量有可能已经被其他线程修改）
+对于volatile类型的变量（如：state），先生成临时变量来保存该值，作为当前流程中 当前时刻的 参考state，而非在流程中 时刻读取state的最新值（此刻，该volatile变量有可能已经被其他线程修改）
 如：aqs中，线程1在执行unparkSuccessor，当需要唤醒后继节点时，会s=head.next，后执行
 	if (s == null || s.waitStatus > 0) {
 而当我们替换使用 if (head.next == null || head.next.waitStatus > 0)时，就有可能head.next为null，而在执行head.next.waitStatus时 抛出空指针异常
@@ -31,6 +31,11 @@ while+CAS：
 	AbstractQueuedSynchronizer#enq来加入一个Node到队尾，而有可能多个线程都要加入到队尾
 自身的流程：
 	FutureTask#awaitDone 中，根据state的取值来执行流程，并有可能加入到链表（成为head）
-	
-当同时有多个线程在并发访问一个volatile变量，在写时，也不一定非要使用CAS，只要保证 多种情形下 流程的正确。
-如：release中唤醒head后继 和 acquireQueue时改变了head
+
+只要保证 多种情形下 流程的正确，则允许多个线程在并发访问一个volatile变量（而没有保护措施）
+且，在写时，也不一定非要使用CAS
+如：release中唤醒head后继（读head） 和 acquireQueue时改变了head（写head）
+
+------------------------
+
+参见：aqs-总述.txt 中 并发性保证

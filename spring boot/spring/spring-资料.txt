@@ -1,0 +1,4 @@
+参见：
+【第三章】 DI 之 3.4 Bean的作用域 ——跟我学spring3 - 《亿级流量网站架构核心技术》~ - ITeye博客
+	http://jinnianshilongnian.iteye.com/blog/1415463
+	等系列教程

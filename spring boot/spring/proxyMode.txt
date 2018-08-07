@@ -1,0 +1,23 @@
+参见：
+Bean的作用域 - CSDN博客
+	https://blog.csdn.net/u014785687/article/details/76338282
+
+当scope为session/request时，需要再额外设置proxyMode，如：
+	@Component("bean12")
+	@Scope(scopeName = "session", proxyMode = ScopedProxyMode.INTERFACES)
+	public class Bean12 implements Bean11.BeanInterface {
+		@Override
+		public void logic() {
+			System.out.println("bean10.logic");
+		}
+	}
+因为：Bean12对象的真实创建，是在session中，而Bean12很有可能是作为其他类的 成员属性
+如：
+	@Component
+	public class Bean11 {
+		@Autowired
+		@Qualifier("bean12")
+		private BeanInterface bean12;
+则Bean11 有可能 在容器被创建时就被创建，而其属性bean12必须要被赋值
+
+则此刻创建BeanInterface的子类（代理），当Bean12被真实创建时，该代理再将请求委培给Bean12

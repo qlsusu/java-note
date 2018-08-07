@@ -1,0 +1,16 @@
+singleton
+prototype
+	不被BeanFactory缓存
+
+request
+	每个请求需要容器创建一个全新Bean
+session
+	每个会话需要容器创建一个全新Bean
+global session
+	类似于session作用域，只是其用于portlet环境的web应用
+	如果在非portlet环境将视为session作用域。
+	
+自定义scope
+参见：
+【第三章】 DI 之 3.4 Bean的作用域 ——跟我学spring3 - 《亿级流量网站架构核心技术》~ - ITeye博客
+	http://jinnianshilongnian.iteye.com/blog/1415463

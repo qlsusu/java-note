@@ -1,0 +1,11 @@
+application.properties
+在其中设置 server.port，则改变了tomcat的所占用端口
+	等同于：java -jar xxx.jar --server.port=xxx
+如果想在命令行中禁止修改参数：SpringApplication.setAddCommandLineProperties(false)
+
+多环境：
+可定义多份application-{profile}.properties，如：
+	application-dev.properties：开发环境
+	application-test.properties：测试环境
+	application-prod.properties：生产环境
+在application.properties中 设置spring.profiles.active={profile}

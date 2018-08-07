@@ -5,7 +5,7 @@ Java多线程之wait(),notify(),notifyAll()
 // wait场景
 synchronized(obj) {
 　　while(!condition) {
-　　		obj.wait();
+		obj.wait();
 　　}
 　　obj.doSomething();
 }

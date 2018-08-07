@@ -3,7 +3,7 @@ Java并发之AQS详解 - waterystone - 博客园
 	http://www.cnblogs.com/waterystone/p/4920797.html
 
 解决了什么 基本问题（封装了什么模型）：
-当在线程1请求资源时，如果失败，线程1如何被阻塞；
+当线程1请求资源时，如果失败，线程1如何被阻塞；
 当其他线程释放了资源后，被阻塞的线程1 如何被自动唤醒
 
 对上述流程进行了封装，则针对于 上层开发者，其只需要实现如下：
@@ -112,7 +112,7 @@ release后，哪个线程能获取资源，一种情况（ReentrantLock的非公
 . shouldParkAfterFailedAcquire时，会设置pre.waitStatus为SIGNAL，则会先找到未被cancel的前节点（移除已被cancel的 中间前节点（中间节点的两端 已经没有节点再指向它们），注意：这些中间节点的next/prev还是维持不变，为了：unparkSuccessor时（有可能shouldParkAfterFailedAcquire正在调整链表结构（Node.prev被调整）），还有可能遍历这些中间节点，来找到未被cancel的 需要唤醒的节点）
 
 ----------------并发性保证:
-aqs没有使用synchronized关键字
+aqs没有使用Synchronized关键字
 
 while+CAS方式：
 当tryAcquire失败时，将生成Node 并添加其到队尾（addWaiter()）
@@ -125,7 +125,7 @@ while+CAS方式：
 情况2. 
 在unparkSuccessor中，要唤醒head之后的 第一个Node（其waitStatus<=0）
 采用了 从tail开始，向前遍历的方式
-这看似和 shouldParkAfterFailedAcquire中的 移除Node 向冲突，但实质上并没有
+这看似和 shouldParkAfterFailedAcquire中的 移除Node 相冲突，但实质上并没有
 	当在遍历时，还未改变链表结构（nodeX.prev），那么无影响
 	当在遍历时，改变了链表了结构，也无所谓，因为，二者的条件 均是waitStatus<=0，即是：我在遍历的时候，你在移除，你移除的东西我也是不需要的
 

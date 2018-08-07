@@ -1,0 +1,41 @@
+参见：
+【第四章】 资源 之 4.2 内置Resource实现 ——跟我学spring3 - 《亿级流量网站架构核心技术》~ - ITeye博客
+	http://jinnianshilongnian.iteye.com/blog/1416320
+【第四章】 资源 之 4.3 访问Resource ——跟我学spring3 - 《亿级流量网站架构核心技术》~ - ITeye博客
+	http://jinnianshilongnian.iteye.com/blog/1416321
+	
+几类资源：
+classpath: classpath*:
+file:
+网络资源，如：http:
+	
+由什么进行加载：
+DefaultResourceLoader
+	用于：classpath: file:
+ServletContextResourceLoader
+	用于：servlet相关资源
+
+AbstractApplicationContext 继承于 DefaultResourceLoader
+有哪些ApplicationContext：
+	ClassPathXmlApplicationContext
+	FileSystemXmlApplicationContext
+	WebApplicationContext
+
+资源通配符：
+?
+	匹配一个字符，
+	如config?.xml将匹配config1.xml；
+*
+	匹配零个或多个字符串，
+	cn/*/config.xml将匹配cn/javass/config.xml，
+	cn/config-*.xml将匹配cn/config-dao.xml；
+	但不匹配匹配cn/config.xml
+**
+	匹配路径中的零个或多个目录
+	cn/**/config.xml将匹配cn/config.xml，也匹配cn/javass/spring/config.xml；
+	cn/javass/config-**.xml将匹配cn/javass/config-dao.xml，即把**当做两个*处理。
+
+classpath: vs classpath*:
+通过classpath只会返回一个匹配资源（即使 有多个资源都匹配）且 不支持通配符
+通过classpath*会返回多个匹配资源，支持通配符
+该资源存在于classpath中（注意：资源会在 classpath中的.jar中 来寻找）

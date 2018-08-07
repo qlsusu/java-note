@@ -1,0 +1,6 @@
+参见：
+【第五章】Spring表达式语言 之 5.1 概述 5.2 SpEL基础 ——跟我学spring3 - 《亿级流量网站架构核心技术》~ - ITeye博客
+	http://jinnianshilongnian.iteye.com/blog/1416581
+	以及系列教程
+
+spring expression language

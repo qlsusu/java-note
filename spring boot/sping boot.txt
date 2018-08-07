@@ -1,0 +1,12 @@
+是什么：
+旨在简化创建产品级的Spring应用和服务，简化了配置文件，使用嵌入式web服务器，含有诸多开箱即用微服务功能，可以和spring cloud联合部署。
+
+生成基础配置：
+https://start.spring.io/
+
+运行方式：
+. 运行main函数
+. maven projects侧边栏中，plugins-spring boot-spring-boot:run
+. maven projects侧边栏中，lifecycle- clean和package
+	在控制台，会看出.jar的输出路径
+	java -jar xxx.jar
