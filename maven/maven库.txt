@@ -1,0 +1,11 @@
+库在本地的位置：/Users/qlong/.m2/repository/
+
+依赖示例（org.aspectj:aspectjweaver:1.9.1）：
+<dependency>  
+    <groupId>org.aspectj</groupId>  
+    <artifactId>aspectjweaver</artifactId>  
+    <version>1.9.1</version>  
+</dependency>
+
+本地目录结构：
+repository/org/aspectj/aspectjweaver/1.9.1

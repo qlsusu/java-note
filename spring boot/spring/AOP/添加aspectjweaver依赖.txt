@@ -1,0 +1,5 @@
+运行AOP时，需要aspectjweaver（否则，报错：java.lang.NoClassDefFoundError: org/aspectj/weaver/reflect/ReflectionWorld$ReflectionWorldException）
+但spring library默认是不提供的，则需要手动添加依赖
+工程结构-dependencies-添加-library-from maven
+	查询：http://mvnrepository.com/artifact/org.aspectj/aspectjweaver，得到版本号
+	输入：org.aspectj:aspectjweaver:1.9.1

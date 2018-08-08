@@ -1,0 +1,12 @@
+当没有使用around advice时
+	Aspect1.before
+	Logic1.logic
+	Aspect1.after
+	Aspect1.afterReturn/afterThrowing
+		当 Logic1.logic 正常返回/抛出异常
+当使用了around advice时	
+	Aspect1.before
+	Aspect1.around
+	Aspect1.afterReturn/afterThrowing
+		当 Aspect1.around 正常返回/抛出异常
+	Aspect1.after
