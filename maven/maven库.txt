@@ -1,4 +1,5 @@
 库在本地的位置：/Users/qlong/.m2/repository/
+远程库：http://mvnrepository.com/
 
 依赖示例（org.aspectj:aspectjweaver:1.9.1）：
 <dependency>  

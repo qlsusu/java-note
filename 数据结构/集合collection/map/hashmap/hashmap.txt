@@ -18,14 +18,14 @@ HashMap实际上是一个“链表散列”的数据结构，即 数组（元素
 get(key)原理：
 rehash(key.hashcode) 得到 hash值
 将该hash值映射到某个桶
-遍历桶内的entry
-	该hash值==entry.hash 为true，且
+遍历桶内的entry，查看该key是否已经存在，条件：
+	. 该hash值==entry.hash 为true &&
 		都找到桶了，为什么还要比较hash值：经过了rehash的 不同的hash值，可能最终被映射到不同的桶上。
 		entry中已经有一个字段来保存该hash值了，参见：entry数据结构.png
-	key.equals(entry.key) 为true
+	. (key == entry.key ||
+	. key.equals(entry.key) 为true)
 
 key.hashcode应该是不变的:
 如果key.hashcode变了，那么rehash可能也会变化，
 	那么映射到的桶 可能也会变化，
 	就算桶不会变化，从该桶中来找entry时，会先拿rehash的值来进行比较，则，有可能就找不到entry
-

@@ -1,0 +1,14 @@
+class SomeClass {
+    ...
+    
+    @Override
+    public boolean equals(Object o) {
+    	//通用判断
+        if (this == o) return true;
+        if (!(o instanceof SomeClass)) return false;
+        
+        //根据的业务 来 判断两个对象是否相等（如：成员属性是否相等 等）
+        ...
+        
+    }
+}

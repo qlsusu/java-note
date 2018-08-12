@@ -3,13 +3,14 @@ Java 中正确使用 hashCode 和 equals 方法
 	http://www.oschina.net/question/82993_75533?fromerr=c7LtkvBW
 Android 面试准备之「equals 和 == 」
 	https://androidzzt.github.io/2017/03/28/Android-%E9%9D%A2%E8%AF%95%E5%87%86%E5%A4%87%E4%B9%8B%E3%80%8Cequals-%E5%92%8C-%E3%80%8D/
+第3章 对于所有对象都通用的方法
+	http://mp.weixin.qq.com/s?__biz=MzIxNDE1NjQ2Mw==&mid=2649872263&idx=1&sn=0188d7575dccb5f67eda2271573a59c0#rd
 
 散列表本质是数组存储，通过 key-value 的形式存储数据，所以当取 value 的时候，先拿 key的hashCode 确定 value在数组中的位置。
-hashset和hashmap等 均采用了散列表结构，
+HashSet和HashMap等 均采用了散列表结构，
 	先通过hash(key.hashcode)来确定 散列表中的位置
 	后，通过entry.key.equals来找到该entry
 	
 两个对象的
-	equals如果相等，那么hashcode一定相同
-	hashcode值相同的，但，equals不一定相等
-
+	equals相等时，hashcode一定相同
+	hashcode相同时，equals不一定相等

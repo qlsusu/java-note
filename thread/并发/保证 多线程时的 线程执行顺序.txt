@@ -1,0 +1,7 @@
+参见：
+多线程控制线程的执行顺序 - CSDN博客
+	https://blog.csdn.net/u013407384/article/details/79999022
+	
+. 采用join
+. 采用单线程的 线程池
+. 采用CountDownLatch

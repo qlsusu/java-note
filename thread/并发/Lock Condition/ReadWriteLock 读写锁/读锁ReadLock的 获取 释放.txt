@@ -1,0 +1,101 @@
+当线程1获得了写锁，线程1可获得读锁
+当线程2获得了写锁，线程1不能获得读锁
+当没有线程获得写锁，线程1可以获得读锁
+
+-----------------------------------------------------读锁的获取
+ReentrantReadWriteLock.ReadLock#lock
+	AbstractQueuedSynchronizer#acquireShared
+		ReentrantReadWriteLock.Sync#tryAcquireShared
+			Thread current = Thread.currentThread();
+            int c = getState();
+            //如果还没有线程获得写锁，或者，获得写锁的线程 为 自身线程，则继续；
+            //否则，获取读锁失败
+            //注意：写锁位于 state的低16位
+            if (exclusiveCount(c) != 0 &&
+                getExclusiveOwnerThread() != current)
+                return -1;
+            //注意：读锁位于 state的高16位，则>>>16 来方便计算
+            int r = sharedCount(c);
+            //readerShouldBlock考虑了 公平性和非公平性，由：FairSync 和 NonFairSync来实现
+            if (!readerShouldBlock() &&
+                r < MAX_COUNT &&
+                compareAndSetState(c, c + SHARED_UNIT)) {
+                if (r == 0) {
+                    firstReader = current;
+                    firstReaderHoldCount = 1;
+                } else if (firstReader == current) {
+                    firstReaderHoldCount++;
+                }
+                //并不是第一个拥有 读锁资源的 线程
+                else {
+                    HoldCounter rh = cachedHoldCounter;
+                    if (rh == null || rh.tid != getThreadId(current))
+                        cachedHoldCounter = rh = readHolds.get();
+                    else if (rh.count == 0)
+                        readHolds.set(rh);
+                    rh.count++;
+                }
+                return 1;
+            }
+            return fullTryAcquireShared(current);
+
+------------------------fullTryAcquireShared
+TODO
+
+------------------------HoldCounter 和 firstReader firstReaderHoldCount cachedHoldCounter 有什么用：
+>>> Sync.HoldCounter
+用来表明：一个线程 持有的读锁的个数
+static final class HoldCounter {
+	int count = 0;
+	final long tid = getThreadId(Thread.currentThread());
+}
+使用Sync.ThreadLocalHoldCounter（继承于ThreadLocal）来将：线程 和 HoldCounter关联
+
+有什么用：
+在释放读锁时，如果一个线程 释放了 其没有拥有的读锁资源，会抛出异常（参见：读锁的释放 流程）
+	private IllegalMonitorStateException unmatchedUnlockException() {
+		return new IllegalMonitorStateException(
+			"attempt to unlock read lock, not locked by current thread");
+	}
+	
+>>> firstReader firstReaderHoldCount cachedHoldCounter有什么用：
+firstReader：			第一个拥有读锁资源的线程
+firstReaderHoldCount：	第一个拥有读锁资源的线程 所拥有的 读锁资源的个数
+cachedHoldCounter：		最后一个拥有读锁资源的线程 对应的 HoldCounter
+firstReader firstReaderHoldCount cachedHoldCounter 和 HoldCounter 的存在是为了：在释放资源时，是否抛出异常
+则本质上，需要知道 释放读锁资源的线程 之前拥有的 读锁资源的个数
+而该个数 可以通过 HoldCounter.count来获得，而HoldCount又需要 ThreadLocal.get
+则，创建 ‘冗余的’ firstReader变量等，可以免去上述 获取步骤，则提升了性能
+	况且，往往，第一个拥有读锁资源的线程 或 最后一个拥有读锁资源的线程 会先释放读锁资源
+
+-----------------------------------------------------读锁的释放            
+ReentrantReadWriteLock.ReadLock#unlock
+	AbstractQueuedSynchronizer#releaseShared
+		ReentrantReadWriteLock.Sync#tryReleaseShared
+			Thread current = Thread.currentThread();
+            if (firstReader == current) {
+                // assert firstReaderHoldCount > 0;
+                if (firstReaderHoldCount == 1)
+                    firstReader = null;
+                else
+                    firstReaderHoldCount--;
+            } else {
+                HoldCounter rh = cachedHoldCounter;
+                if (rh == null || rh.tid != getThreadId(current))
+                    rh = readHolds.get();
+                int count = rh.count;
+                if (count <= 1) {
+                    readHolds.remove();
+                    //当线程释放了 其并不拥有的 读锁资源时，抛出异常
+                    if (count <= 0)
+                        throw unmatchedUnlockException();
+                }
+                --rh.count;
+            }
+            for (;;) {
+                int c = getState();
+                int nextc = c - SHARED_UNIT;
+                if (compareAndSetState(c, nextc))
+					//只有当 读锁和写锁 都释放完毕后，才唤醒后续节点
+                    return nextc == 0;
+            }

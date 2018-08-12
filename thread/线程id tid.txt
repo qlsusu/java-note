@@ -1,0 +1,5 @@
+获取线程id的方式：
+. Thread#getId
+. ReentrantReadWriteLock#getThreadId
+	UNSAFE.getLongVolatile(thread, TID_OFFSET);
+	其中 TID_OFFSET = UNSAFE.objectFieldOffset(Thread.class.getDeclaredField("tid"));

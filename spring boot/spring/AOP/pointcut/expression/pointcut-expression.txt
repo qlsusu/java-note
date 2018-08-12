@@ -1,0 +1,42 @@
+execution
+	execution(<scope> <return-type> <fully-qualified-class-name>.*(parameters))
+	指定到 方法
+	能 使用通配符
+	如：execution(* com.zejian.spring.springAop.dao.IUserDao.*(..))
+within
+	指定到 类名
+	能 使用通配符
+	如：within(com.zejian.spring.springAop.dao.IUserDao+)
+target
+	指定到 类名
+	不能 使用通配符
+	如：target(com.zejian.spring.springAop.dao.IUserDao)
+this
+	this作用于代理对象（而非目标对象）
+    	什么是代理对象：
+		如：对于ILogic来讲，Aspect9#beforeAdvice对应的对象 就为代理对象（其由AOP生成，而非 客户手动生成）
+	指定到 类名
+	不能 使用通配符
+	如：this(aop.logic.ILogic)
+bean
+	指定到 bean的名字
+	能 使用通配符
+@within
+	指定到 注解类名
+	候选目标的 类 使用注解
+	不能 使用通配符
+	如：@within(aop.annotation.MarkForClass)
+	当 类A使用注解MarkForClass，子类B并没有使用注解，那么，子类B 也被认为是 目标
+@target
+	指定到 注解类名
+	不能 使用通配符
+	候选目标的 类 使用注解
+	如：@within(aop.annotation.MarkForClass)
+	当 类A使用注解MarkForClass，子类B并没有使用注解，那么，子类B 不会 被认为是 目标
+@annotation
+	指定到 注解类名
+	不能 使用通配符
+	候选目标的 类的方法 使用注解
+	如：@within(aop.annotation.MarkForMethod)
+	当 类A的 方法1和方法2 使用注解MarkForMethod，子类B中，覆盖了方法1 但没有使用MarkForMethod，和，未覆盖方法2，
+		则子类B中 方法1 不被认为是目标，方法2 认为是目标

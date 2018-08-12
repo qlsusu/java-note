@@ -1,0 +1,3 @@
+参见：
+java多线程中的死锁、活锁、饥饿、无锁都是什么鬼？
+	https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247483871&idx=1&sn=21b03867de82612ffd9e3267ae668456&chksm=eb5384e9dc240dff6228b1493d73a9048dd0896c1d47af4785f491139e2a320151ebb5270cf2&scene=21#wechat_redirect

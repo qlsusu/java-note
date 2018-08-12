@@ -1,0 +1,29 @@
+参见：
+Java多线程（十）之ReentrantReadWriteLock深入分析 - goto-array的个人页面 - 开源中国
+	https://my.oschina.net/adan1/blog/158107
+【死磕Java并发】—–J.U.C之读写锁：ReentrantReadWriteLock
+	http://cmsblogs.com/?p=2213
+	
+内部通过同一个Sync来 实现 读和写的 获取
+高16为表示读，低16为表示写
+
+ReentrantReadWriteLock内部定义了内部类 ReadLock 和 WriteLock 来处理 读/写锁的 获取和释放
+但是，它们最后会委派给 同一个ReentrantReadWriteLock.Sync对象（继承自AbstractQueuedSynchronizer） 来处理
+
+AQS的阻塞队列
+Sync对象的阻塞队列 对应着 读锁/写锁 两种资源
+设阻塞队列的内容为：线程1写(head) 线程2写 线程3读 线程4写 线程5读
+	当线程1释放写资源时，唤醒线程2，其获得了写资源
+	线程2释放写资源，唤醒线程3，
+	线程3获得了读资源，其会执行AbstractQueuedSynchronizer#setHeadAndPropagate
+		其会判断 其后继是否isShared 来决定是否要唤醒后继
+		针对于例子中的情况，线程4对应的Node并不是shared，则线程3并不会唤醒线程4
+	线程3释放了读资源，唤醒线程4，其获得了写资源
+	线程4释放了写资源，唤醒线程5
+
+state
+Sync对象的state 也对应着 读/写锁 两类资源
+则采用了 高低位 的方式：
+	高16位对应了 写锁（独占锁）
+	低16位对应了 读锁（共享锁）
+则，读/写锁资源 个数（每类）：(1<<16) -1 

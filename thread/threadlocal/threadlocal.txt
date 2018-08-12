@@ -10,7 +10,7 @@
 则，虽然多个线程在访问同一个ThreadLocal对象，但是，每个线程都对应了一个value对象
 	因为：value存放在 ThreadLocal.ThreadLocalMap.Entry#value 中
 	而Entry会存放在 ThreadLocal.ThreadLocalMap#table 中
-	而不同的线程会提供不同的 ThreadLocalMap，则是 不同的ThreadLocalMap#table（存放着不同的Entry）
+	而不同的线程会提供不同的 ThreadLocalMap（由ThreadLocal#getMap(Thread)决定）
 
 应用场景：
 Looper#private static void prepare(boolean quitAllowed) {

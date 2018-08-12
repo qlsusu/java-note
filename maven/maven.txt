@@ -5,5 +5,3 @@ Gradle 修改 Maven 仓库地址
 	http://www.yrom.net/blog/2015/02/07/change-gradle-maven-repo-url/
 Maven详解之仓库------本地仓库、远程仓库
 	http://blog.csdn.net/wanghantong/article/details/36427433
-mvn地址
-	http://mvnrepository.com/

@@ -1,0 +1,45 @@
+当线程2获得了 写锁，则，线程1 不能获得写锁
+当线程2获得了 读锁，则，线程1 不能获得写锁
+当线程1获取了 写锁，...，线程1 可以再次获得写锁
+当没有线程 获得 读/写锁，则，线程1 可以获得写锁
+
+写锁的获取：
+ReentrantReadWriteLock.WriteLock#lock
+	AbstractQueuedSynchronizer#acquire
+		ReentrantReadWriteLock.Sync#tryAcquire
+            Thread current = Thread.currentThread();
+            int c = getState();
+            //写锁被持有的个数（可被同一个线程多次持有）
+            int w = exclusiveCount(c);
+            //当已经有线程 获得了 读锁/写锁
+            if (c != 0) {
+            	//如果已有线程持有写锁，且 该线程 为 当前线程，则继续；
+            	//否则，获取写锁失败
+                if (w == 0 || current != getExclusiveOwnerThread())
+                    return false;
+                if (w + exclusiveCount(acquires) > MAX_COUNT)
+                    throw new Error("Maximum lock count exceeded");
+                // Reentrant acquire
+                setState(c + acquires);
+                return true;
+            }
+            //writerShouldBlock体现了 是否公平来获取，FairSync/NonfairSync 来提供具体的实现
+            if (writerShouldBlock() ||
+                !compareAndSetState(c, c + acquires))
+                return false;
+            setExclusiveOwnerThread(current);
+            return true;
+        }
+
+写锁的释放:
+ReentrantReadWriteLock.WriteLock#unlock
+	AbstractQueuedSynchronizer#release
+		ReentrantReadWriteLock.Sync#tryRelease
+			if (!isHeldExclusively())
+                throw new IllegalMonitorStateException();
+            int nextc = getState() - releases;
+            boolean free = exclusiveCount(nextc) == 0;
+            if (free)
+                setExclusiveOwnerThread(null);
+            setState(nextc);
+            return free;

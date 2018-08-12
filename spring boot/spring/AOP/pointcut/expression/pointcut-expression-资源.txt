@@ -1,0 +1,6 @@
+参见：
+关于 Spring AOP (AspectJ) 你该知晓的一切 - CSDN博客
+	https://blog.csdn.net/javazejian/article/details/56267036
+【第六章】 AOP 之 6.5 AspectJ切入点语法详解 ——跟我学spring3 - 《亿级流量网站架构核心技术》~ - ITeye博客
+	http://jinnianshilongnian.iteye.com/blog/1420691
+	中的 6.5.4  切入点使用示例

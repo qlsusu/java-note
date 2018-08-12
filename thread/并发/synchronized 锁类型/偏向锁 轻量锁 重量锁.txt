@@ -11,6 +11,8 @@ Java虚拟机14：Java对象大小、对象内存布局及锁状态变化
 	http://www.cnblogs.com/xrq730/p/6928133.html
 synchronized、锁、多线程同步的原理是咋样的
 	http://www.jianshu.com/p/5dbb07c8d5d5
+Java 虚拟机对锁优化所做的努力
+	https://mp.weixin.qq.com/s/AnALNEWYfGW7yDSvWve1dw
 
 java1.6对synchronized进行了优化：
 锁消除

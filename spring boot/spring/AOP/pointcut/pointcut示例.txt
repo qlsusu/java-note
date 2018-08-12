@@ -1,0 +1,11 @@
+在config.xml中
+<aop:pointcut id="pointcut1" expression="execution(* aop.logic..*.*(..)) and args(str2)"/>
+
+在.java中
+@Pointcut(value = "execution(* aop.logic..*.*(..)) && args(str2)")
+public void pointcut(String str2) {}
+
+可连用：&& || !
+如：//匹配了任意实现了UserDao接口的目标对象的方法并且该方法名称为addUser
+@Pointcut("target(com.zejian.spring.springAop.dao.UserDao) && execution(* com.zejian.spring.springAop.dao.UserDao.addUser(..))")
+private void myPointcut7(){}
