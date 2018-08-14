@@ -16,7 +16,7 @@ invokeXXX 批量执行任务
 --
 awaitTermination(long timeout, TimeUnit unit)
 	返回值类型：boolean
-	是一个阻塞方法，直到：所有的任务执行完毕，或者，等待时间到，或者，线程被interrupt
+	是一个阻塞方法，直到：所有的任务执行完毕（正常结束 或 因异常退出（如：可能被中断）），或者，等待时间到
 	需要在shutdown后被调用，返回值才有效
 
 一些线程池：

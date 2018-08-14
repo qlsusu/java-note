@@ -14,7 +14,7 @@ synchronized(obj) {
 synchronized(obj) {
 	obj.doPrepare();
 　	condition = true;
-	obj.notify();
+	obj.notifyAll();
 }
 
 需要注意的概念是：
@@ -25,10 +25,16 @@ synchronized(obj) {
 　　# obj.notifyAll()则能全部唤醒A1,A2,A3，但是要继续执行obj.wait()的下一条语句，必须获得obj锁，因此，A1,A2,A3只有一个有机会获得锁继续执行，例如A1，其余的需要等待A1释放obj锁之后才能继续执行。
 　　# 当B调用obj.notify/notifyAll的时候，B正持有obj锁，因此，A1,A2,A3虽被唤醒，但是仍无法获得obj锁。直到B退出synchronized块，释放obj锁后，A1,A2,A3中的一个才有机会获得锁继续执行。
 
------------------------------
-
-obj.wait和thread.sleep的区别
+-----------------------------obj.wait和thread.sleep的区别
 参见：
 Java Thread(线程)案例详解sleep和wait的区别
 	http://www.cnblogs.com/DreamSea/archive/2012/01/16/SleepAndWaitDifferent.html
 sleep和wait的区别.png
+
+-----------------------------obj.notifyAll
+当有多个线程（1-N） 都在等待 同一个obj
+当在 某其他线程上 执行了obj.notifyAll后
+会全部唤醒这些线程，
+但，这些线程的 工作场景中，均要求：先获得synchronized
+则，此刻，也只有一个线程才 真实的继续执行 synchronized逻辑
+之后，待其离开了synchronized（执行完毕，或，因条件原因再次被wait），其他线程可进入到synchronized中

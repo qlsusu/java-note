@@ -5,3 +5,12 @@ Java_io体系之PipedWriter、PipedReader简介、走进源码及示例——14
 线程间通信的一种方式：
 PipedWriter/PipedReader
 pipewriter.connect(pipereader)
+
+示例：
+CharSenderThread cst = new CharSenderThread();
+CharReceiverThread crt = new CharReceiverThread();
+PipedWriter pw = cst.getPipedWriter();
+PipedReader pr = crt.getPipedReader();
+pw.connect(pr);
+//随后就可以从 pr中读取 pw写入的数据
+//而 对pr的读取 和 pw的写入 分别执行在 不同的线程上
