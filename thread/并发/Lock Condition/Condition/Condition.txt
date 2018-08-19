@@ -1,0 +1,19 @@
+参见：
+Java线程(九)：Condition-线程通信更高效的方式
+	http://blog.csdn.net/ghsau/article/details/7481142
+
+vs Object.wait/notify/notifyAll	
+用Condition.await()替换wait()，
+用Condition.signal()替换notify()，用Condition.signalAll()替换notifyAll()	
+
+在使用Condition之前（无论是await，还是signal，均要先获得Lock资源）
+
+Condition 只是使用在 独占资源上，如：
+Condition = ReentrantLock#newCondition
+Condition = ReentrantReadWriteLock.WriteLock#newCondition
+
+同一个Lock对象 可拥有多个Condition对象
+
+Condition的子类：
+AbstractQueuedSynchronizer.ConditionObject
+AbstractQueuedLongSynchronizer.ConditionObject

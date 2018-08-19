@@ -1,3 +1,0 @@
-String str = "20";
-//认为str是采用了16进制来表示，则parse到的整数值为32
-Integer.parseInt(str, 16)

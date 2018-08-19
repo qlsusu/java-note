@@ -19,6 +19,10 @@ entry可能被分配到了更多的桶中，则桶内的链表长度可能因此
 构造函数为：public HashMap(int initialCapacity, float loadFactor)
 其中initialCapacity为桶的初始个数（默认为16），loadFactor默认为0.75
 当 当前entry总数 > 桶个数*loadFactor时，桶的个数会 *=2
+--
+负载因子：
+当负载因子取值过小，那么意味着，更早的时间去扩容，会引发 空间上的浪费
+而负载因子取值过大，因为着 扩容的时机就更晚，那么会引发 诸如put等操作（有可能引发扩容）的 执行效率
 
 多线程下，可能会引发问题
 参见：HashMap并发扩容时的问题.png

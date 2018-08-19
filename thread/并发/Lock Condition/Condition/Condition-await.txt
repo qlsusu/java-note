@@ -1,0 +1,65 @@
+AbstractQueuedSynchronizer.ConditionObject#public final void await() throws InterruptedException {
+	if (Thread.interrupted())
+		throw new InterruptedException();
+	//添加Node到条件队列中
+	Node node = addConditionWaiter();
+	//完全释放 本AQS 占用线程 所占用的所有资源
+	int savedState = fullyRelease(node);
+	int interruptMode = 0;
+	//该Node是否位于 AQS同步队列中，如果不位于，那么阻塞 调用方线程
+	//如果不位于 的解释：当ConditionObject#signal时，会将ConditionObject的条件队列的 对头 转移到 同步队列中
+	//只有位于AQS同步队列的 节点（线程），才能够重新 申请到资源，所以，在释放了资源后，Node（线程）必须重新占用资源
+	while (!isOnSyncQueue(node)) {
+		LockSupport.park(this);
+		if ((interruptMode = checkInterruptWhileWaiting(node)) != 0)
+			break;
+	}
+	//Node位于AQS的同步队列中，试图申请 之前释放的资源
+	//注意：acquireQueued的返回值代表 本Node（线程）是否被interrupt
+	if (acquireQueued(node, savedState) && interruptMode != THROW_IE)
+		interruptMode = REINTERRUPT;
+	if (node.nextWaiter != null) // clean up if cancelled
+		unlinkCancelledWaiters();
+	if (interruptMode != 0)
+		reportInterruptAfterWait(interruptMode);
+
+}
+
+//完全释放 本AQS 占用线程 所占用的所有资源
+AbstractQueuedSynchronizer#final int fullyRelease(Node node) {
+	boolean failed = true;
+	try {
+		int savedState = getState();
+		if (release(savedState)) {
+			failed = false;
+			return savedState;
+		} else {
+			throw new IllegalMonitorStateException();
+		}
+	} finally {
+		if (failed)
+			node.waitStatus = Node.CANCELLED;
+	}
+}
+
+AbstractQueuedSynchronizer#final boolean isOnSyncQueue(Node node) {
+	//同步队列中，Node.waitStatus肯定不是Node.CONDITION，也肯定拥有前继
+	if (node.waitStatus == Node.CONDITION || node.prev == null)
+		return false;
+	//如果其拥有next，那么肯定在同步队列中（同步队列中的节点也才回到 next/prev）
+	if (node.next != null)
+		return true;
+	//遍历同步队列（从tail开始），看 是否能找到该Node
+	return findNodeFromTail(node);
+}
+
+AbstractQueuedSynchronizer#private boolean findNodeFromTail(Node node) {
+	Node t = tail;
+	for (;;) {
+		if (t == node)
+			return true;
+		if (t == null)
+			return false;
+		t = t.prev;
+	}
+}

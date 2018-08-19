@@ -13,7 +13,8 @@ Finalizer的static中，会启动Finalizer.FinalizerThread（级别为 Thread.MA
 	JavaLangAccess var1 = SharedSecrets.getJavaLangAccess();
 	...
 	//注意：此句执行完后，对象1不可达了，将被回收
-	//之后，对象1的 其他reference（如：弱引用等）才会相继被处理：Reference#tryHandlePending	
+	//之后，对象1的 其他reference（如：弱引用等）才会相继被处理：Reference#tryHandlePending
+	//当queue中无元素时，queue.remove的调用线程 会被阻塞
 	Finalizer var2 = (Finalizer)Finalizer.queue.remove();
 	var2.runFinalizer(var1);
 		进而执行被引用对象的finalize()

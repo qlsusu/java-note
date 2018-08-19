@@ -1,0 +1,35 @@
+AbstractQueuedSynchronizer.ConditionObject#public final void signal() {
+	//如果当前线程并没有持有资源，则抛出异常
+	if (!isHeldExclusively())
+		throw new IllegalMonitorStateException();
+	Node first = firstWaiter;
+	if (first != null)
+		doSignal(first);
+}
+
+AbstractQueuedSynchronizer.ConditionObject#private void doSignal(Node first) {
+	do {
+		//如果本Node是 条件队列中的唯一节点，那么设置firstWaiter=nextWaiter=null
+		if ( (firstWaiter = first.nextWaiter) == null)
+			lastWaiter = null;
+		//本Node可以被gc了
+		first.nextWaiter = null;
+	} 
+	//将本节点 从条件队列 移动到同步队列中，如果失败，那么尝试 nextWaiter
+	while (!transferForSignal(first) && (first = firstWaiter) != null);
+}
+
+//将Node节点 从 条件队列 移到 AQS同步队列中
+AbstractQueuedSynchronizer#final boolean transferForSignal(Node node) {
+	//设置Node.waitStatus为0
+	if (!compareAndSetWaitStatus(node, Node.CONDITION, 0))
+		return false;
+	
+	//Node被转移到 同步队列（尾部）
+	Node p = enq(node);
+	int ws = p.waitStatus;
+	//如果Node被cancel，或者，前继.ws不能设置为SIGNAL，那么直接唤醒Node.thread
+	if (ws > 0 || !compareAndSetWaitStatus(p, ws, Node.SIGNAL))
+		LockSupport.unpark(node.thread);
+	return true;
+}

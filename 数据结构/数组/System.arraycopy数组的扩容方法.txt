@@ -1,0 +1,15 @@
+Arrays#copyOf(int[] original, int newLength)
+System.public static native void arraycopy(
+	Object src,  int  srcPos,
+	Object dest, int destPos,
+	int length);
+
+例子：
+在原数组array 的index位置 插入一个新数值：
+	int[] newArray = new int[array.length+1];
+	System.arraycopy(array, 0, newArray, 0, index);
+	newArray[index] = element;
+	System.arraycopy(array, index, newArray, index + 1, array.length - index);
+	return newArray;
+support包也提供类似的方法：
+	GrowingArrayUtils#public static int[] insert(int[] array, int currentSize, int index, int element)

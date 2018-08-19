@@ -1,0 +1,63 @@
+参见：
+图解集合3：CopyOnWriteArrayList
+	http://www.cnblogs.com/xrq730/p/5020760.html
+
+public class CopyOnWriteArrayList<E> implements List<E>, RandomAccess, Cloneable, java.io.Serializable {
+    private static final long serialVersionUID = 8673264195747942595L;
+
+    /** The lock protecting all mutators */
+    transient final ReentrantLock lock = new ReentrantLock();
+
+    /** The array, accessed only via getArray/setArray. */
+    private volatile transient Object[] array;
+    ...
+
+    public boolean add(E e) {
+    	//在写操作时，加锁
+		final ReentrantLock lock = this.lock;
+		lock.lock();
+		try {
+		    Object[] elements = getArray();
+		    int len = elements.length;
+		    //拷贝出一个新数组，前len个元素都和元素组的相同
+		    Object[] newElements = Arrays.copyOf(elements, len + 1);
+		    //添加元素到 新数组中
+		    newElements[len] = e;
+		    //设置array
+		    //注意：设：之前有线程2要请求array，那么返回该array给线程2，线程2基于该array进行遍历
+		    //此刻，要重新设置array
+		    //则之后，array发生了变化，但是之前的线程2却感觉不到该变化
+		    //但，之后，线程3请求array时，得到的是 最新的 修改后的 array
+		    setArray(newElements);
+		    return true;
+		} finally {
+		    lock.unlock();
+		}
+	}
+
+	final void setArray(Object[] a) {
+	    array = a;
+	}
+
+	final Object[] getArray() {
+        return array;
+    }
+}
+
+和读写锁有什么不同：
+. 关于写
+读写锁中，写锁申请时，需要查看 当前有无其他线程申请到了读锁/写锁，如果其他线程申请到了读锁，那么本线程写锁申请失败
+CopyOnWriteArrayList中，写时，也只用考虑其他线程是否 ‘申请到了写锁’，而不用管 ‘读锁的申请情况’
+. 关于读
+读写锁中，读锁申请时，需要查看 当前有无其他线程申请到了写锁，如果其他线程申请到了写锁，那么本线程读锁申请失败
+CopyOnWriteArrayList中，读时，不用管 ‘写锁的申请情况’
+
+CopyOnWriteArrayList有什么好处：
+读时，完全不需要锁；只有写时，需要申请锁
+--
+适用于什么场景：读的次数 远远大于 写的次数
+		
+CopyOnWriteArrayList需要注意些什么：
+. 数据一致性问题
+	可能需要同步修改结果到 写过程中的读取线程，参见：add方法中的注释
+. 写操作会导致数据发生拷贝

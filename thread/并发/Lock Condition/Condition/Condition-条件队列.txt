@@ -1,0 +1,15 @@
+条件队列：
+针对于单个ConditionObject对象（AQS中还存在着 同步队列，针对于AQS对象本身）
+元素仍然使用Node来表示（和AQS同步队列中元素 所采用的数据结构 一致）
+拥有头尾：ConditionObject#firstWaiter, ConditionObject#lastWaiter
+单向链表：用Node#nextWaiter来表示 条件队列中的下一个节点
+	请注意：Node#next 和 Node#prev 并不使用在 条件队列中
+	
+什么时候 条件队列 被改变：
+ConditionObject#addConditionWaiter
+	添加节点	
+ConditionObject#unlinkCancelledWaiters
+	清除掉 条件队列中 的无效节点（Node.waitStatus != Node.CONDITION）
+	被调用场景：
+		ConditionObject#addConditionWaiter中，在添加Node之前，如果ConditionObject#lastWaiter.waitStatus != Node.CONDITION
+		ConditionObject#await中，重新获得了资源后，如果node.nextWaiter != null

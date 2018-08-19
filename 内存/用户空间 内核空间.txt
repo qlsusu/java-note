@@ -19,7 +19,7 @@ linux 用户空间与内核空间——高端内存详解 - Lawrence.Lau - 博�
 	内核在执行的过程中，也需要为用户程序保存一些变量
 
 当进程执行系统方法调用 而陷入 内核代码中时，称 进程处于 内核态
-	可以通过strace命令来查看，进程进行 系统调用的情况（哪些系统调用，用了多久）
+	可以通过strace命令来查看：进程进行 系统调用的情况（哪些系统调用，用了多久）
 	参见：
 	Linux strace命令 - ggjucheng - 博客园
 		https://www.cnblogs.com/ggjucheng/archive/2012/01/08/2316692.html

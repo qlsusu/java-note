@@ -1,4 +1,6 @@
 参见：
+Map 综述（三）：彻头彻尾理解 ConcurrentHashMap - CSDN博客
+	https://blog.csdn.net/justloveyou_/article/details/72783008
 java hashmap工作原理
 	http://www.importnew.com/16599.html
 ConcurrentHashMap使用要点 - 上校 - 博客园
@@ -6,7 +8,9 @@ ConcurrentHashMap使用要点 - 上校 - 博客园
 聊聊并发（四）——深入分析ConcurrentHashMap
 	http://www.infoq.com/cn/articles/ConcurrentHashMap
 
-并发核心原理：并发仅仅针对于桶（有问题的场景：同一个桶的put操作，或，put操作触发了扩容 导致 桶的个数发生了变化）
+并发核心原理：
+	并发仅仅针对于桶（有问题的场景：同一个桶的put操作，或，put操作触发了扩容 导致 桶的个数发生了变化）
+	构造函数中的concurrencyLevel指明了 一个‘锁’对应于 哪几个桶
 最优情况：
 	设hashmap有n个桶，
 	当n个线程，

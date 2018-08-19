@@ -1,0 +1,44 @@
+生产者消费者
+该例 本质上是：java.util.concurrent.ArrayBlockingQueue
+
+class BoundedBuffer {
+    final Lock lock = new ReentrantLock();//锁对象
+    final Condition notFull = lock.newCondition();//非满 条件，如果非满，可以放东西
+    final Condition notEmpty = lock.newCondition();//非空 条件，如果非空，可以取东西
+
+    final Object[] items = new Object[100];//缓存队列
+    int putptr/*写索引*/, takeptr/*读索引*/, count/*队列中存在的数据个数*/;
+
+    public void put(Object x) throws InterruptedException {
+        lock.lock();
+        try {
+            while (count == items.length)//如果队列满了
+                notFull.await();//非满条件 不满足，await
+
+            items[putptr] = x;//赋值
+            if (++putptr == items.length) putptr = 0;//如果写索引写到队列的最后一个位置了，那么置为0
+            ++count;//个数++
+
+            notEmpty.signal();//非空条件 满足，signal
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public Object take() throws InterruptedException {
+        lock.lock();
+        try {
+            while (count == 0)//如果队列为空
+                notEmpty.await();//非空条件 不满足，await
+
+            Object x = items[takeptr];//取值
+            if (++takeptr == items.length) takeptr = 0;//如果读索引读到队列的最后一个位置了，那么置为0
+            --count;//个数--
+
+            notFull.signal();//非满条件 满足，signal
+            return x;
+        } finally {
+            lock.unlock();
+        }
+    }
+}

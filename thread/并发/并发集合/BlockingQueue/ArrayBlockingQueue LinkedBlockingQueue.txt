@@ -1,0 +1,18 @@
+参见：
+Java Concurrent(二)::并发集合
+	http://aducode.github.io/posts/2015-10-28/java_concurrent02.html
+
+LinkedBlockingQueue
+	最大元素个数为Integer.MAX_VALUE
+	内部使用了两个ReentrantLock：putLock, takeLock
+	存在Condition：notEmpty（由takeLock提供）, notFull（由putLock提供）
+	性能上相较于ArrayBlockingQueue更好些：
+		读 取线程 使用了不同的锁，则可以并行进行（但，同样的操作（如：读/取）还是要一个个顺序执行）
+		如何保证 队列中的元素 没有并发问题（读 写采用了不同的锁，但，队列只有一份）：
+			. 采用AtomicInteger来表示 队列大小，当不满足特定条件时（如：队列满），则响应的 读/写线程会被阻塞
+			. 写时，只会修改head（其中，head中不包含真实的数据，仅仅象征）
+				而读时，只会修改tail（其中，tail包含了真实的数据）
+ArrayBlockingQueue
+	需要指定元素个数
+	内部只使用了一个ReentrantLock：lock
+	存在Condition：notEmpty, notFull，均是由lock来提供

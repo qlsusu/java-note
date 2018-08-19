@@ -9,7 +9,3 @@ java Queue中 remove/poll, add/offer, element/peek区别
 
 BlockingQueue 
 是线程安全的，实现了先进先出等特性，是生产者消费者的模型
-
-LinkedBlockingQueue是一个无限大的任务队列
-ArrayBlockingQueue
-	参见：Condition.txt

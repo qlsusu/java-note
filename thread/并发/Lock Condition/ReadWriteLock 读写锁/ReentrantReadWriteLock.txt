@@ -11,12 +11,13 @@ ReentrantReadWriteLock内部定义了内部类 ReadLock 和 WriteLock 来处理 
 但是，它们最后会委派给 同一个ReentrantReadWriteLock.Sync对象（继承自AbstractQueuedSynchronizer） 来处理
 
 AQS的阻塞队列
-Sync对象的阻塞队列 对应着 读锁/写锁 两种资源
-设阻塞队列的内容为：线程1写(head) 线程2写 线程3读 线程4写 线程5读
+Sync对象的阻塞队列 存放着 申请读锁/申请写锁 的两类节点
+	再次注意：一个队列上 存放着 两类节点
+设：阻塞队列的内容为：线程1写(head) 线程2写 线程3读 线程4写 线程5读
 	当线程1释放写资源时，唤醒线程2，其获得了写资源
 	线程2释放写资源，唤醒线程3，
-	线程3获得了读资源，其会执行AbstractQueuedSynchronizer#setHeadAndPropagate
-		其会判断 其后继是否isShared 来决定是否要唤醒后继
+	线程3获得了读资源，其会执行AbstractQueuedSynchronizer#setHeadAndPropagate 来试图唤醒后继节点
+		但之前，其会判断 其后继是否isShared 来决定是否要唤醒后继
 		针对于例子中的情况，线程4对应的Node并不是shared，则线程3并不会唤醒线程4
 	线程3释放了读资源，唤醒线程4，其获得了写资源
 	线程4释放了写资源，唤醒线程5

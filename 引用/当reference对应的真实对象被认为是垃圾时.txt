@@ -1,4 +1,6 @@
 Reference的static块中启动了线程ReferenceHandler
+	该线程优先级很高
+	为守护线程
 最终将调用：
 while(true) {
 	Reference.tryHandlePending(true);
