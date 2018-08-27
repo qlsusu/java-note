@@ -6,6 +6,6 @@ Integer.toOctalString(num)
 Integer.toHexString(num)
 
 例子：num=17
-2进制：	10001
+2进制：	10001	前缀：无
 8进制：	21		前缀：0
 16进制：	11		前缀：0x

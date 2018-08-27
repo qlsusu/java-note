@@ -45,6 +45,8 @@ public class SelectorServer
                     ServerSocketChannel ssc1 = (ServerSocketChannel)sk.channel();
                     SocketChannel sc = ssc1.accept();
                     sc.configureBlocking(false);
+                    //为SocketChannel 注册 SelectionKey，在同一个Selector上
+                    //则通过Iterator可遍历到该SelectionKey
                     sc.register(selector, SelectionKey.OP_READ);
                 }
                 // 通道上是否有数据可读

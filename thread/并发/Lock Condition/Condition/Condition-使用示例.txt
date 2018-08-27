@@ -1,25 +1,25 @@
-Éú²úÕßÏû·ÑÕß
-¸ÃÀı ±¾ÖÊÉÏÊÇ£ºjava.util.concurrent.ArrayBlockingQueue
+ç”Ÿäº§è€…æ¶ˆè´¹è€…
+è¯¥ä¾‹ æœ¬è´¨ä¸Šæ˜¯ï¼šjava.util.concurrent.ArrayBlockingQueue
 
 class BoundedBuffer {
-    final Lock lock = new ReentrantLock();//Ëø¶ÔÏó
-    final Condition notFull = lock.newCondition();//·ÇÂú Ìõ¼ş£¬Èç¹û·ÇÂú£¬¿ÉÒÔ·Å¶«Î÷
-    final Condition notEmpty = lock.newCondition();//·Ç¿Õ Ìõ¼ş£¬Èç¹û·Ç¿Õ£¬¿ÉÒÔÈ¡¶«Î÷
+    final Lock lock = new ReentrantLock();//é”å¯¹è±¡
+    final Condition notFull = lock.newCondition();//éæ»¡ æ¡ä»¶ï¼Œå¦‚æœéæ»¡ï¼Œå¯ä»¥æ”¾ä¸œè¥¿
+    final Condition notEmpty = lock.newCondition();//éç©º æ¡ä»¶ï¼Œå¦‚æœéç©ºï¼Œå¯ä»¥å–ä¸œè¥¿
 
-    final Object[] items = new Object[100];//»º´æ¶ÓÁĞ
-    int putptr/*Ğ´Ë÷Òı*/, takeptr/*¶ÁË÷Òı*/, count/*¶ÓÁĞÖĞ´æÔÚµÄÊı¾İ¸öÊı*/;
+    final Object[] items = new Object[100];//ç¼“å­˜é˜Ÿåˆ—
+    int putptr/*å†™ç´¢å¼•*/, takeptr/*è¯»ç´¢å¼•*/, count/*é˜Ÿåˆ—ä¸­å­˜åœ¨çš„æ•°æ®ä¸ªæ•°*/;
 
     public void put(Object x) throws InterruptedException {
         lock.lock();
         try {
-            while (count == items.length)//Èç¹û¶ÓÁĞÂúÁË
-                notFull.await();//·ÇÂúÌõ¼ş ²»Âú×ã£¬await
+            while (count == items.length)//å¦‚æœé˜Ÿåˆ—æ»¡äº†
+                notFull.await();//éæ»¡æ¡ä»¶ ä¸æ»¡è¶³ï¼Œawait
 
-            items[putptr] = x;//¸³Öµ
-            if (++putptr == items.length) putptr = 0;//Èç¹ûĞ´Ë÷ÒıĞ´µ½¶ÓÁĞµÄ×îºóÒ»¸öÎ»ÖÃÁË£¬ÄÇÃ´ÖÃÎª0
-            ++count;//¸öÊı++
+            items[putptr] = x;//èµ‹å€¼
+            if (++putptr == items.length) putptr = 0;//å¦‚æœå†™ç´¢å¼•å†™åˆ°é˜Ÿåˆ—çš„æœ€åä¸€ä¸ªä½ç½®äº†ï¼Œé‚£ä¹ˆç½®ä¸º0
+            ++count;//ä¸ªæ•°++
 
-            notEmpty.signal();//·Ç¿ÕÌõ¼ş Âú×ã£¬signal
+            notEmpty.signal();//éç©ºæ¡ä»¶ æ»¡è¶³ï¼Œsignal
         } finally {
             lock.unlock();
         }
@@ -28,14 +28,14 @@ class BoundedBuffer {
     public Object take() throws InterruptedException {
         lock.lock();
         try {
-            while (count == 0)//Èç¹û¶ÓÁĞÎª¿Õ
-                notEmpty.await();//·Ç¿ÕÌõ¼ş ²»Âú×ã£¬await
+            while (count == 0)//å¦‚æœé˜Ÿåˆ—ä¸ºç©º
+                notEmpty.await();//éç©ºæ¡ä»¶ ä¸æ»¡è¶³ï¼Œawait
 
-            Object x = items[takeptr];//È¡Öµ
-            if (++takeptr == items.length) takeptr = 0;//Èç¹û¶ÁË÷Òı¶Áµ½¶ÓÁĞµÄ×îºóÒ»¸öÎ»ÖÃÁË£¬ÄÇÃ´ÖÃÎª0
-            --count;//¸öÊı--
+            Object x = items[takeptr];//å–å€¼
+            if (++takeptr == items.length) takeptr = 0;//å¦‚æœè¯»ç´¢å¼•è¯»åˆ°é˜Ÿåˆ—çš„æœ€åä¸€ä¸ªä½ç½®äº†ï¼Œé‚£ä¹ˆç½®ä¸º0
+            --count;//ä¸ªæ•°--
 
-            notFull.signal();//·ÇÂúÌõ¼ş Âú×ã£¬signal
+            notFull.signal();//éæ»¡æ¡ä»¶ æ»¡è¶³ï¼Œsignal
             return x;
         } finally {
             lock.unlock();

@@ -7,7 +7,7 @@ AbstractQueuedSynchronizer.ConditionObject#public final void await() throws Inte
 	int savedState = fullyRelease(node);
 	int interruptMode = 0;
 	//该Node是否位于 AQS同步队列中，如果不位于，那么阻塞 调用方线程
-	//如果不位于 的解释：当ConditionObject#signal时，会将ConditionObject的条件队列的 对头 转移到 同步队列中
+	//如果不位于 的解释：当ConditionObject#signal时，会将ConditionObject的条件队列的 队头 转移到 同步队列中
 	//只有位于AQS同步队列的 节点（线程），才能够重新 申请到资源，所以，在释放了资源后，Node（线程）必须重新占用资源
 	while (!isOnSyncQueue(node)) {
 		LockSupport.park(this);

@@ -3,7 +3,7 @@
 	http://www.cnblogs.com/xrq730/p/5052323.html
 
 LinkedHashMap = HashMap + 双向链表
-双向链表（参见：LinkedList）（单head，参见：双向链表.png）：最新被访问的元素 被放入到 tail
+双向链表（参见：LinkedList）（单head，参见：只有head的双向链表.png）：最新被访问的元素 被放入到 tail
 其作为LruCache的内部 数据结构依赖
 
 可定义 遍历时采用什么顺序

@@ -11,10 +11,10 @@ okhttp3.internal.cache.CacheStrategy.Factory#get
 . 精细间隔：收到响应的时刻 - 服务器告诉我该响应的时刻
 long residentDuration = nowMillis - receivedResponseMillis;
 long responseDuration = receivedResponseMillis - sentRequestMillis;
---
 long apparentReceivedAge = servedDate != null（date头）
 	? Math.max(0, receivedResponseMillis - servedDate.getTime())
 	: 0;
+--
 long receivedAge = ageSeconds != -1（age头）
 	? Math.max(apparentReceivedAge, SECONDS.toMillis(ageSeconds))
 	: apparentReceivedAge;
@@ -23,7 +23,7 @@ long receivedAge = ageSeconds != -1（age头）
 ------------------cache的待刷新间隔/在多长时间内有效（freshMillis）：
 是否response有max-age头
 	有，为max-age
-	否则，是否有expire头
+	无，是否有expire头
 		有
 			expire头 - (存在date头 ?  date头 : receivedResponseMillis)
 		无，是否有modifyTime头 且 Address.HttpUrl中不包含query，

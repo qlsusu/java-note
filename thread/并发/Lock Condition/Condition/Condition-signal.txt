@@ -1,5 +1,5 @@
 AbstractQueuedSynchronizer.ConditionObject#public final void signal() {
-	//Èç¹ûµ±Ç°Ïß³Ì²¢Ã»ÓÐ³ÖÓÐ×ÊÔ´£¬ÔòÅ×³öÒì³£
+	//å¦‚æžœå½“å‰çº¿ç¨‹å¹¶æ²¡æœ‰æŒæœ‰èµ„æºï¼Œåˆ™æŠ›å‡ºå¼‚å¸¸
 	if (!isHeldExclusively())
 		throw new IllegalMonitorStateException();
 	Node first = firstWaiter;
@@ -9,26 +9,26 @@ AbstractQueuedSynchronizer.ConditionObject#public final void signal() {
 
 AbstractQueuedSynchronizer.ConditionObject#private void doSignal(Node first) {
 	do {
-		//Èç¹û±¾NodeÊÇ Ìõ¼þ¶ÓÁÐÖÐµÄÎ¨Ò»½Úµã£¬ÄÇÃ´ÉèÖÃfirstWaiter=nextWaiter=null
+		//å¦‚æžœæœ¬Nodeæ˜¯ æ¡ä»¶é˜Ÿåˆ—ä¸­çš„å”¯ä¸€èŠ‚ç‚¹ï¼Œé‚£ä¹ˆè®¾ç½®firstWaiter=nextWaiter=null
 		if ( (firstWaiter = first.nextWaiter) == null)
 			lastWaiter = null;
-		//±¾Node¿ÉÒÔ±»gcÁË
+		//æœ¬Nodeå¯ä»¥è¢«gcäº†
 		first.nextWaiter = null;
 	} 
-	//½«±¾½Úµã ´ÓÌõ¼þ¶ÓÁÐ ÒÆ¶¯µ½Í¬²½¶ÓÁÐÖÐ£¬Èç¹ûÊ§°Ü£¬ÄÇÃ´³¢ÊÔ nextWaiter
+	//å°†æœ¬èŠ‚ç‚¹ ä»Žæ¡ä»¶é˜Ÿåˆ— ç§»åŠ¨åˆ°åŒæ­¥é˜Ÿåˆ—ä¸­ï¼Œå¦‚æžœå¤±è´¥ï¼Œé‚£ä¹ˆå°è¯• nextWaiter
 	while (!transferForSignal(first) && (first = firstWaiter) != null);
 }
 
-//½«Node½Úµã ´Ó Ìõ¼þ¶ÓÁÐ ÒÆµ½ AQSÍ¬²½¶ÓÁÐÖÐ
+//å°†NodeèŠ‚ç‚¹ ä»Ž æ¡ä»¶é˜Ÿåˆ— ç§»åˆ° AQSåŒæ­¥é˜Ÿåˆ—ä¸­
 AbstractQueuedSynchronizer#final boolean transferForSignal(Node node) {
-	//ÉèÖÃNode.waitStatusÎª0
+	//è®¾ç½®Node.waitStatusä¸º0
 	if (!compareAndSetWaitStatus(node, Node.CONDITION, 0))
 		return false;
 	
-	//Node±»×ªÒÆµ½ Í¬²½¶ÓÁÐ£¨Î²²¿£©
+	//Nodeè¢«è½¬ç§»åˆ° åŒæ­¥é˜Ÿåˆ—ï¼ˆå°¾éƒ¨ï¼‰ï¼Œè¿”å›žçš„pä¸º nodeçš„å‰ç»§
 	Node p = enq(node);
 	int ws = p.waitStatus;
-	//Èç¹ûNode±»cancel£¬»òÕß£¬Ç°¼Ì.ws²»ÄÜÉèÖÃÎªSIGNAL£¬ÄÇÃ´Ö±½Ó»½ÐÑNode.thread
+	//å¦‚æžœNodeè¢«cancelï¼Œæˆ–è€…ï¼Œå‰ç»§.wsä¸èƒ½è®¾ç½®ä¸ºSIGNALï¼Œé‚£ä¹ˆç›´æŽ¥å”¤é†’Node.thread
 	if (ws > 0 || !compareAndSetWaitStatus(p, ws, Node.SIGNAL))
 		LockSupport.unpark(node.thread);
 	return true;

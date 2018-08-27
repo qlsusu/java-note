@@ -1,15 +1,15 @@
-Ìõ¼ş¶ÓÁĞ£º
-Õë¶ÔÓÚµ¥¸öConditionObject¶ÔÏó£¨AQSÖĞ»¹´æÔÚ×Å Í¬²½¶ÓÁĞ£¬Õë¶ÔÓÚAQS¶ÔÏó±¾Éí£©
-ÔªËØÈÔÈ»Ê¹ÓÃNodeÀ´±íÊ¾£¨ºÍAQSÍ¬²½¶ÓÁĞÖĞÔªËØ Ëù²ÉÓÃµÄÊı¾İ½á¹¹ Ò»ÖÂ£©
-ÓµÓĞÍ·Î²£ºConditionObject#firstWaiter, ConditionObject#lastWaiter
-µ¥ÏòÁ´±í£ºÓÃNode#nextWaiterÀ´±íÊ¾ Ìõ¼ş¶ÓÁĞÖĞµÄÏÂÒ»¸ö½Úµã
-	Çë×¢Òâ£ºNode#next ºÍ Node#prev ²¢²»Ê¹ÓÃÔÚ Ìõ¼ş¶ÓÁĞÖĞ
+æ¡ä»¶é˜Ÿåˆ—ï¼š
+é’ˆå¯¹äºå•ä¸ªConditionObjectå¯¹è±¡ï¼ˆAQSä¸­è¿˜å­˜åœ¨ç€ åŒæ­¥é˜Ÿåˆ—ï¼Œé’ˆå¯¹äºAQSå¯¹è±¡æœ¬èº«ï¼‰
+å…ƒç´ ä»ç„¶ä½¿ç”¨Nodeæ¥è¡¨ç¤ºï¼ˆå’ŒAQSåŒæ­¥é˜Ÿåˆ—ä¸­å…ƒç´  æ‰€é‡‡ç”¨çš„æ•°æ®ç»“æ„ ä¸€è‡´ï¼‰
+æ‹¥æœ‰å¤´å°¾ï¼šConditionObject#firstWaiter, ConditionObject#lastWaiter
+å•å‘é“¾è¡¨ï¼šç”¨Node#nextWaiteræ¥è¡¨ç¤º æ¡ä»¶é˜Ÿåˆ—ä¸­çš„ä¸‹ä¸€ä¸ªèŠ‚ç‚¹
+	è¯·æ³¨æ„ï¼šNode#next å’Œ Node#prev å¹¶ä¸ä½¿ç”¨åœ¨ æ¡ä»¶é˜Ÿåˆ—ä¸­
 	
-Ê²Ã´Ê±ºò Ìõ¼ş¶ÓÁĞ ±»¸Ä±ä£º
+ä»€ä¹ˆæ—¶å€™ æ¡ä»¶é˜Ÿåˆ— è¢«æ”¹å˜ï¼š
 ConditionObject#addConditionWaiter
-	Ìí¼Ó½Úµã	
+	æ·»åŠ èŠ‚ç‚¹
 ConditionObject#unlinkCancelledWaiters
-	Çå³ıµô Ìõ¼ş¶ÓÁĞÖĞ µÄÎŞĞ§½Úµã£¨Node.waitStatus != Node.CONDITION£©
-	±»µ÷ÓÃ³¡¾°£º
-		ConditionObject#addConditionWaiterÖĞ£¬ÔÚÌí¼ÓNodeÖ®Ç°£¬Èç¹ûConditionObject#lastWaiter.waitStatus != Node.CONDITION
-		ConditionObject#awaitÖĞ£¬ÖØĞÂ»ñµÃÁË×ÊÔ´ºó£¬Èç¹ûnode.nextWaiter != null
+	æ¸…é™¤æ‰ æ¡ä»¶é˜Ÿåˆ—ä¸­ çš„æ— æ•ˆèŠ‚ç‚¹ï¼ˆNode.waitStatus != Node.CONDITIONï¼‰
+	è¢«è°ƒç”¨åœºæ™¯ï¼š
+		ConditionObject#addConditionWaiterä¸­ï¼Œåœ¨æ·»åŠ Nodeä¹‹å‰ï¼Œå¦‚æœConditionObject#lastWaiter.waitStatus != Node.CONDITION
+		ConditionObject#awaitä¸­ï¼Œé‡æ–°è·å¾—äº†èµ„æºåï¼Œå¦‚æœnode.nextWaiter != null

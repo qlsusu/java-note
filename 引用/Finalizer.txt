@@ -6,7 +6,7 @@ java将弃用finalize()方法？
 	http://www.linuxidc.com/Linux/2017-03/142352.htm
 
 在生成了 复写了finalize()的类的 对象1时，会产生Finalizer对象（继承自FinalReference，也是Reference的一种）
-当对象1不可达时，该Finalizer会放入到Finalizer#queue中（static ReferenceQueue<Object>）（Reference#tryHandlePending中的逻辑）
+当对象1不可达时，该Finalizer会放入到Finalizer#queue中（static ReferenceQueue<Object>类型）（Reference#tryHandlePending中的逻辑）
 	注意：此时，对象1并不会被认为是垃圾，因为存在路径：Finalizer#queue（static类型）-Finalizer-对象1
 Finalizer的static中，会启动Finalizer.FinalizerThread（级别为 Thread.MAX_PRIORITY-2 ，也不是很低，但是为daemon thread）
 	其run核心为：
