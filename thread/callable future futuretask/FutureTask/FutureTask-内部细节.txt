@@ -26,7 +26,7 @@ set/setException：
 	第一步CAS：认为state是NEW，设置state到COMPLETING
 	如果成功，则第二步CAS：
 		设置outcome（为真实结果，或，在执行过程中抛出的异常）
-		设置state（putOrderedInt的形式）
+		设置state（putOrderedInt的形式）为
 			NORMAL，或
 			EXCEPTIONAL
 	--
@@ -41,16 +41,21 @@ set/setException：
 				！！！！！！！！！！！这也是 state+CAS 的并发编程模型
 		而用户在get时，会根据state来走相应的分支
 FutureTask#finishCompletion
-	唤醒FutureTask.waiters表示的WaitNode链表：
-		for (WaitNode q; (q = waiters) != null;) {
-            if (UNSAFE.compareAndSwapObject(this, waitersOffset, q, null)) {
-				//唤醒以q为头的 链表，方式：LockSupport.unpark(WaitNode.thread)
-				...
-				//直接break来退出最外层for循环，即是：当成功设置了head为null后，就只用唤醒head为头的所有节点，而不用：担心：head发生了改变
-				break;			
-			}
+	//唤醒FutureTask.waiters表示的WaitNode链表：
+	//这里采用了for，为了：之前客户线程（为获取结果）因为state还<COMPLETING 而构建了节点，
+	//后 本工作线程执行了for的第一次，并通过了条件
+	//后 客户线程设置了链表头
+	//则 切到工作线程，工作代码中，CAS失败，则再走一次for循环
+	for (WaitNode q; (q = waiters) != null;) {
+		if (UNSAFE.compareAndSwapObject(this, waitersOffset, q, null)) {
+			//唤醒 之前以q为头的 链表，方式：LockSupport.unpark(WaitNode.thread)
+			...
+			//直接break来退出最外层for循环，即是：当成功设置了head为null后，就只用唤醒head为头的所有节点，而不用：担心：head发生了改变
+			break;			
 		}
-	通知FutureTask子类（一个钩子）：通过done()
+	}
+	//通知FutureTask子类（一个钩子）
+	done()
 
 get：
 执行完毕 的描述：成功NORMAL，执行过程中抛出异常EXCEPTIONAL，取消CANCELLED或INTERRUPTED

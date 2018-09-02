@@ -124,6 +124,8 @@ private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
 		 * need a signal, but don't park yet.  Caller will need to
 		 * retry to make sure it cannot acquire before parking.
 		 */
+		//这里并不在意ws是否真的设置为了SIGNAL
+		//因为，就算没有被设置为SIGNAL，node.thread还是会再走一遍acquireQueued的for循环，有可能因此而获得了独占资源
 		compareAndSetWaitStatus(pred, ws, Node.SIGNAL);
 	}
 	return false;

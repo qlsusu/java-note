@@ -1,0 +1,1 @@
+int randomNum = random.nextInt((max - min) + 1) + min;

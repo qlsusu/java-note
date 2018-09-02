@@ -1,5 +1,6 @@
 Channel
-既可以从channel中读取数据，又可以写数据到channel。
+相当于数据源
+既可以从channel中读取数据，又可以写数据到channel
 channel可以异步地读写。
 
 channel对应了一个源，

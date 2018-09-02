@@ -1,0 +1,25 @@
+FutureTask#removeWaiter中
+private void removeWaiter(WaitNode node) {
+	if (node != null) {
+		node.thread = null;
+		//goto的checkpoint
+		retry:
+		for (;;) {          // restart on removeWaiter race
+			for (WaitNode pred = null, q = waiters, s; q != null; q = s) {
+				s = q.next;
+				if (q.thread != null)
+					pred = q;
+				else if (pred != null) {
+					pred.next = s;
+					if (pred.thread == null) // check for race
+						//goto语法
+						continue retry;
+				}
+				else if (!UNSAFE.compareAndSwapObject(this, waitersOffset,
+													  q, s))
+					continue retry;
+			}
+			break;
+		}
+	}
+}

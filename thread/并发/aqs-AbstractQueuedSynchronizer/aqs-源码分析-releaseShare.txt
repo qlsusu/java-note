@@ -22,10 +22,17 @@ private void doReleaseShared() {
             //设置head的ws为 0
             if (ws == Node.SIGNAL) {
             	//为什么会有CAS失败的情况：
+            	//情况1：
             	//在thread1上，当unpark了后继，后继.thread（设为thread2）返回到doAcquireShare.for，很有可能获得了资源，那么其会执行setHeadAndPropagate
             	//node2成为了新的head，并准备唤醒其后继，设其准备执行 之下的这句
             	//而此刻，thread1继续执行，由于head发生了改变（为node2），又执行了一遍for循环，其使得node2.waitStatus为0
             	//而回到thread2，则CAS失败，因为expected已经发生了改变（不为SIGNAL，代表：不需要唤醒后继）
+            	//情况2：
+            	//当前同步队列中只有head，有一个节点申请资源，未申请到，产生节点并加入到同步队列中，在shouldPark时，将head.ws设置为SIGNAL
+            	//当head要进行release，执行到doReleaseShared
+            	//回到node线程，再次试图获取资源时，获取到资源，设置自身为head，并试图唤醒其后继，其也执行到了doReleaseShared
+            	//设两个线程均执行过了 ws==Node.SIGNAL 的判断
+            	//则下述的CAS必有一个线程执行失败
                 if (!compareAndSetWaitStatus(h, Node.SIGNAL, 0))
                     continue;
                 //唤醒后继，继续走doAcquireShared中的for循环

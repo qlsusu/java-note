@@ -1,0 +1,5 @@
+参见：
+【知乎Live】狼叔：如何正确的学习Node.js
+	https://github.com/i5ting/How-to-learn-node-correctly
+node.js中文资料导航
+	https://github.com/sergtitov/NodeJS-Learning/blob/master/cn_resource.md
