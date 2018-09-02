@@ -7,5 +7,3 @@ android topic
 	https://github.com/topics/android
 有哪些topic
 	https://github.com/topics/
-
-https://github.com/search?utf8=%E2%9C%93&q=javascript+is%3Acurated&type=Topics
