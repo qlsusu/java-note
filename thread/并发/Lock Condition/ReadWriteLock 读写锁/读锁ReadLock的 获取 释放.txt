@@ -1,6 +1,7 @@
-当线程1获得了写锁，线程1可获得读锁
-当线程2获得了写锁，线程1不能获得读锁
-当没有线程获得写锁，线程1可以获得读锁
+读资源的获取方式：
+当还没有线程获得写资源，或者，本线程获得了写资源，那么
+	当同步队列中的第一个节点为写节点（有其他线程在请求写资源）时，不能获得资源
+	否则，能获得资源
 
 -----------------------------------------------------读锁的获取
 ReentrantReadWriteLock.ReadLock#lock
@@ -20,6 +21,7 @@ ReentrantReadWriteLock.ReadLock#lock
             if (!readerShouldBlock() &&
                 r < MAX_COUNT &&
                 compareAndSetState(c, c + SHARED_UNIT)) {
+				//第一个拥有 读锁资源的 线程
                 if (r == 0) {
                     firstReader = current;
                     firstReaderHoldCount = 1;
@@ -30,6 +32,7 @@ ReentrantReadWriteLock.ReadLock#lock
                 else {
                     HoldCounter rh = cachedHoldCounter;
                     if (rh == null || rh.tid != getThreadId(current))
+						//readHolds为ThreadLocalHoldCounter类型（继承自ThreadLocal，提供了initialValue方法，用于产生 对应于线程的HoldCounter）
                         cachedHoldCounter = rh = readHolds.get();
                     else if (rh.count == 0)
                         readHolds.set(rh);
@@ -65,7 +68,7 @@ cachedHoldCounter：		最后一个拥有读锁资源的线程 对应的 HoldCoun
 firstReader firstReaderHoldCount cachedHoldCounter 和 HoldCounter 的存在是为了：在释放资源时，是否抛出异常
 则本质上，需要知道 释放读锁资源的线程 之前拥有的 读锁资源的个数
 而该个数 可以通过 HoldCounter.count来获得，而HoldCount又需要 ThreadLocal.get
-则，创建 ‘冗余的’ firstReader变量等，可以免去上述 获取步骤，则提升了性能
+则，创建 ‘冗余的’ firstReader cachedHoldCounter 等，可以免去上述 获取HoldCount的步骤，则提升了性能
 	况且，往往，第一个拥有读锁资源的线程 或 最后一个拥有读锁资源的线程 会先释放读锁资源
 
 -----------------------------------------------------读锁的释放            
@@ -85,6 +88,7 @@ ReentrantReadWriteLock.ReadLock#unlock
                     rh = readHolds.get();
                 int count = rh.count;
                 if (count <= 1) {
+					//本线程即将释放完毕读资源，那么对应本线程的 HolderCount已经无用了，进行移除
                     readHolds.remove();
                     //当线程释放了 其并不拥有的 读锁资源时，抛出异常
                     if (count <= 0)
